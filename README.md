@@ -51,3 +51,7 @@ php artisan serve
 
 Visit http://127.0.0.1:8000 to view the application.
 
+5. acess admin panel via http://127.0.0.1:8000/admin
+
+6. login  to filament with email:test@admin.com password:test@admin.com
+
