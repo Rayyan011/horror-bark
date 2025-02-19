@@ -23,9 +23,9 @@ class PagesTableSeeder extends Seeder
             array (
                 'id' => 1,
                 'page_name' => 'home',
-                'content' => '[]',
+                'content' => '[{"data": {"pos": "hero_image", "content": "01JMF11YKY2EYCPWYYNKCQH493.webp"}, "type": "image"}]',
                 'created_at' => '2025-02-19 11:27:24',
-                'updated_at' => '2025-02-19 11:27:24',
+                'updated_at' => '2025-02-19 11:59:04',
             ),
         ));
         
