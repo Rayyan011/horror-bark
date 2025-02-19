@@ -104,24 +104,24 @@ class PageResource extends Resource
                                     ->required(),
                             ]),
 
-                        Builder\Block::make('options')
-                            ->schema([
-                                Select::make('options')
-                                    ->options([
-                                        '1',
-                                        '2',
-                                    ])
-                                    ->required(),
-                            ]),
-                        Builder\Block::make('options')
-                            ->schema([
-                                Select::make('options')
-                                    ->options([
-                                        '1',
-                                        '2',
-                                    ])
-                                    ->required(),
-                            ]),
+                        // Builder\Block::make('options')
+                        //     ->schema([
+                        //         Select::make('options')
+                        //             ->options([
+                        //                 '1',
+                        //                 '2',
+                        //             ])
+                        //             ->required(),
+                        //     ]),
+                        // Builder\Block::make('options')
+                        //     ->schema([
+                        //         Select::make('options')
+                        //             ->options([
+                        //                 '1',
+                        //                 '2',
+                        //             ])
+                        //             ->required(),
+                        //     ]),
                             // Builder\Block::make('MarkdownEditor')
                             // ->schema([
                             //     TextInput::make('pos')
