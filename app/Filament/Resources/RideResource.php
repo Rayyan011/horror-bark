@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\RideResource\Pages;
 use App\Filament\Resources\RideResource\RelationManagers;
 use App\Models\Ride;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,6 +13,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
+use Filament\Forms\Components\Select;
+
 
 class RideResource extends Resource
 {
@@ -21,28 +27,41 @@ class RideResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                //
-            ]);
+        return $form->schema([
+            Select::make('user_id')
+                ->label('Owner (User)')
+                ->relationship('user', 'name')
+                ->required(),
+
+            TextInput::make('name')
+                ->label('Ride Name')
+                ->required(),
+            Textarea::make('description')
+                ->label('Description')
+                ->rows(3),
+            TextInput::make('default_capacity')
+                ->numeric()
+                ->default(0)
+                ->required(),
+            TimePicker::make('open_time'),
+            TimePicker::make('close_time'),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Columns\TextColumn::make('id')->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Owner')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('default_capacity'),
+                Tables\Columns\TextColumn::make('open_time')->time('H:i'),
+                Tables\Columns\TextColumn::make('close_time')->time('H:i'),
+                Tables\Columns\TextColumn::make('created_at')->dateTime(),
             ]);
     }
 
