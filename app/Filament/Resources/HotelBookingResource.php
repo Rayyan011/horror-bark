@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Carbon\Carbon;
 
 class HotelBookingResource extends Resource
 {
@@ -26,14 +27,30 @@ class HotelBookingResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form->schema([
+        // Closure to recalculate the price whenever a reactive field updates.
+        $recalculatePrice = function (callable $get, callable $set) {
+            $roomId = $get('room_id');
+            $startDate = $get('start_date');
+            $endDate = $get('end_date');
+            $quantity = $get('quantity') ?: 1;
+            if ($roomId && $startDate && $endDate) {
+                $room = Room::find($roomId);
+                if ($room) {
+                    $days = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate));
+                    $price = $room->price * $days * $quantity;
+                    $set('total_price', $price);
+                }
+            }
+        };
 
+        return $form->schema([
             Select::make('user_id')
                 ->relationship('user', 'name')
                 ->label('User')
                 ->searchable()
                 ->required(),
-            // Hotel selection field – used to filter available rooms. This field is not stored.
+
+            // Hotel selection used to filter available rooms (not persisted).
             Select::make('hotel_id')
                 ->label('Hotel')
                 ->options(function () {
@@ -41,10 +58,10 @@ class HotelBookingResource extends Resource
                 })
                 ->reactive()
                 ->afterStateUpdated(fn($state, callable $set) => $set('room_id', null))
-                ->dehydrated(false) // Do not persist this field; it's only used for filtering.
+                ->dehydrated(false)
                 ->required(),
 
-            // Room selection, filtered by the selected hotel.
+            // Room selection filtered by the selected hotel.
             Select::make('room_id')
                 ->label('Room')
                 ->options(function ($get) {
@@ -57,27 +74,50 @@ class HotelBookingResource extends Resource
                         ->toArray();
                 })
                 ->searchable()
+                ->reactive()
+                ->afterStateUpdated($recalculatePrice)
                 ->required(),
 
-            // Booking start date
+            // Quantity field added for multiple bookings.
+            TextInput::make('quantity')
+                ->label('Quantity')
+                ->numeric()
+                ->default(1)
+                ->minValue(1)
+                ->reactive()
+                ->afterStateUpdated($recalculatePrice)
+                ->required(),
+
+            // Booking start date.
             DatePicker::make('start_date')
                 ->label('Start Date')
+                ->reactive()
+                ->afterStateUpdated($recalculatePrice)
                 ->required(),
 
-            // Booking end date
+            // Booking end date.
             DatePicker::make('end_date')
                 ->label('End Date')
+                ->reactive()
+                ->afterStateUpdated($recalculatePrice)
                 ->required(),
 
-            // Total price (entered manually or can be dynamically calculated later)
+            // Total price is computed and displayed as read-only.
             TextInput::make('total_price')
                 ->label('Total Price')
                 ->numeric()
+                ->disabled()
+                ->reactive()
                 ->required(),
 
-            // Booking status
-            TextInput::make('status')
+            // Booking status.
+            Select::make('status')
                 ->label('Status')
+                ->options([
+                    'pending'   => 'Pending',
+                    'confirmed' => 'Confirmed',
+                    'cancelled' => 'Cancelled',
+                ])
                 ->default('pending')
                 ->required(),
         ]);
@@ -86,45 +126,30 @@ class HotelBookingResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
-            // Primary booking ID
             Tables\Columns\TextColumn::make('id')
                 ->label('ID')
                 ->sortable(),
-
-            // Display user name
             Tables\Columns\TextColumn::make('user.name')
                 ->label('User')
                 ->searchable()
                 ->sortable(),
-
-            // Display room number
             Tables\Columns\TextColumn::make('room.room_number')
                 ->label('Room')
                 ->searchable()
                 ->sortable(),
-
-            // Display start date
             Tables\Columns\TextColumn::make('start_date')
                 ->label('Start Date')
                 ->date()
                 ->sortable(),
-
-            // Display end date
             Tables\Columns\TextColumn::make('end_date')
                 ->label('End Date')
                 ->date()
                 ->sortable(),
-
-            // Total price column
             Tables\Columns\TextColumn::make('total_price')
                 ->label('Total Price')
                 ->sortable(),
-
-            // Booking status
             Tables\Columns\TextColumn::make('status')
                 ->sortable(),
-
-            // Creation timestamp
             Tables\Columns\TextColumn::make('created_at')
                 ->label('Created')
                 ->dateTime()
@@ -145,9 +170,9 @@ class HotelBookingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListHotelBookings::route('/'),
+            'index'  => Pages\ListHotelBookings::route('/'),
             'create' => Pages\CreateHotelBooking::route('/create'),
-            'edit' => Pages\EditHotelBooking::route('/{record}/edit'),
+            'edit'   => Pages\EditHotelBooking::route('/{record}/edit'),
         ];
     }
 }

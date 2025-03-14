@@ -14,6 +14,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\MarkdownEditor;
 
 class RoomResource extends Resource
 {
@@ -27,9 +32,29 @@ class RoomResource extends Resource
             Select::make('hotel_id')
                 ->relationship('hotel', 'name')
                 ->required(),
+                MarkdownEditor::make('description'),
+                FileUpload::make('image')
+                    ->multiple()
+                    ->required()
+                    ->maxFiles(3)
+                    ->imageEditor()
+                    ->reorderable()
+                    ->appendFiles()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '16:9',
+                        '4:3',
+                        '1:1',
+                    ]),
+                TagsInput::make('amenities'),
+
+                
             TextInput::make('room_number')
                 ->required(),
             TextInput::make('price')
+                ->numeric()
+                ->required(),
+            TextInput::make('max_occupancy')
                 ->numeric()
                 ->required(),
             TextInput::make('status')

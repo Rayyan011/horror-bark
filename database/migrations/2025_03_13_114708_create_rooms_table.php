@@ -19,7 +19,7 @@ return new class extends Migration
             // e.g., 'available', 'maintenance', etc.
             $table->string('status')->default('available');
             $table->unsignedInteger('max_occupancy')->default(1);
-            $table->json('amenities')->nullable();
+            $table->string('amenities')->nullable();
             $table->string('images')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();

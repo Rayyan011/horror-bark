@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 class HotelBooking extends Model
 {
@@ -30,5 +31,25 @@ class HotelBooking extends Model
     public function isConfirmed(): bool
     {
         return $this->status === 'confirmed';
+    }
+
+    public function calculateTotalPrice(): float
+    {
+        $roomPrice = $this->room->price;
+        $start = Carbon::parse($this->start_date);
+        $end = Carbon::parse($this->end_date);
+        $days = $start->diffInDays($end);
+        $quantity = $this->quantity ?: 1;
+        return $roomPrice * $days * $quantity;
+    }
+
+    /**
+     * Automatically calculate and set the total price before saving.
+     */
+    protected static function booted()
+    {
+        static::saving(function ($booking) {
+            $booking->total_price = $booking->calculateTotalPrice();
+        });
     }
 }
