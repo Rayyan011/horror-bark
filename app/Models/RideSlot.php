@@ -17,6 +17,12 @@ class RideSlot extends Model
         'status',
     ];
 
+    protected $casts = [
+        'slot_date' => 'date:Y-m-d',       // or just 'date'
+        'start_time' => 'datetime:H:i',    // or 'time'
+        'end_time'   => 'datetime:H:i',    // or 'time'
+    ];
+
     public function ride(): BelongsTo
     {
         return $this->belongsTo(Ride::class);

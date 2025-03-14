@@ -17,6 +17,11 @@ class Ride extends Model
        
     ];
 
+    protected $casts = [
+        'open_time'  => 'datetime:H:i',
+        'close_time' => 'datetime:H:i',
+    ];
+
     public function rideSlots(): HasMany
     {
         return $this->hasMany(RideSlot::class);

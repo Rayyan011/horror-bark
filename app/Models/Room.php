@@ -13,8 +13,15 @@ class Room extends Model
         'room_number',
         'price',
         'status',
+        'max_occupancy', // Maximum number of people allowed
+        'amenities',     // JSON field: list of amenities (e.g., Wi-Fi, TV, minibar)
+        'images',        // JSON field: list of image URLs or paths
+        'description'
     ];
-
+    protected $casts = [
+        
+        'images'    => 'array', // Automatically convert JSON to array
+    ];
     public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);

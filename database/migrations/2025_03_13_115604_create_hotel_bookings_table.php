@@ -24,6 +24,7 @@ return new class extends Migration
 
             // e.g., pending, confirmed, checked_in, canceled
             $table->string('status')->default('pending');
+            $table->unsignedInteger('quantity')->default(1);
 
             $table->timestamps();
         });

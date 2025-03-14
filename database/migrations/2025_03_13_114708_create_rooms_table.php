@@ -18,6 +18,10 @@ return new class extends Migration
             $table->decimal('price', 8, 2)->default(0);
             // e.g., 'available', 'maintenance', etc.
             $table->string('status')->default('available');
+            $table->unsignedInteger('max_occupancy')->default(1);
+            $table->json('amenities')->nullable();
+            $table->string('images')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

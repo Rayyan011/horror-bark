@@ -22,6 +22,7 @@ return new class extends Migration
 
             // If you want an owner for the ride (business user):
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->decimal('price', 8, 2)->default(0);
             $table->timestamps();
         });
     }

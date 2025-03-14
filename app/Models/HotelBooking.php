@@ -13,6 +13,7 @@ class HotelBooking extends Model
         'start_date',
         'end_date',
         'total_price',
+        'quantity',
         'status',
     ];
 

@@ -17,6 +17,8 @@ return new class extends Migration
             // Book a specific ride slot
             $table->foreignId('ride_slot_id')->constrained()->cascadeOnDelete();
 
+            $table->unsignedInteger('quantity')->default(1);
+
             $table->decimal('total_price', 8, 2)->nullable();
 
             // e.g., pending, confirmed, canceled
