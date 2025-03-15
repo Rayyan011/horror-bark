@@ -13,15 +13,13 @@ return new class extends Migration
     {
         Schema::create('game_bookings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('game_slot_id');
-            $table->unsignedBigInteger('user_id');
-            $table->decimal('total_price', 8, 2)->default(0);
-            $table->integer('quantity')->default(1);
-            $table->string('status')->default('booked');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('game_id')->constrained()->onDelete('cascade');
+            $table->timestamp('booking_time'); // allowed only at 9:00 or 17:00
+            $table->integer('quantity');
+            $table->decimal('total_price', 8, 2);
+            $table->string('status')->default('pending');
             $table->timestamps();
-
-            $table->foreign('game_slot_id')->references('id')->on('game_slots')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

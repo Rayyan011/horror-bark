@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('games', function (Blueprint $table) {
+        Schema::create('beach_events', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // owner
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Organizer
             $table->string('name');
+            $table->date('event_date');
             $table->decimal('price', 8, 2);
             $table->integer('max_capacity');
             $table->integer('max_booking_quantity');
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('games');
+        Schema::dropIfExists('beach_events');
     }
 };

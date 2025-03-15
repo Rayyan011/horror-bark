@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ferry_bookings', function (Blueprint $table) {
+        Schema::create('beach_event_bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('ferry_id')->constrained()->onDelete('cascade');
-            $table->timestamp('booking_time'); // Must be a whole hour between 9:00 and 16:00.
+            $table->foreignId('beach_event_id')->constrained()->onDelete('cascade');
+            $table->date('booking_date'); // Should match the event date
             $table->integer('quantity');
             $table->decimal('total_price', 8, 2);
             $table->string('status')->default('pending');
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ferry_bookings');
+        Schema::dropIfExists('beach_event_bookings');
     }
 };

@@ -3,17 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Ride extends Model
+class BeachEvent extends Model
 {
     protected $fillable = [
-        'user_id',            // Owner of the ride
+        'user_id',    // Organizer of the event
         'name',
+        'event_date', // Date of the event (YYYY-MM-DD)
         'price',
-        'max_capacity',       // Maximum capacity per booking time slot
-        'max_booking_quantity'// Maximum allowed per single booking
+        'max_capacity',
+        'max_booking_quantity',
     ];
 
     public function owner(): BelongsTo
@@ -23,6 +24,6 @@ class Ride extends Model
 
     public function bookings(): HasMany
     {
-        return $this->hasMany(RideBooking::class);
+        return $this->hasMany(BeachEventBooking::class);
     }
 }

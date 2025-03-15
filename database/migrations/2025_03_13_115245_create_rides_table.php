@@ -13,16 +13,11 @@ return new class extends Migration
     {
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // owner
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->unsignedInteger('default_capacity')->default(0);
-            // If rides have a general open/close time
-            $table->time('open_time')->nullable();
-            $table->time('close_time')->nullable();
-
-            // If you want an owner for the ride (business user):
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->decimal('price', 8, 2)->default(0);
+            $table->decimal('price', 8, 2);
+            $table->integer('max_capacity');
+            $table->integer('max_booking_quantity');
             $table->timestamps();
         });
     }

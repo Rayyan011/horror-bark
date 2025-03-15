@@ -13,17 +13,12 @@ return new class extends Migration
     {
         Schema::create('ride_bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            // Book a specific ride slot
-            $table->foreignId('ride_slot_id')->constrained()->cascadeOnDelete();
-
-            $table->unsignedInteger('quantity')->default(1);
-
-            $table->decimal('total_price', 8, 2)->nullable();
-
-            // e.g., pending, confirmed, canceled
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('ride_id')->constrained()->onDelete('cascade');
+            $table->timestamp('booking_time'); // allowed only at 9:00 or 17:00
+            $table->integer('quantity');
+            $table->decimal('total_price', 8, 2);
             $table->string('status')->default('pending');
-
             $table->timestamps();
         });
     }

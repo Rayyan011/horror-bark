@@ -13,16 +13,13 @@ return new class extends Migration
     {
         Schema::create('ferries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable(); // if a ferry belongs to a user
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Owner
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->integer('default_capacity');
-            $table->time('open_time');
-            $table->time('close_time');
-            $table->decimal('price', 8, 2)->nullable();
+            $table->decimal('price', 8, 2);
+            $table->integer('max_capacity');
+            $table->integer('max_booking_quantity');
+            $table->foreignId('island_id')->constrained()->onDelete('cascade'); // Linked island
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

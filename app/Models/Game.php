@@ -2,32 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Game extends Model
 {
     protected $fillable = [
+        'user_id',            // Owner of the game
         'name',
-        'description',
-        'default_capacity',
-        'open_time',
-        'close_time',
         'price',
+        'max_capacity',
+        'max_booking_quantity'
     ];
 
-    protected $casts = [
-        'open_time'  => 'datetime:H:i',
-        'close_time' => 'datetime:H:i',
-    ];
-
-    public function gameSlots(): HasMany
+    public function owner(): BelongsTo
     {
-        return $this->hasMany(GameSlot::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function user(): BelongsTo
+    public function bookings(): HasMany
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(GameBooking::class);
     }
 }
