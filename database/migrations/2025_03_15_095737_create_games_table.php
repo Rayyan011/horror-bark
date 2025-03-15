@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ferries', function (Blueprint $table) {
+        Schema::create('games', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable(); // if a ferry belongs to a user
+            $table->unsignedBigInteger('user_id')->nullable(); // if a game belongs to a user
             $table->string('name');
             $table->text('description')->nullable();
             $table->integer('default_capacity');
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ferries');
+        Schema::dropIfExists('games');
     }
 };

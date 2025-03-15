@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class FerrySlot extends Model
+class GameSlot extends Model
 {
     protected $fillable = [
-        'ferry_id',
+        'game_id',
         'slot_date',
         'start_time',
         'end_time',
@@ -23,20 +23,20 @@ class FerrySlot extends Model
         'end_time'   => 'datetime:H:i',
     ];
 
-    public function ferry(): BelongsTo
+    public function game(): BelongsTo
     {
-        return $this->belongsTo(Ferry::class);
+        return $this->belongsTo(Game::class);
     }
 
-    public function ferryBookings(): HasMany
+    public function gameBookings(): HasMany
     {
-        return $this->hasMany(FerryBooking::class);
+        return $this->hasMany(GameBooking::class);
     }
 
     // Returns the count of non-canceled bookings.
     public function getBookedCount(): int
     {
-        return $this->ferryBookings()
+        return $this->gameBookings()
             ->where('status', '!=', 'canceled')
             ->count();
     }

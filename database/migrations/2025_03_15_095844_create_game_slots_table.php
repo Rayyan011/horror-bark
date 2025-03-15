@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ferry_slots', function (Blueprint $table) {
+        Schema::create('game_slots', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('ferry_id');
+            $table->unsignedBigInteger('game_id');
             $table->date('slot_date');
             $table->time('start_time');
             $table->time('end_time');
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('status')->default('active');
             $table->timestamps();
 
-            $table->foreign('ferry_id')->references('id')->on('ferries')->onDelete('cascade');
+            $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ferry_slots');
+        Schema::dropIfExists('game_slots');
     }
 };

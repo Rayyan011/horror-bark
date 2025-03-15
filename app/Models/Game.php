@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Ride extends Model
+class Game extends Model
 {
     protected $fillable = [
         'name',
@@ -15,7 +14,6 @@ class Ride extends Model
         'open_time',
         'close_time',
         'price',
-       
     ];
 
     protected $casts = [
@@ -23,14 +21,13 @@ class Ride extends Model
         'close_time' => 'datetime:H:i',
     ];
 
-    public function rideSlots(): HasMany
+    public function gameSlots(): HasMany
     {
-        return $this->hasMany(RideSlot::class);
+        return $this->hasMany(GameSlot::class);
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-    
 }

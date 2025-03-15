@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ferry_bookings', function (Blueprint $table) {
+        Schema::create('game_bookings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('ferry_slot_id');
+            $table->unsignedBigInteger('game_slot_id');
             $table->unsignedBigInteger('user_id');
             $table->decimal('total_price', 8, 2)->default(0);
             $table->integer('quantity')->default(1);
             $table->string('status')->default('booked');
             $table->timestamps();
 
-            $table->foreign('ferry_slot_id')->references('id')->on('ferry_slots')->onDelete('cascade');
+            $table->foreign('game_slot_id')->references('id')->on('game_slots')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ferry_bookings');
+        Schema::dropIfExists('game_bookings');
     }
 };

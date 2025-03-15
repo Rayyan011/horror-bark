@@ -12,6 +12,7 @@ class FerryBooking extends Model
         'user_id',
         'ferry_slot_id',
         'total_price',
+        'quantity',
         'status',
     ];
 
@@ -25,26 +26,39 @@ class FerryBooking extends Model
         return $this->belongsTo(FerrySlot::class);
     }
 
-    protected static function boot()
+    public function isPending(): bool
     {
-        parent::boot();
+        return $this->status === 'pending';
+    }
 
-        static::creating(function ($booking) {
-            // Example "hotel-first" check:
-            // Make sure user has a confirmed hotel booking
-            $user = $booking->user;
-            $hasHotelBooking = $user->hotelBookings()
+    protected static function booted()
+    {
+        static::creating(function (FerryBooking $ferryBooking) {
+            // Validate: User must have a confirmed hotel booking.
+            $hasHotelBooking = $ferryBooking->user->hotelBookings()
                 ->where('status', 'confirmed')
                 ->exists();
+
             if (! $hasHotelBooking) {
-                throw new \Exception("User must have a confirmed hotel booking before booking the ferry.");
+                throw new \Exception("User must have a confirmed hotel booking before booking a ferry slot.");
             }
 
-            // Capacity check for ferry slot
-            $slot = $booking->ferrySlot;
-            if ($slot->getBookedCount() >= $slot->capacity) {
+            // Validate: Slot capacity check.
+            $ferrySlot = $ferryBooking->ferrySlot;
+            if ($ferrySlot->getBookedCount() >= $ferrySlot->capacity) {
                 throw new \Exception("This ferry slot is at full capacity.");
             }
+
+            // Calculate dynamic price: total_price = ferry's price * quantity.
+            $ferryPrice = $ferrySlot->ferry->price ?? 0;
+            $ferryBooking->total_price = $ferryPrice * $ferryBooking->quantity;
+        });
+
+        static::updating(function (FerryBooking $ferryBooking) {
+            $ferrySlot = $ferryBooking->ferrySlot;
+            $ferryPrice = $ferrySlot->ferry->price ?? 0;
+            $ferryBooking->total_price = $ferryPrice * $ferryBooking->quantity;
         });
     }
 }
+

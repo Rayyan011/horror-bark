@@ -36,6 +36,9 @@ class RideResource extends Resource
             TextInput::make('name')
                 ->label('Ride Name')
                 ->required(),
+            TextInput::make('price')
+                ->label('Price')
+                ->required(),
             Textarea::make('description')
                 ->label('Description')
                 ->rows(3),
