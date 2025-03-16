@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\RideResource\Pages;
-use App\Filament\Resources\RideResource\RelationManagers;
-use App\Models\Ride;
-use App\Models\User;
+use App\Filament\Resources\GameResource\Pages;
+use App\Filament\Resources\GameResource\RelationManagers;
+use App\Models\Game;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,22 +12,17 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TimePicker;
-use Filament\Forms\Components\Select;
 
-
-class RideResource extends Resource
+class GameResource extends Resource
 {
-    protected static ?string $model = Ride::class;
+    protected static ?string $model = Game::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            // The owner is retrieved via the 'owner' relation (user_id)
+            // Owner of the game
             Forms\Components\Select::make('user_id')
                 ->label('Owner')
                 ->relationship('owner', 'name')
@@ -67,9 +61,9 @@ class RideResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListRides::route('/'),
-            'create' => Pages\CreateRide::route('/create'),
-            'edit'   => Pages\EditRide::route('/{record}/edit'),
+            'index'  => Pages\ListGames::route('/'),
+            'create' => Pages\CreateGame::route('/create'),
+            'edit'   => Pages\EditGame::route('/{record}/edit'),
         ];
     }
 }

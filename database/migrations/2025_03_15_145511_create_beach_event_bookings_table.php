@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('beach_event_id')->constrained()->onDelete('cascade');
             $table->date('booking_date'); // Should match the event date
             $table->integer('quantity');
+            $table->timestamp('booking_time');
             $table->decimal('total_price', 8, 2);
             $table->string('status')->default('pending');
             $table->timestamps();
