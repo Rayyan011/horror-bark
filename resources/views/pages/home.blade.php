@@ -23,11 +23,17 @@
           <li><a href="#" class="hover:text-gray-400">Home</a></li>
           <li><a href="#" class="hover:text-gray-400">Hotels</a></li>
           <li><a href="#" class="hover:text-gray-400">Ferry Tickets</a></li>
+<<<<<<< HEAD
           <li><a href="{{ route('theme-park') }}" class="hover:text-gray-400">Theme Park</a></li> 
           <li><a href="#" class="hover:text-gray-400">Beach Events</a></li>
           <li><a href="{{ route('contact') }}" class="hover:text-gray-400">Contact</a></li> 
           <li><a href="{{ route('about') }}" class="hover:text-gray-400">About Us</a>
           
+=======
+          <li><a href="#" class="hover:text-gray-400">Theme Park</a></li>
+          <li><a href="#" class="hover:text-gray-400">Beach Events</a></li>
+          <li><a href="#" class="hover:text-gray-400">Contact</a></li>
+>>>>>>> 132dbe4e7633d85d880c9b2366a2ee5414c1e904
         </ul>
       </nav>
     </div>
