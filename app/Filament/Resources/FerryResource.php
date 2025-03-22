@@ -3,27 +3,53 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FerryResource\Pages;
-use App\Filament\Resources\FerryResource\RelationManagers;
 use App\Models\Ferry;
+use App\Models\User;
+use App\Models\Island;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class FerryResource extends Resource
 {
     protected static ?string $model = Ferry::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Select::make('user_id')
+                    ->relationship('owner', 'name')
+                    ->required()
+                    ->label('Owner'),
+
+                TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+
+                TextInput::make('price')
+                    ->numeric()
+                    ->required()
+                    ->prefix('MVR'),
+
+                TextInput::make('max_capacity')
+                    ->numeric()
+                    ->required(),
+
+                TextInput::make('max_booking_quantity')
+                    ->numeric()
+                    ->required(),
+
+                Select::make('island_id')
+                    ->relationship('island', 'name')
+                    ->required()
+                    ->label('Home Island'),
             ]);
     }
 
@@ -31,7 +57,12 @@ class FerryResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')->sortable(),
+                Tables\Columns\TextColumn::make('owner.name')->label('Owner'),
+                Tables\Columns\TextColumn::make('island.name')->label('Island'),
+                Tables\Columns\TextColumn::make('price')->money('MVR')->sortable(),
+                Tables\Columns\TextColumn::make('max_capacity')->sortable(),
+                Tables\Columns\TextColumn::make('max_booking_quantity')->sortable(),
             ])
             ->filters([
                 //
@@ -49,7 +80,8 @@ class FerryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // If you want to manage bookings directly from the Ferry Resource:
+            // RelationManagers\BookingsRelationManager::class,
         ];
     }
 
