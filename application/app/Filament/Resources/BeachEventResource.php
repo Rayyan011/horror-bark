@@ -40,6 +40,12 @@ class BeachEventResource extends Resource
             Forms\Components\TextInput::make('max_booking_quantity')
                 ->numeric()
                 ->required(),
+                Forms\Components\FileUpload::make('cover_image')
+                ->label('Cover Image')
+                ->directory('beach-events')
+                ->image()
+                ->maxSize(1024)
+                ->helperText('Upload an image for the event cover (Max 1MB).'),
         ]);
     }
 
@@ -52,6 +58,9 @@ class BeachEventResource extends Resource
             Tables\Columns\TextColumn::make('price'),
             Tables\Columns\TextColumn::make('max_capacity'),
             Tables\Columns\TextColumn::make('max_booking_quantity'),
+            Tables\Columns\ImageColumn::make('cover_image')
+            ->label('Cover')
+            ->size(40),
             Tables\Columns\TextColumn::make('created_at')->dateTime(),
         ])
         ->actions([

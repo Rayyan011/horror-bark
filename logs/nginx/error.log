@@ -1251,3 +1251,6 @@
 2025/04/07 09:36:43 [notice] 1#1: start worker process 49
 2025/04/07 09:36:43 [notice] 1#1: start worker process 50
 2025/04/07 09:36:43 [notice] 1#1: start worker process 51
+2025/04/07 10:46:56 [warn] 28#28: *114 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000001, client: 172.21.0.1, server: localhost, request: "POST /livewire/upload-file?expires=1744023116&signature=ff6a6f75d940d325541c5ed6dfca3b470c725a7ffce90df38c326b54dc92e636 HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/admin/beach-events/create"
+2025/04/07 10:50:43 [warn] 28#28: *139 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000002, client: 172.21.0.1, server: localhost, request: "POST /livewire/upload-file?expires=1744023343&signature=cd3c30d4af46a8cd777dd314cea4d1c9db51859159fef00c36e78af97a84f552 HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/admin/beach-events/create"
+2025/04/07 10:53:09 [warn] 28#28: *148 a client request body is buffered to a temporary file /var/cache/nginx/client_temp/0000000003, client: 172.21.0.1, server: localhost, request: "POST /livewire/upload-file?expires=1744023489&signature=db7a6e39f9c22f834ab9b75972a55271b187f3440eedb9aa988fbe37f8378345 HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/admin/beach-events/1/edit"

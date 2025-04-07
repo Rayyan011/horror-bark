@@ -24,7 +24,7 @@
           <li><a href="#" class="hover:text-gray-400">Hotels</a></li>
           <li><a href="#" class="hover:text-gray-400">Ferry Tickets</a></li>
           <li><a href="#" class="hover:text-gray-400">Theme Park</a></li>
-          <li><a href="#" class="hover:text-gray-400">Beach Events</a></li>
+          <li><a href="beach-events" class="hover:text-gray-400">Beach Events</a></li>
           <li><a href="{{ route('contacts.create') }}" class="hover:text-gray-400">Contact</a></li>
         </ul>
       </nav>
