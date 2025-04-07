@@ -21,9 +21,6 @@ class DatabaseSeeder extends Seeder
         ]);
         $this->call(UsersTableSeeder::class);
         $this->call(PagesTableSeeder::class);
-<<<<<<< HEAD
-=======
         $this->call(HotelsTableSeeder::class);
->>>>>>> 966fa9979e5eae892398c75f797325864c928e12
     }
 }

@@ -57,3 +57,28 @@ Visit http://127.0.0.1:8000 to view the application.
 
 6. login  to filament with email:test@admin.com password:test@admin.com
 
+
+// To us with docker:
+1. Build and Start the Containers
+docker-compose up -d
+
+2. Install Laravel Dependencies
+docker-compose exec php bash
+cd /var/www/html
+composer install
+
+3. Generate a new app key
+php artisan key:generate
+
+4. Database setup
+php artisan migrate:fresh --seed
+
+5. Storage symbolic link
+php artisan storage:link
+
+
+#if you are facing issues with docker try the following command 
+docker compose build --no-cache
+
+
+

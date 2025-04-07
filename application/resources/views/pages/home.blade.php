@@ -26,7 +26,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Theme Park Advertisement -->
         <div class="bg-gray-800 shadow-lg rounded overflow-hidden border border-gray-700">
-          <img src="https://source.unsplash.com/400x300/?rollercoaster,haunted" alt="Theme Park" class="w-full h-48 object-cover" />
+          <img src="https://source.unsplash.com/random/400x300/?rollercoaster,haunted" alt="Theme Park" class="w-full h-48 object-cover" />
           <div class="p-4">
             <h4 class="font-bold text-xl mb-2 horror-font">Horror-Bark Theme Park</h4>
             <p class="text-gray-300 text-base">
