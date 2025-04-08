@@ -4,8 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ContactController; // **ADD THIS LINE:  Import ContactController**
 use App\Http\Controllers\BeachEventController;
+use App\Http\Controllers\HomeController;
 
-Route::redirect('/', '/home')->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
 // **ADD THESE LINES BELOW:**
 Route::get('/contact', [ContactController::class, 'create'])->name('contacts.create');
 Route::post('/contact', [ContactController::class, 'store'])->name('contacts.store');
@@ -15,6 +17,3 @@ Route::get('/{page_name}', [PagesController::class, 'show'])->name('custom_page'
 
 
 
-// Route::get('/', function () {  <-- Commented out, as it's likely not needed anymore
-//     return view('welcome');
-// });

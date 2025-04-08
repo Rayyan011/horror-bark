@@ -4,7 +4,7 @@
 
 @section('content') {{-- Start the content section --}}
   <!-- Hero Section -->
-  <section class="bg-cover bg-center h-96" style="background-image: url('{{ asset('/storage/' . $home['hero_image']['content']) }}');">
+  <section class="bg-cover bg-center h-96" style="background-image: url('{{ asset('images/default-hero.jpg') }}');">
     <div class="bg-black bg-opacity-70 h-full flex items-center justify-center">
       <div class="text-center">
         <h2 class="text-5xl font-bold mb-4 horror-font">Welcome to Horror-Bark!</h2>
