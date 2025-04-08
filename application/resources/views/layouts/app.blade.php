@@ -12,6 +12,7 @@
       font-family: 'Creepster', cursive;
     }
   </style>
+  @livewireStyles
 </head>
 <body class="bg-gray-900 text-gray-200 font-sans leading-normal tracking-normal">
   <!-- Header -->
@@ -46,5 +47,11 @@
       </p>
     </div>
   </footer>
+  @livewireScripts
+  <script>
+    if (typeof Livewire !== 'undefined') {
+      window.livewire = Livewire;
+    }
+  </script>
 </body>
 </html>

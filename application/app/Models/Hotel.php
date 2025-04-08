@@ -10,6 +10,13 @@ class Hotel extends Model
     protected $fillable = [
         'name',
         'location',
+        'latitude',
+        'longitude',
+        'images',
+    ];
+
+    protected $casts = [
+        'images' => 'array',
     ];
 
     public function rooms(): HasMany
