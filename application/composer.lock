@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4c3786d42ae91e7a8095d4efa05b50a0",
+    "content-hash": "46e26e26c6be26633e149c96dd09b327",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1060,6 +1060,58 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "fathihfaiz/laravel-maps-suite",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fathihfaiz/laravel-maps-suite.git",
+                "reference": "e7efe9615dd9a1b6cd93dddcec568e09082c8fc0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fathihfaiz/laravel-maps-suite/zipball/e7efe9615dd9a1b6cd93dddcec568e09082c8fc0",
+                "reference": "e7efe9615dd9a1b6cd93dddcec568e09082c8fc0",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^9.0|^10.0|^11.0",
+                "php": ">=8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "MapsSuite": "FathihFaiz\\\\MapsSuite\\\\MapsSuiteFacade"
+                    },
+                    "providers": [
+                        "FathihFaiz\\MapsSuite\\MapsSuiteServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "FathihFaiz\\MapsSuite\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fathih Faiz",
+                    "email": "fathihfaiz@gmail.com"
+                }
+            ],
+            "description": "Laravel Blade components for Leaflet, Google Maps, and Mapbox integration.",
+            "homepage": "https://github.com/fathihfaiz/laravel-maps-suite",
+            "support": {
+                "issues": "https://github.com/fathihfaiz/laravel-maps-suite/issues",
+                "source": "https://github.com/fathihfaiz/laravel-maps-suite/tree/v1.0.1"
+            },
+            "time": "2025-04-10T11:02:02+00:00"
         },
         {
             "name": "filament/actions",
