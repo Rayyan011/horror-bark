@@ -19,6 +19,9 @@ return new class extends Migration
             $table->decimal('price', 8, 2);
             $table->integer('max_capacity');
             $table->integer('max_booking_quantity');
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
+            $table->json('images')->nullable();
             $table->string('cover_image')->nullable();
             $table->timestamps();
         });

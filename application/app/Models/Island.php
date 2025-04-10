@@ -10,5 +10,8 @@ class Island extends Model
         'name',
         'type',        // e.g., 'theme_park' or 'picnic'
         'description',
+        'latitude',
+        'longitude',
+        'images',
     ];
 }

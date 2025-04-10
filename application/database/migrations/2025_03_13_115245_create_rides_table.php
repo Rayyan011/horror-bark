@@ -16,6 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // owner
             $table->string('name');
             $table->decimal('price', 8, 2);
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
+            $table->json('images')->nullable();
             $table->integer('max_capacity');
             $table->integer('max_booking_quantity');
             $table->timestamps();

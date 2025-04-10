@@ -13,6 +13,9 @@ class BeachEvent extends Model
         'name',
         'event_date', // Date of the event (YYYY-MM-DD)
         'price',
+        'latitude',
+        'longitude',
+        'images',
         'max_capacity',
         'max_booking_quantity',
         'cover_image',

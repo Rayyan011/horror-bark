@@ -12,6 +12,9 @@ class Game extends Model
         'user_id',            // Owner of the game
         'name',
         'price',
+        'latitude',
+        'longitude',
+        'images',
         'max_capacity',
         'max_booking_quantity'
     ];

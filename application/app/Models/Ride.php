@@ -12,6 +12,9 @@ class Ride extends Model
         'user_id',            // Owner of the ride
         'name',
         'price',
+        'latitude',
+        'longitude',
+        'images',
         'max_capacity',       // Maximum capacity per booking time slot
         'max_booking_quantity'// Maximum allowed per single booking
     ];
