@@ -22,7 +22,6 @@ return new class extends Migration
             $table->double('latitude')->nullable();
             $table->double('longitude')->nullable();
             $table->json('images')->nullable();
-            $table->string('cover_image')->nullable();
             $table->timestamps();
         });
     }

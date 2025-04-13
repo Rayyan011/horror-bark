@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Carbon\Carbon;
+use Dotswan\MapPicker\Fields\Map;
+use Filament\Forms\Set;
 
 class BeachEventResource extends Resource
 {
@@ -40,12 +42,54 @@ class BeachEventResource extends Resource
             Forms\Components\TextInput::make('max_booking_quantity')
                 ->numeric()
                 ->required(),
-                Forms\Components\FileUpload::make('cover_image')
-                ->label('Cover Image')
-                ->directory('beach-events')
+            Map::make('location_data')
+                ->label('Select Location on Map')
+                ->columnSpanFull()
+                ->defaultLocation(latitude: 4.22700104517645, longitude: 73.42662978621766)
+                ->draggable(true)
+                ->clickable(true)
+                ->zoom(16)
+                ->minZoom(0)
+                ->maxZoom(28)
+                ->tilesUrl("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}")
+                ->detectRetina(true)
+                ->showMarker(true)
+                ->markerColor("#3b82f6")
+                ->showFullscreenControl(true)
+                ->afterStateHydrated(function ($state, $record, Set $set): void {
+                    if ($record && $record->latitude && $record->longitude) {
+                        $set('location_data', [
+                            'lat' => $record->latitude,
+                            'lng' => $record->longitude,
+                        ]);
+                    }
+                })
+                // When a user interacts with the map, update the separate 'latitude' and 'longitude' fields.
+                ->afterStateUpdated(function ($state, Set $set): void {
+                    if (is_array($state)) {
+                        $set('latitude', $state['lat'] ?? null);
+                        $set('longitude', $state['lng'] ?? null);
+                    }
+                })
+                ->showZoomControl(true),
+
+                Forms\Components\TextInput::make('latitude')
+                ->label('Latitude')
+                ->numeric()
+                ->required(),
+            Forms\Components\TextInput::make('longitude')
+                ->label('Longitude')
+                ->numeric()
+                ->required(),
+
+            // File Upload for Images
+            Forms\Components\FileUpload::make('images')
+                ->label('Additional Images')
+                ->directory('beach-events/gallery')
+                ->multiple()
+                ->maxFiles(5)
                 ->image()
-                ->maxSize(1024)
-                ->helperText('Upload an image for the event cover (Max 1MB).'),
+                ->maxSize(1024),
         ]);
     }
 
@@ -58,9 +102,17 @@ class BeachEventResource extends Resource
             Tables\Columns\TextColumn::make('price'),
             Tables\Columns\TextColumn::make('max_capacity'),
             Tables\Columns\TextColumn::make('max_booking_quantity'),
-            Tables\Columns\ImageColumn::make('cover_image')
-            ->label('Cover')
-            ->size(40),
+            Tables\Columns\TextColumn::make('latitude')
+                ->label('Latitude')
+                ->sortable(),
+            Tables\Columns\TextColumn::make('longitude')
+                ->label('Longitude')
+                ->sortable(),
+            Tables\Columns\ImageColumn::make('images')
+                ->disk('public')
+                ->getStateUsing(fn ($record) => $record->images[0] ?? null)
+                ->size(50)
+                ->label('Gallery'),
             Tables\Columns\TextColumn::make('created_at')->dateTime(),
         ])
         ->actions([

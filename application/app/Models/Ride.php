@@ -19,6 +19,10 @@ class Ride extends Model
         'max_booking_quantity'// Maximum allowed per single booking
     ];
 
+    protected $casts = [
+        'images' => 'array',
+    ];
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

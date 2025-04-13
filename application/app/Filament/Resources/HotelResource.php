@@ -49,7 +49,6 @@ class HotelResource extends Resource
                         ]);
                     }
                 })
-                // When a user interacts with the map, update the separate 'latitude' and 'longitude' fields.
                 ->afterStateUpdated(function ($state, Set $set): void {
                     if (is_array($state)) {
                         $set('latitude', $state['lat'] ?? null);
@@ -58,7 +57,7 @@ class HotelResource extends Resource
                 })
                 ->showZoomControl(true),
 
-                Forms\Components\TextInput::make('latitude')
+            Forms\Components\TextInput::make('latitude')
                 ->label('Latitude')
                 ->numeric()
                 ->required(),
@@ -67,7 +66,6 @@ class HotelResource extends Resource
                 ->numeric()
                 ->required(),
 
-            // File Upload for Images
             Forms\Components\FileUpload::make('images')
                 ->label('Additional Images')
                 ->directory('beach-events/gallery')

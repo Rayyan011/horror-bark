@@ -18,15 +18,11 @@ class BeachEvent extends Model
         'images',
         'max_capacity',
         'max_booking_quantity',
-        'cover_image',
     ];
 
-    public function getCoverImageUrlAttribute(): ?string
-    {
-        return $this->cover_image
-            ? asset('storage/' . $this->cover_image)
-            : null;
-    }
+    protected $casts = [
+        'images' => 'array',
+    ];
 
     public function owner(): BelongsTo
     {

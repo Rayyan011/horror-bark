@@ -19,6 +19,10 @@ class Game extends Model
         'max_booking_quantity'
     ];
 
+    protected $casts = [
+        'images' => 'array',
+    ];
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -14,4 +14,8 @@ class Island extends Model
         'longitude',
         'images',
     ];
+
+    protected $casts = [
+        'images' => 'array',
+    ];
 }
