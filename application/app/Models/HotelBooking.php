@@ -32,6 +32,6 @@ class HotelBooking extends Model
     {
         return $this->status === 'pending';
     }
-    
+
 
 }

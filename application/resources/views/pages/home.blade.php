@@ -25,43 +25,44 @@
             <h3 class="text-2xl font-bold mb-4 horror-font">Featured Experiences</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Theme Park Advertisement -->
-                <div class="bg-gray-800 shadow-lg rounded overflow-hidden border border-gray-700">
-                    <img src="https://source.unsplash.com/random/400x300/?rollercoaster,haunted" alt="Theme Park"
-                        class="w-full h-48 object-cover" />
-                    <div class="p-4">
-                        <h4 class="font-bold text-xl mb-2 horror-font">Horror-Bark Theme Park</h4>
-                        <p class="text-gray-300 text-base">
-                            Thrill your senses with attractions like the Space Exploration Roller Coaster and
-                            Glow-in-the-Dark Coral Ride!
-                        </p>
-                        <a href="#" class="inline-block mt-4 text-red-400 hover:underline">Learn More</a>
-                    </div>
-                </div>
+                @if ($rides->count() > 0)
+                    @php $featuredRide = $rides->random(); @endphp
+
+                    <x-featured-card
+                        :title="$featuredRide->name"
+                        :description="$featuredRide->description ?? 'Experience the thrill of this exciting ride at Horror-Bark Theme Park!'"
+                        :images="$featuredRide->images"
+                        :image="count($featuredRide->images) === 0 ? 'https://picsum.photos/seed/' . $featuredRide->id . '/400/300' : null"
+                        :link="route('home', $featuredRide)"
+                        link-text="More info"
+                    />
+                @endif
                 <!-- Beach Sports Advertisement -->
-                <div class="bg-gray-800 shadow-lg rounded overflow-hidden border border-gray-700">
-                    <img src="https://source.unsplash.com/400x300/?beach,night" alt="Beach Sports"
-                        class="w-full h-48 object-cover" />
-                    <div class="p-4">
-                        <h4 class="font-bold text-xl mb-2 horror-font">Beach Sports & Events</h4>
-                        <p class="text-gray-300 text-base">
-                            Join eerie beach events on our main island – from ghostly jet skiing to moonlit paddleboarding
-                            and mysterious concerts!
-                        </p>
-                        <a href="#" class="inline-block mt-4 text-red-400 hover:underline">Discover More</a>
-                    </div>
-                </div>
+                @if ($beachEvents->count() > 0)
+                    @php $featuredBeachEvent = $beachEvents->random(); @endphp
+
+                    <x-featured-card
+                        :title="$featuredBeachEvent->name"
+                        :description="$featuredBeachEvent->description ?? 'Join eerie beach events on our main island – from ghostly jet skiing to moonlit paddleboarding and mysterious concerts!'"
+                        :images="$featuredBeachEvent->images"
+                        :image="count($featuredBeachEvent->images) === 0 ? 'https://picsum.photos/seed/' . $featuredBeachEvent->id . '/400/300' : null"
+                        :link="route('home', $featuredBeachEvent)" {{-- Adjust route as needed --}}
+                        link-text="Discover More"
+                    />
+                @endif
                 <!-- Hotels Advertisement -->
-                <div class="bg-gray-800 shadow-lg rounded overflow-hidden border border-gray-700">
-                    <img src="https://source.unsplash.com/400x300/?hotel,haunted" alt="Hotels"
-                        class="w-full h-48 object-cover" />
-                    <div class="p-4">
-                        <h4 class="font-bold text-xl mb-2 horror-font">Island Hotels</h4>
-                        <p class="text-gray-300 text-base">
-                            Book your stay on the island and unlock exclusive access to our spine-chilling experiences.
-                        </p>
-                        <a href="#" class="inline-block mt-4 text-red-400 hover:underline">Book Now</a>
-                    </div>
-                </div>
+                @if ($hotels->count() > 0)
+                    @php $featuredHotel = $hotels->random(); @endphp
+
+                    <x-featured-card
+                        :title="$featuredHotel->name"
+                        :description="$featuredHotel->description ?? 'Book your stay on the island and unlock exclusive access to our spine-chilling experiences.'"
+                        :images="$featuredHotel->images"
+                        :image="count($featuredHotel->images) === 0 ? 'https://picsum.photos/seed/' . $featuredHotel->id . '/400/300' : null"
+                        :link="route('home', $featuredHotel)" {{-- Adjust route as needed --}}
+                        link-text="Book Now"
+                    />
+                @endif
             </div>
         </section>
 
@@ -78,14 +79,18 @@
                 <div class="absolute bottom-10 left-40 bg-yellow-700 text-white px-2 py-1 rounded text-xs">Restaurants</div>
             </div> --}}
 
-               <x-maps-leaflet
-  :center-point="[4.22700104517645, 73.42662978621766]"
-  :zoom-level="16"
-  :markers="$hotels->map(fn ($h) => ['lat' => $h->latitude, 'lng' => $h->longitude, 'info' => $h->name, 'icon' => 'images/resort.png', 'open' => true])->toArray()" 
-  {{-- :markers="[
-    ['lat' => 51.505, 'lng' => -0.09, 'info' => 'Test Marker']
-  ]" --}}
-/>
+                <x-maps-leaflet
+                    :center-point="[4.22700104517645, 73.42662978621766]"
+                    :zoom-level="16"
+                    :zoom-control="false"
+                    :scroll-wheel-zoom="false"
+                    :markers="[
+                        ...$hotels->map(fn ($h) => ['lat' => $h->latitude, 'lng' => $h->longitude, 'info' => $h->name, 'icon' => 'images/hotel.png'])->toArray(),
+                        ...$rides->map(fn ($ride) => ['lat' => $ride->latitude, 'lng' => $ride->longitude, 'info' => $ride->name, 'icon' => 'images/ride.png'])->toArray(),
+                        ...$games->map(fn ($game) => ['lat' => $game->latitude, 'lng' => $game->longitude, 'info' => $game->name, 'icon' => 'images/game.png'])->toArray(),
+                        ...$beachEvents->map(fn ($event) => ['lat' => $event->latitude, 'lng' => $event->longitude, 'info' => $event->name, 'icon' => 'images/beach.png'])->toArray(),
+                    ]"
+                />
         </section>
 
         <!-- Additional Attractions Section -->
