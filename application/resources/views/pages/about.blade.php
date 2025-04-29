@@ -64,9 +64,9 @@
                 Have questions or need to get in touch with the shadows? Reach out to our team.
             </p>
             <ul class="list-disc list-inside text-gray-700">
-                <li>Email: <a href="mailto:info@horror-bark.com" class="text-red-600 hover:underline">info@horror-bark.com</a></li>
-                <li>Phone: +1-800-FEAR-PARK</li>
-                <li>Location: [Your Theme Park Address]</li>
+                <li>Email: <a href="mailto:info@horror-bark.com.mv" class="text-red-600 hover:underline">info@horror-bark.com</a></li>
+                <li>Phone: +960 999999</li>
+                <li>Location: 4.2260552262693,73.426287174225 </li>
             </ul>
         </section>
     </main>
