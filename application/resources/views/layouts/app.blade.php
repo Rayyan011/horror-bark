@@ -18,12 +18,14 @@
   <!-- Header -->
   <header class="bg-black text-white p-4 shadow-md">
     <div class="container mx-auto flex justify-between items-center">
-      <h1 class="text-3xl font-bold horror-font">Horror-Bark</h1>
+    <h1 class="text-3xl font-bold horror-font">
+     <a href="{{ route('home') }}">Horror-Bark</a>
+    </h1>
       <nav>
         <ul class="flex space-x-6">
           <li><a href="{{ route('home') }}" class="hover:text-gray-400">Home</a></li> {{-- Corrected Home link to use route('home') --}}
           <li><a href="{{ route('hotels.index') }}">Hotels</a></li>
-          <li><a href="#" class="hover:text-gray-400">Ferry Tickets</a></li>
+          <li><a href="{{ route('ferries.index') }}" class="hover:text-gray-400">Ferry Tickets</a></li>
           <li><a href="#" class="hover:text-gray-400">Theme Park</a></li>
           <li><a href="beach-events" class="hover:text-gray-400">Beach Events</a></li>
           <li><a href="{{ url('/about') }}" class="hover:text-gray-400">About</a></li>
