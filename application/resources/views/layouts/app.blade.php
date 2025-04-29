@@ -27,7 +27,7 @@
           <li><a href="{{ route('home') }}" class="hover:text-gray-400">Home</a></li>
           <li><a href="{{ route('hotels.index') }}" class="hover:text-gray-400">Hotels</a></li>
           <li><a href="{{ route('ferries.index') }}" class="hover:text-gray-400">Ferry Tickets</a></li>
-          <li><a href="#" class="hover:text-gray-400">Theme Park</a></li> {{-- Placeholder link --}}
+          <li><a href="{{ route('themepark.index') }}" class="hover:text-gray-400">Theme Park</a></li>
           <li><a href="{{ route('beach-events.index') }}" class="hover:text-gray-400">Beach Events</a></li>
           <li><a href="{{ route('contacts.create') }}" class="hover:text-gray-400">Contact</a></li>
           <li><a href="{{ url('/about') }}" class="hover:text-gray-400">About</a></li>

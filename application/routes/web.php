@@ -7,6 +7,7 @@ use App\Http\Controllers\BeachEventController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\FerryController;
+use App\Http\Controllers\ThemeParkController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -17,6 +18,7 @@ Route::get('/beach-events', [BeachEventController::class, 'index'])->name('beach
 Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index'); // Specific /hotels route first
 Route::get('/hotels/{hotel}', [HotelController::class, 'show'])->name('hotels.show');
 Route::get('/ferrytickets', [FerryController::class, 'index'])->name('ferries.index');
+Route::get('/themepark', [ThemeParkController::class, 'index'])->name('themepark.index');
 Route::get('/{page_name}', [PagesController::class, 'show'])->name('custom_page'); // Generic route AFTER /hotels
 
 // ... other routes ...
