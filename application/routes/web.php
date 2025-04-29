@@ -14,6 +14,12 @@ Route::get('/contact', [ContactController::class, 'create'])->name('contacts.cre
 Route::post('/contact', [ContactController::class, 'store'])->name('contacts.store');
 Route::get('/beach-events', [BeachEventController::class, 'index'])->name('beach-events.index');
 
-Route::get('/{page_name}', [PagesController::class, 'show'])->name('custom_page');
-Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index');
+Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index'); // Specific /hotels route first
 Route::get('/hotels/{hotel}', [HotelController::class, 'show'])->name('hotels.show');
+Route::get('/{page_name}', [PagesController::class, 'show'])->name('custom_page'); // Generic route AFTER /hotels
+
+// ... other routes ...
+
+
+
+// ...

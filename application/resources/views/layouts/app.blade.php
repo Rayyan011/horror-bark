@@ -22,7 +22,7 @@
       <nav>
         <ul class="flex space-x-6">
           <li><a href="{{ route('home') }}" class="hover:text-gray-400">Home</a></li> {{-- Corrected Home link to use route('home') --}}
-          <li><a href="#" class="hover:text-gray-400">Hotels</a></li>
+          <li><a href="{{ route('hotels.index') }}">Hotels</a></li>
           <li><a href="#" class="hover:text-gray-400">Ferry Tickets</a></li>
           <li><a href="#" class="hover:text-gray-400">Theme Park</a></li>
           <li><a href="beach-events" class="hover:text-gray-400">Beach Events</a></li>
