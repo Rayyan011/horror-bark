@@ -27,6 +27,14 @@ class PagesTableSeeder extends Seeder
                 'created_at' => '2025-02-19 11:27:24',
                 'updated_at' => '2025-02-19 11:59:04',
             ),
+            1 => 
+            array (
+                'id' => 2,
+                'page_name' => 'about',
+                'content' => '[]',
+                'created_at' => '2025-04-30 10:54:09',
+                'updated_at' => '2025-04-30 10:54:09',
+            ),
         ));
         
         
