@@ -6,4 +6,5 @@ return [
     App\Providers\Filament\FerryPanelProvider::class,
     App\Providers\Filament\GamePanelProvider::class,
     App\Providers\Filament\HotelPanelProvider::class,
+    App\Providers\Filament\RidePanelProvider::class,
 ];
