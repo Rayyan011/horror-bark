@@ -224,3 +224,5 @@
 172.21.0.1 - - [07/Apr/2025:11:02:47 +0000] "GET /storage/01JMF11YKY2EYCPWYYNKCQH493.webp HTTP/1.1" 403 6616 "http://localhost:8080/home" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0" "-"
 172.21.0.1 - - [07/Apr/2025:11:03:14 +0000] "GET /home HTTP/1.1" 200 6691 "http://localhost:8080/beach-events" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0" "-"
 172.21.0.1 - - [07/Apr/2025:11:03:14 +0000] "GET /storage/01JMF11YKY2EYCPWYYNKCQH493.webp HTTP/1.1" 403 6622 "http://localhost:8080/home" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0" "-"
+172.18.0.1 - - [30/Apr/2025:05:27:46 +0000] "GET / HTTP/1.1" 500 190813 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0" "-"
+172.18.0.1 - - [30/Apr/2025:05:29:56 +0000] "GET / HTTP/1.1" 500 190815 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0" "-"
