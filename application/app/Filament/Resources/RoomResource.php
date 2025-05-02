@@ -33,7 +33,7 @@ class RoomResource extends Resource
                 ->relationship('hotel', 'name')
                 ->required(),
                 MarkdownEditor::make('description'),
-                FileUpload::make('image')
+                FileUpload::make('images')
                     ->multiple()
                     ->required()
                     ->maxFiles(3)

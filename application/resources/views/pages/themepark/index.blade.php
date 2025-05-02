@@ -19,16 +19,15 @@
                         <div>
                             <h3 class="text-2xl font-bold mb-2 text-white">{{ $ride->name }}</h3>
                             {{-- Display Ride Image if available --}}
-                            @if (!empty($ride->images) && is_array($ride->images))
-                                <img src="{{ asset($ride->images[0]) }}" alt="{{ $ride->name }}" class="rounded mb-4 w-full h-48 object-cover">
+                            @if (!empty($ride->images))
+                                <x-image-carousel :images="$ride->images" :title="$ride->name" />
                             @else
-                                 {{-- Placeholder if no image --}}
-                                <img src="https://picsum.photos/seed/ride_{{ $ride->id }}/400/300" alt="{{ $ride->name }}" class="rounded mb-4 w-full h-48 object-cover">
+                                <img src="https://picsum.photos/seed/{{ $ride->id }}/400/300" alt="{{ $ride->name }} image" class="w-full h-48 object-cover" />
                             @endif
                             <p class="text-gray-400 mb-1">Price: ${{ number_format($ride->price, 2) }}</p>
                             <p class="text-gray-400 mb-1">Max Capacity: {{ $ride->max_capacity ?? 'N/A' }}</p>
                             {{-- Add Description if available in your Ride model --}}
-                            {{-- <p class="text-gray-300 mt-2">{{ $ride->description ?? 'Experience the thrill!' }}</p> --}}
+                            <p class="text-gray-300 mt-2">{{ $ride->description ?? 'Experience the thrill!' }}</p>
                         </div>
                         <a href="#" class="inline-block text-center mt-4 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
                             Ride Details (Coming Soon)
@@ -51,16 +50,15 @@
                         <div>
                             <h3 class="text-2xl font-bold mb-2 text-white">{{ $game->name }}</h3>
                             {{-- Display Game Image if available --}}
-                            @if (!empty($game->images) && is_array($game->images))
-                                <img src="{{ asset($game->images[0]) }}" alt="{{ $game->name }}" class="rounded mb-4 w-full h-48 object-cover">
+                            @if (!empty($game->images))
+                                <x-image-carousel :images="$game->images" :title="$game->name" />
                             @else
-                                 {{-- Placeholder if no image --}}
-                                <img src="https://picsum.photos/seed/game_{{ $game->id }}/400/300" alt="{{ $game->name }}" class="rounded mb-4 w-full h-48 object-cover">
+                                <img src="https://picsum.photos/seed/{{ $game->id }}/400/300" alt="{{ $game->name }} image" class="w-full h-48 object-cover" />
                             @endif
                             <p class="text-gray-400 mb-1">Price: ${{ number_format($game->price, 2) }}</p>
                             <p class="text-gray-400 mb-1">Max Players per Booking: {{ $game->max_booking_quantity ?? 'N/A' }}</p>
                             {{-- Add Description if available in your Game model --}}
-                            {{-- <p class="text-gray-300 mt-2">{{ $game->description ?? 'Test your skills!' }}</p> --}}
+                            <p class="text-gray-300 mt-2">{{ $game->description ?? 'Test your skills!' }}</p>
                         </div>
                         <a href="#" class="inline-block text-center mt-4 bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700">
                             Game Info (Coming Soon)

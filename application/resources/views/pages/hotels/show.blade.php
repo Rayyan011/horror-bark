@@ -5,10 +5,15 @@
 @section('content')
 <main class="container mx-auto my-8 px-4">
     <h1 class="text-4xl font-bold mb-6">{{ $hotel->name }}</h1>
-    @if (!empty($hotel->images) && is_array($hotel->images))
+    {{-- @if (!empty($hotel->images) && is_array($hotel->images))
         <img src="{{ asset($hotel->images[0]) }}" alt="{{ $hotel->name }}" class="rounded mb-8
              w-full h-64 object-cover">
-    @endif
+    @endif --}}
+    @if (!empty($hotel->images))
+    <x-image-carousel :images="$hotel->images" :title="$hotel->name" />
+@else
+    <img src="https://picsum.photos/seed/{{ $event->id }}/400/300" alt="{{ $event->name }} image" class="w-full h-48 object-cover" />
+@endif
     <p class="text-gray-300 mb-8">{{ $hotel->location }}</p>
 
     <h2 class="text-2xl font-bold mb-4 horror-font">Available Rooms</h2>
@@ -44,12 +49,10 @@
                             @endforeach
                         </ul>
                     @endif
-                    @if (!empty($room->images) && is_array($room->images))
-                        <img src="{{ asset($room->images[0]) }}" alt="Room Image" class="rounded
-                             mt-4 w-full h-48 object-cover">
+                    @if (!empty($room->images))
+                        <x-image-carousel :images="$room->images" :title="$room->name" />
                     @else
-                        <img src="https://picsum.photos/400/300?random={{ $room->id }}" alt="Room
-                             Image" class="rounded mt-4 w-full h-48 object-cover">
+                        <img src="https://picsum.photos/seed/{{ $room->id }}/400/300" alt="{{ $room->name }} image" class="w-full h-48 object-cover" />
                     @endif
                 </div>
             </div>

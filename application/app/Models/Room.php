@@ -14,7 +14,7 @@ class Room extends Model
         'price',
         'status',
         'max_occupancy', // Maximum number of people allowed
-        'amenities',     
+        'amenities',
         'images',        // JSON field: list of image URLs or paths
         'description'
     ];
