@@ -9,11 +9,18 @@
         <img src="{{ asset($hotel->images[0]) }}" alt="{{ $hotel->name }}" class="rounded mb-8
              w-full h-64 object-cover">
     @endif --}}
+    @if (session('status'))
+        <div class="mb-4 text-green-300 text-sm">{{ session('status') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="mb-4 text-red-300 text-sm">{{ $errors->first() }}</div>
+    @endif
+
     @if (!empty($hotel->images))
-    <x-image-carousel :images="$hotel->images" :title="$hotel->name" />
-@else
-    <img src="https://picsum.photos/seed/{{ $event->id }}/400/300" alt="{{ $event->name }} image" class="w-full h-48 object-cover" />
-@endif
+        <x-image-carousel :images="$hotel->images" :title="$hotel->name" />
+    @else
+        <img src="https://picsum.photos/seed/{{ $hotel->id }}/400/300" alt="{{ $hotel->name }} image" class="w-full h-48 object-cover" />
+    @endif
     <p class="text-gray-300 mb-8">{{ $hotel->location }}</p>
 
     <h2 class="text-2xl font-bold mb-4 horror-font">Available Rooms</h2>
@@ -52,8 +59,37 @@
                     @if (!empty($room->images))
                         <x-image-carousel :images="$room->images" :title="$room->name" />
                     @else
-                        <img src="https://picsum.photos/seed/{{ $room->id }}/400/300" alt="{{ $room->name }} image" class="w-full h-48 object-cover" />
+                        <img src="https://picsum.photos/seed/{{ $room->id }}/400/300" alt="{{ $room->room_number }} image" class="w-full h-48 object-cover" />
                     @endif
+                    <div class="mt-4 border-t border-gray-700 pt-4">
+                        @auth
+                            <form method="POST" action="{{ route('bookings.hotels.store', $room) }}" class="space-y-3">
+                                @csrf
+                                <div>
+                                    <label class="block text-sm mb-1" for="start_date_{{ $room->id }}">Check-in</label>
+                                    <input id="start_date_{{ $room->id }}" name="start_date" type="date" required
+                                        class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-1" for="end_date_{{ $room->id }}">Check-out</label>
+                                    <input id="end_date_{{ $room->id }}" name="end_date" type="date" required
+                                        class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-1" for="quantity_{{ $room->id }}">Guests</label>
+                                    <input id="quantity_{{ $room->id }}" name="quantity" type="number" min="1" max="{{ $room->max_occupancy }}" value="1" required
+                                        class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+                                </div>
+                                <button type="submit" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
+                                    Book this room
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="inline-block w-full text-center bg-red-600 text-white py-2 rounded hover:bg-red-700">
+                                Log in to book
+                            </a>
+                        @endauth
+                    </div>
                 </div>
             </div>
         @endforeach

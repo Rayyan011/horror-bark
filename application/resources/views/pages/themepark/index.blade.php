@@ -7,6 +7,13 @@
     <h1 class="text-4xl font-bold mb-6 horror-font text-center">Welcome to the Theme Park!</h1>
     <p class="text-lg text-gray-300 mb-12 text-center">Discover thrilling rides and exciting games scattered across the island.</p>
 
+    @if (session('status'))
+        <div class="mb-4 text-green-300 text-sm">{{ session('status') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="mb-4 text-red-300 text-sm">{{ $errors->first() }}</div>
+    @endif
+
     {{-- Rides Section --}}
     <section class="mb-12">
         <h2 class="text-3xl font-bold mb-6 horror-font">Rides</h2>
@@ -29,9 +36,31 @@
                             {{-- Add Description if available in your Ride model --}}
                             <p class="text-gray-300 mt-2">{{ $ride->description ?? 'Experience the thrill!' }}</p>
                         </div>
-                        <a href="#" class="inline-block text-center mt-4 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
-                            Ride Details (Coming Soon)
-                        </a>
+                        <div class="mt-4">
+                            @auth
+                                <form method="POST" action="{{ route('bookings.rides.store', $ride) }}" class="space-y-3">
+                                    @csrf
+                                    <div>
+                                        <label class="block text-sm mb-1" for="ride_booking_time_{{ $ride->id }}">Booking time</label>
+                                        <input id="ride_booking_time_{{ $ride->id }}" name="booking_time" type="datetime-local" required
+                                            class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+                                        <p class="text-xs text-gray-400 mt-1">Only 9:00 or 17:00.</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm mb-1" for="ride_quantity_{{ $ride->id }}">Tickets</label>
+                                        <input id="ride_quantity_{{ $ride->id }}" name="quantity" type="number" min="1" max="{{ $ride->max_booking_quantity }}" value="1" required
+                                            class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+                                    </div>
+                                    <button type="submit" class="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                                        Book ride
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="inline-block w-full text-center bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+                                    Log in to book
+                                </a>
+                            @endauth
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -60,9 +89,31 @@
                             {{-- Add Description if available in your Game model --}}
                             <p class="text-gray-300 mt-2">{{ $game->description ?? 'Test your skills!' }}</p>
                         </div>
-                        <a href="#" class="inline-block text-center mt-4 bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700">
-                            Game Info (Coming Soon)
-                        </a>
+                        <div class="mt-4">
+                            @auth
+                                <form method="POST" action="{{ route('bookings.games.store', $game) }}" class="space-y-3">
+                                    @csrf
+                                    <div>
+                                        <label class="block text-sm mb-1" for="game_booking_time_{{ $game->id }}">Booking time</label>
+                                        <input id="game_booking_time_{{ $game->id }}" name="booking_time" type="datetime-local" required
+                                            class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+                                        <p class="text-xs text-gray-400 mt-1">Only 9:00 or 17:00.</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm mb-1" for="game_quantity_{{ $game->id }}">Players</label>
+                                        <input id="game_quantity_{{ $game->id }}" name="quantity" type="number" min="1" max="{{ $game->max_booking_quantity }}" value="1" required
+                                            class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+                                    </div>
+                                    <button type="submit" class="w-full bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700">
+                                        Book game
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="inline-block w-full text-center bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700">
+                                    Log in to book
+                                </a>
+                            @endauth
+                        </div>
                     </div>
                 @endforeach
             </div>

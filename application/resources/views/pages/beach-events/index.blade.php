@@ -9,6 +9,13 @@
         <h1 class="text-4xl font-bold mb-6 horror-font text-center">Beach Events</h1>
         <p class="text-lg text-gray-300 mb-12 text-center">Eerie tides, moonlit concerts, and chilling fun.</p>
 
+        @if (session('status'))
+            <div class="mb-4 text-green-300 text-sm">{{ session('status') }}</div>
+        @endif
+        @if ($errors->any())
+            <div class="mb-4 text-red-300 text-sm">{{ $errors->first() }}</div>
+        @endif
+
         <!-- Events Grid -->
         @if ($beachEvents->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

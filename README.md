@@ -74,7 +74,7 @@ php artisan key:generate
 php artisan migrate:fresh --seed
 
 5. Storage symbolic link
-php artisan storage:link
+
 
 php artisan vendor:publish --tag=maps-views
 

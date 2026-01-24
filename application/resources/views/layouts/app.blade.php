@@ -31,6 +31,19 @@
           <li><a href="{{ route('beach-events.index') }}" class="hover:text-gray-400">Beach Events</a></li>
           <li><a href="{{ route('contacts.create') }}" class="hover:text-gray-400">Contact</a></li>
           <li><a href="{{ url('/about') }}" class="hover:text-gray-400">About</a></li>
+          @auth
+            <li><a href="{{ route('bookings.index') }}" class="hover:text-gray-400">My Bookings</a></li>
+            <li>
+              <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="hover:text-gray-400">Logout</button>
+              </form>
+            </li>
+          @endauth
+          @guest
+            <li><a href="{{ route('login') }}" class="hover:text-gray-400">Login</a></li>
+            <li><a href="{{ route('register') }}" class="hover:text-gray-400">Register</a></li>
+          @endguest
         </ul>
       </nav>
     </div>

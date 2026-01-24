@@ -13,7 +13,7 @@
                 @if (!empty($hotel->images))
                     <x-image-carousel :images="$hotel->images" :title="$hotel->name" />
                 @else
-                    <img src="https://picsum.photos/seed/{{ $room->id }}/400/300" alt="{{ $room->name }} image" class="w-full h-48 object-cover" />
+                    <img src="https://picsum.photos/seed/{{ $hotel->id }}/400/300" alt="{{ $hotel->name }} image" class="w-full h-48 object-cover" />
                 @endif
                 <a href="{{ route('hotels.show', $hotel) }}" class="inline-block mt-4 bg-red-600
                         text-white py-2 px-4 rounded hover:bg-red-700">

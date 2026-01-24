@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\HotelBooking;
+use App\Models\FerryBooking;
+use App\Models\RideBooking;
+use App\Models\GameBooking;
+use App\Models\BeachEventBooking;
 
 class User extends Authenticatable
 {
@@ -51,5 +56,25 @@ class User extends Authenticatable
     public function hotelBookings(): HasMany
     {
         return $this->hasMany(HotelBooking::class);
+    }
+
+    public function ferryBookings(): HasMany
+    {
+        return $this->hasMany(FerryBooking::class);
+    }
+
+    public function rideBookings(): HasMany
+    {
+        return $this->hasMany(RideBooking::class);
+    }
+
+    public function gameBookings(): HasMany
+    {
+        return $this->hasMany(GameBooking::class);
+    }
+
+    public function beachEventBookings(): HasMany
+    {
+        return $this->hasMany(BeachEventBooking::class);
     }
 }
