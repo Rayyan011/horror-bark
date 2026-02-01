@@ -2,3 +2,6 @@ logs/
 *.log
 storage/logs/
 .env
+application/.env
+.cursor/plans/
+

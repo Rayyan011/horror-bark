@@ -2,9 +2,11 @@
 
 This repo contains a Laravel 11 app with Filament admin panels. The main
 application lives in `application/` and is served either locally or via Docker.
-It powers a Horror Bark theme park booking site with hotel rooms, ferry
-tickets, theme park rides, games, beach events, a contact form, and simple
-content pages managed via the admin panels.
+It powers a Horror Bark theme park booking site with customer auth, a booking
+portal, and invoices. Core user-facing features include hotels/rooms, ferry
+tickets, theme park rides, games, beach events, a contact form, and CMS pages.
+Admins manage hotels, rooms, ferries (and slots), rides, games, beach events,
+islands, pages, users, contacts, bookings, and invoices via Filament.
 
 ## Quick Start (Local)
 - `cd application`
