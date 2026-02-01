@@ -7,10 +7,11 @@ use App\Models\HotelBooking;
 use App\Models\Room;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Services\InvoiceService;
 
 class HotelBookingController extends Controller
 {
-    public function store(Request $request, Room $room)
+    public function store(Request $request, Room $room, InvoiceService $invoiceService)
     {
         $data = $request->validate([
             'start_date' => ['required', 'date'],
@@ -38,15 +39,17 @@ class HotelBookingController extends Controller
             ]);
         }
 
-        HotelBooking::create([
+        $booking = HotelBooking::create([
             'user_id' => $request->user()->id,
             'room_id' => $room->id,
             'start_date' => $startDate,
             'end_date' => $endDate,
             'quantity' => $data['quantity'],
             'total_price' => $room->price * $data['quantity'] * $nights,
-            'status' => 'pending',
+            'status' => 'confirmed',
         ]);
+
+        $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
 
         return back()->with('status', 'Hotel booking created.');
     }

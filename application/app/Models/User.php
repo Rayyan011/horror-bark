@@ -17,7 +17,7 @@ use App\Models\BeachEventBooking;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, Hasroles ;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -76,5 +76,10 @@ class User extends Authenticatable
     public function beachEventBookings(): HasMany
     {
         return $this->hasMany(BeachEventBooking::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 }

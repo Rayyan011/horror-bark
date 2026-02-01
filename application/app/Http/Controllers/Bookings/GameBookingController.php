@@ -7,10 +7,11 @@ use App\Models\Game;
 use App\Models\GameBooking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Services\InvoiceService;
 
 class GameBookingController extends Controller
 {
-    public function store(Request $request, Game $game)
+    public function store(Request $request, Game $game, InvoiceService $invoiceService)
     {
         $data = $request->validate([
             'booking_time' => ['required', 'date'],
@@ -38,14 +39,16 @@ class GameBookingController extends Controller
             ]);
         }
 
-        GameBooking::create([
+        $booking = GameBooking::create([
             'user_id' => $request->user()->id,
             'game_id' => $game->id,
             'booking_time' => $bookingTime,
             'quantity' => $data['quantity'],
             'total_price' => $game->price * $data['quantity'],
-            'status' => 'pending',
+            'status' => 'confirmed',
         ]);
+
+        $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
 
         return back()->with('status', 'Game booking created.');
     }

@@ -32,7 +32,9 @@
           <li><a href="{{ route('contacts.create') }}" class="hover:text-gray-400">Contact</a></li>
           <li><a href="{{ url('/about') }}" class="hover:text-gray-400">About</a></li>
           @auth
+            <li><a href="{{ route('portal') }}" class="hover:text-gray-400">Portal</a></li>
             <li><a href="{{ route('bookings.index') }}" class="hover:text-gray-400">My Bookings</a></li>
+            <li><a href="{{ route('profile.edit') }}" class="hover:text-gray-400">My Profile</a></li>
             <li>
               <form method="POST" action="{{ route('logout') }}">
                 @csrf

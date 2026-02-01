@@ -7,10 +7,11 @@ use App\Models\BeachEvent;
 use App\Models\BeachEventBooking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Services\InvoiceService;
 
 class BeachEventBookingController extends Controller
 {
-    public function store(Request $request, BeachEvent $beachEvent)
+    public function store(Request $request, BeachEvent $beachEvent, InvoiceService $invoiceService)
     {
         $data = $request->validate([
             'booking_date' => ['required', 'date'],
@@ -42,15 +43,17 @@ class BeachEventBookingController extends Controller
             ]);
         }
 
-        BeachEventBooking::create([
+        $booking = BeachEventBooking::create([
             'user_id' => $request->user()->id,
             'beach_event_id' => $beachEvent->id,
             'booking_date' => $bookingDate,
             'booking_time' => $bookingTime,
             'quantity' => $data['quantity'],
             'total_price' => $beachEvent->price * $data['quantity'],
-            'status' => 'pending',
+            'status' => 'confirmed',
         ]);
+
+        $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
 
         return back()->with('status', 'Beach event booking created.');
     }

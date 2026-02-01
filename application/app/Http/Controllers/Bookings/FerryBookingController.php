@@ -7,10 +7,11 @@ use App\Models\Ferry;
 use App\Models\FerryBooking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Services\InvoiceService;
 
 class FerryBookingController extends Controller
 {
-    public function store(Request $request, Ferry $ferry)
+    public function store(Request $request, Ferry $ferry, InvoiceService $invoiceService)
     {
         $data = $request->validate([
             'booking_time' => ['required', 'date'],
@@ -38,14 +39,16 @@ class FerryBookingController extends Controller
             ]);
         }
 
-        FerryBooking::create([
+        $booking = FerryBooking::create([
             'user_id' => $request->user()->id,
             'ferry_id' => $ferry->id,
             'booking_time' => $bookingTime,
             'quantity' => $data['quantity'],
             'total_price' => $ferry->price * $data['quantity'],
-            'status' => 'pending',
+            'status' => 'confirmed',
         ]);
+
+        $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
 
         return back()->with('status', 'Ferry booking created.');
     }

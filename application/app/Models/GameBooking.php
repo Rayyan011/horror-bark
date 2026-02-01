@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class GameBooking extends Model
 {
@@ -25,6 +26,11 @@ class GameBooking extends Model
     public function game(): BelongsTo
     {
         return $this->belongsTo(Game::class);
+    }
+
+    public function invoice(): MorphOne
+    {
+        return $this->morphOne(Invoice::class, 'invoiceable');
     }
 
     public function isPending(): bool

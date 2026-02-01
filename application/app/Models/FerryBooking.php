@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Carbon\Carbon;
 
 class FerryBooking extends Model
@@ -25,6 +26,11 @@ class FerryBooking extends Model
     public function ferry(): BelongsTo 
     {
         return $this->belongsTo(Ferry::class);
+    }
+
+    public function invoice(): MorphOne
+    {
+        return $this->morphOne(Invoice::class, 'invoiceable');
     }
 
     public function isPending(): bool 

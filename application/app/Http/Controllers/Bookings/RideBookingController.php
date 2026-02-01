@@ -7,10 +7,11 @@ use App\Models\Ride;
 use App\Models\RideBooking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Services\InvoiceService;
 
 class RideBookingController extends Controller
 {
-    public function store(Request $request, Ride $ride)
+    public function store(Request $request, Ride $ride, InvoiceService $invoiceService)
     {
         $data = $request->validate([
             'booking_time' => ['required', 'date'],
@@ -38,14 +39,16 @@ class RideBookingController extends Controller
             ]);
         }
 
-        RideBooking::create([
+        $booking = RideBooking::create([
             'user_id' => $request->user()->id,
             'ride_id' => $ride->id,
             'booking_time' => $bookingTime,
             'quantity' => $data['quantity'],
             'total_price' => $ride->price * $data['quantity'],
-            'status' => 'pending',
+            'status' => 'confirmed',
         ]);
+
+        $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
 
         return back()->with('status', 'Ride booking created.');
     }

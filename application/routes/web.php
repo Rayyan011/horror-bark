@@ -12,6 +12,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Bookings\HotelBookingController;
 use App\Http\Controllers\Bookings\FerryBookingController;
 use App\Http\Controllers\Bookings\RideBookingController;
@@ -44,7 +46,14 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth')->name('logout');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/portal', [CustomerBookingController::class, 'index'])->name('portal');
     Route::get('/bookings', [CustomerBookingController::class, 'index'])->name('bookings.index');
+
+    Route::get('/bookings/hotels/{hotelBooking}', [CustomerBookingController::class, 'showHotel'])->name('bookings.hotels.show');
+    Route::get('/bookings/ferries/{ferryBooking}', [CustomerBookingController::class, 'showFerry'])->name('bookings.ferries.show');
+    Route::get('/bookings/rides/{rideBooking}', [CustomerBookingController::class, 'showRide'])->name('bookings.rides.show');
+    Route::get('/bookings/games/{gameBooking}', [CustomerBookingController::class, 'showGame'])->name('bookings.games.show');
+    Route::get('/bookings/beach-events/{beachEventBooking}', [CustomerBookingController::class, 'showBeachEvent'])->name('bookings.beach-events.show');
 
     Route::post('/bookings/hotels/rooms/{room}', [HotelBookingController::class, 'store'])->name('bookings.hotels.store');
     Route::post('/bookings/ferries/{ferry}', [FerryBookingController::class, 'store'])->name('bookings.ferries.store');
@@ -57,6 +66,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/bookings/rides/{rideBooking}/cancel', [CustomerBookingController::class, 'cancelRide'])->name('bookings.rides.cancel');
     Route::patch('/bookings/games/{gameBooking}/cancel', [CustomerBookingController::class, 'cancelGame'])->name('bookings.games.cancel');
     Route::patch('/bookings/beach-events/{beachEventBooking}/cancel', [CustomerBookingController::class, 'cancelBeachEvent'])->name('bookings.beach-events.cancel');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('/invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
 });
 
 Route::get('/{page_name}', [PagesController::class, 'show'])->name('custom_page'); // Generic route AFTER all specific routes
