@@ -27,7 +27,7 @@ class HotelBookingResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('user_id', auth()->id());
+            ->whereHas('room.hotel', fn (Builder $query) => $query->where('user_id', auth()->id()));
     }
 
     public static function form(Form $form): Form
@@ -59,6 +59,7 @@ class HotelBookingResource extends Resource
                 })
                 ->reactive()
                 ->afterStateUpdated(fn ($state, callable $set) => $set('room_id', null))
+                ->dehydrated(false)
                 ->required(),
 
             Select::make('room_id')
@@ -106,7 +107,7 @@ class HotelBookingResource extends Resource
                 ->options([
                     'pending' => 'Pending',
                     'confirmed' => 'Confirmed',
-                    'cancelled' => 'Cancelled',
+                    'canceled' => 'Canceled',
                 ])
                 ->default('pending')
                 ->required(),

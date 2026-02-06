@@ -7,37 +7,35 @@ use App\Models\FerryBooking;
 use App\Models\GameBooking;
 use App\Models\HotelBooking;
 use App\Models\RideBooking;
-use Filament\Widgets\ChartWidget;
+use App\Filament\Widgets\PeriodChartWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
-class BookingsByDayChart extends ChartWidget
+class BookingsByDayChart extends PeriodChartWidget
 {
-    protected static ?string $heading = 'Bookings by Day (Last 14 Days)';
+    protected static ?string $heading = 'Bookings by Day';
 
     protected static ?int $sort = 2;
 
     protected function getData(): array
     {
-        $days = 14;
+        [$startDate, $endDate, $days] = $this->getFilterRange();
         $labels = [];
         $dateKeys = [];
 
-        for ($i = $days - 1; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i)->startOfDay();
+        for ($i = 0; $i < $days; $i++) {
+            $date = $startDate->copy()->addDays($i)->startOfDay();
             $labels[] = $date->format('M j');
             $dateKeys[] = $date->format('Y-m-d');
         }
 
-        $startDate = Carbon::now()->subDays($days - 1)->startOfDay();
-
         return [
             'datasets' => [
-                $this->makeDataset('Hotels', HotelBooking::query(), $startDate, $dateKeys, '#f59e0b'),
-                $this->makeDataset('Ferries', FerryBooking::query(), $startDate, $dateKeys, '#3b82f6'),
-                $this->makeDataset('Rides', RideBooking::query(), $startDate, $dateKeys, '#22c55e'),
-                $this->makeDataset('Games', GameBooking::query(), $startDate, $dateKeys, '#8b5cf6'),
-                $this->makeDataset('Beach Events', BeachEventBooking::query(), $startDate, $dateKeys, '#ef4444'),
+                $this->makeDataset('Hotels', HotelBooking::query()->where('status', '!=', 'canceled'), $startDate, $endDate, $dateKeys, '#f59e0b', 'start_date'),
+                $this->makeDataset('Ferries', FerryBooking::query()->where('status', '!=', 'canceled'), $startDate, $endDate, $dateKeys, '#3b82f6', 'booking_time'),
+                $this->makeDataset('Rides', RideBooking::query()->where('status', '!=', 'canceled'), $startDate, $endDate, $dateKeys, '#22c55e', 'booking_time'),
+                $this->makeDataset('Games', GameBooking::query()->where('status', '!=', 'canceled'), $startDate, $endDate, $dateKeys, '#8b5cf6', 'booking_time'),
+                $this->makeDataset('Beach Events', BeachEventBooking::query()->where('status', '!=', 'canceled'), $startDate, $endDate, $dateKeys, '#ef4444', 'booking_date'),
             ],
             'labels' => $labels,
         ];
@@ -52,12 +50,15 @@ class BookingsByDayChart extends ChartWidget
         string $label,
         Builder $query,
         Carbon $startDate,
+        Carbon $endDate,
         array $dateKeys,
-        string $color
+        string $color,
+        string $dateColumn
     ): array {
         $counts = $query
-            ->where('created_at', '>=', $startDate)
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->where($dateColumn, '>=', $startDate)
+            ->where($dateColumn, '<', $endDate)
+            ->selectRaw(sprintf('DATE(%s) as date, COUNT(*) as count', $dateColumn))
             ->groupBy('date')
             ->orderBy('date')
             ->pluck('count', 'date');

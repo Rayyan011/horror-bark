@@ -116,7 +116,7 @@ class HotelBookingResource extends Resource
                 ->options([
                     'pending'   => 'Pending',
                     'confirmed' => 'Confirmed',
-                    'cancelled' => 'Cancelled',
+                    'canceled' => 'Canceled',
                 ])
                 ->default('pending')
                 ->required(),

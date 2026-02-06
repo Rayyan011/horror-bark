@@ -53,7 +53,7 @@ class FerryBookingResource extends Resource
                     ->options([
                         'pending' => 'Pending',
                         'confirmed' => 'Confirmed',
-                        'cancelled' => 'Cancelled',
+                        'canceled' => 'Canceled',
                     ])
                     ->required(),
             ]);
@@ -72,7 +72,7 @@ class FerryBookingResource extends Resource
                     ->colors([
                         'warning' => 'pending',
                         'success' => 'confirmed',
-                        'danger' => 'cancelled',
+                        'danger' => 'canceled',
                     ]),
             ])
             ->filters([
@@ -80,7 +80,7 @@ class FerryBookingResource extends Resource
                     ->options([
                         'pending' => 'Pending',
                         'confirmed' => 'Confirmed',
-                        'cancelled' => 'Cancelled',
+                        'canceled' => 'Canceled',
                     ]),
             ])
             ->actions([

@@ -13,6 +13,7 @@ use App\Models\FerryBooking;
 use App\Models\RideBooking;
 use App\Models\GameBooking;
 use App\Models\BeachEventBooking;
+use App\Models\Hotel;
 
 class User extends Authenticatable
 {
@@ -76,6 +77,11 @@ class User extends Authenticatable
     public function beachEventBookings(): HasMany
     {
         return $this->hasMany(BeachEventBooking::class);
+    }
+
+    public function hotels(): HasMany
+    {
+        return $this->hasMany(Hotel::class);
     }
 
     public function invoices(): HasMany

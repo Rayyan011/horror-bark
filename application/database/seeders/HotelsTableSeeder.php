@@ -22,6 +22,7 @@ class HotelsTableSeeder extends Seeder
             0 => 
             array (
                 'id' => 1,
+                'user_id' => 1,
                 'name' => 'The shining my nigga',
                 'location' => 'Main island ',
                 'created_at' => '2025-03-18 12:10:21',

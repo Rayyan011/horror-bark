@@ -9,62 +9,114 @@ use App\Models\HotelBooking;
 use App\Models\Invoice;
 use App\Models\RideBooking;
 use App\Models\User;
-use Filament\Widgets\StatsOverviewWidget;
+use App\Filament\Widgets\PeriodStatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
 
-class AdminStatsOverview extends StatsOverviewWidget
+class AdminStatsOverview extends PeriodStatsOverviewWidget
 {
     protected static ?int $sort = 1;
 
     protected function getStats(): array
     {
-        $totalBookings = $this->sumBookings(fn ($query) => $query->count());
-        $pendingBookings = $this->sumBookings(fn ($query) => $query->where('status', 'pending')->count());
+        [$start, $end] = $this->getPeriodRange();
+        [$prevStart, $prevEnd] = $this->getPreviousPeriodRange();
 
-        $since = Carbon::now()->subDays(30);
-        $revenueLast30Days = Invoice::query()
-            ->where('issued_at', '>=', $since)
+        $totalBookings = $this->countBookingsBetween($start, $end);
+        $prevTotalBookings = $this->countBookingsBetween($prevStart, $prevEnd);
+
+        $pendingBookings = $this->countBookingsBetween($start, $end, status: 'pending');
+        $prevPendingBookings = $this->countBookingsBetween($prevStart, $prevEnd, status: 'pending');
+
+        $revenue = Invoice::query()
+            ->where('issued_at', '>=', $start)
+            ->where('issued_at', '<', $end)
+            ->sum('amount');
+        $prevRevenue = Invoice::query()
+            ->where('issued_at', '>=', $prevStart)
+            ->where('issued_at', '<', $prevEnd)
             ->sum('amount');
 
-        $newUsersLast30Days = User::query()
-            ->where('created_at', '>=', $since)
+        $newUsers = User::query()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<', $end)
+            ->count();
+        $prevNewUsers = User::query()
+            ->where('created_at', '>=', $prevStart)
+            ->where('created_at', '<', $prevEnd)
             ->count();
 
+        [$totalDesc, $totalIcon, $totalColor] = $this->buildDescriptionWithDelta('All booking types', $totalBookings, $prevTotalBookings);
+        [$pendingDesc, $pendingIcon, $pendingColor] = $this->buildDescriptionWithDelta('Needs attention', $pendingBookings, $prevPendingBookings);
+        [$revenueDesc, $revenueIcon, $revenueColor] = $this->buildDescriptionWithDelta('Invoices issued', $revenue, $prevRevenue);
+        [$usersDesc, $usersIcon, $usersColor] = $this->buildDescriptionWithDelta('Users created', $newUsers, $prevNewUsers);
+
         return [
-            Stat::make('Total Bookings', number_format($totalBookings))
-                ->description('All booking types')
-                ->descriptionIcon('heroicon-m-ticket')
+            Stat::make('Bookings', number_format($totalBookings))
+                ->description($totalDesc)
+                ->descriptionIcon($totalIcon)
+                ->descriptionColor($totalColor)
                 ->color('primary'),
             Stat::make('Pending Bookings', number_format($pendingBookings))
-                ->description('Needs attention')
-                ->descriptionIcon('heroicon-m-clock')
+                ->description($pendingDesc)
+                ->descriptionIcon($pendingIcon)
+                ->descriptionColor($pendingColor)
                 ->color('warning'),
-            Stat::make('Revenue (30 Days)', 'MVR ' . number_format($revenueLast30Days, 2))
-                ->description('Invoices issued in last 30 days')
-                ->descriptionIcon('heroicon-m-banknotes')
+            Stat::make('Revenue', 'MVR ' . number_format($revenue, 2))
+                ->description($revenueDesc)
+                ->descriptionIcon($revenueIcon)
+                ->descriptionColor($revenueColor)
                 ->color('success'),
-            Stat::make('New Customers (30 Days)', number_format($newUsersLast30Days))
-                ->description('Users created in last 30 days')
-                ->descriptionIcon('heroicon-m-user-plus')
+            Stat::make('New Customers', number_format($newUsers))
+                ->description($usersDesc)
+                ->descriptionIcon($usersIcon)
+                ->descriptionColor($usersColor)
                 ->color('info'),
         ];
     }
 
-    private function sumBookings(callable $callback): int
+    private function countBookingsBetween(Carbon $start, Carbon $end, ?string $status = null): int
     {
-        $bookings = [
-            HotelBooking::query(),
-            FerryBooking::query(),
-            RideBooking::query(),
-            GameBooking::query(),
-            BeachEventBooking::query(),
-        ];
-
         $total = 0;
-        foreach ($bookings as $query) {
-            $total += (int) $callback($query);
+
+        $hotelQuery = HotelBooking::query()
+            ->where('status', '!=', 'canceled')
+            ->where('start_date', '>=', $start)
+            ->where('start_date', '<', $end);
+
+        $ferryQuery = FerryBooking::query()
+            ->where('status', '!=', 'canceled')
+            ->where('booking_time', '>=', $start)
+            ->where('booking_time', '<', $end);
+
+        $rideQuery = RideBooking::query()
+            ->where('status', '!=', 'canceled')
+            ->where('booking_time', '>=', $start)
+            ->where('booking_time', '<', $end);
+
+        $gameQuery = GameBooking::query()
+            ->where('status', '!=', 'canceled')
+            ->where('booking_time', '>=', $start)
+            ->where('booking_time', '<', $end);
+
+        $beachEventQuery = BeachEventBooking::query()
+            ->where('status', '!=', 'canceled')
+            ->where('booking_date', '>=', $start->toDateString())
+            ->where('booking_date', '<', $end->toDateString());
+
+        if ($status !== null) {
+            $hotelQuery->where('status', $status);
+            $ferryQuery->where('status', $status);
+            $rideQuery->where('status', $status);
+            $gameQuery->where('status', $status);
+            $beachEventQuery->where('status', $status);
         }
+
+        $total += $hotelQuery->count();
+        $total += $ferryQuery->count();
+        $total += $rideQuery->count();
+        $total += $gameQuery->count();
+        $total += $beachEventQuery->count();
 
         return $total;
     }

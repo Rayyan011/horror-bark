@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Hidden;
 
 class HotelResource extends Resource
 {
@@ -17,9 +18,18 @@ class HotelResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('user_id', auth()->id());
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
+            Hidden::make('user_id')
+                ->default(fn () => auth()->id())
+                ->required(),
             Forms\Components\TextInput::make('name')
                 ->required(),
 

@@ -12,6 +12,8 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
+use App\Filament\Widgets\AdminNext7DaysOverview;
+use App\Filament\Widgets\AdminQuickActionsWidget;
 use App\Filament\Widgets\AdminStatsOverview;
 use App\Filament\Widgets\BookingsByDayChart;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -33,6 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->brandName('Horror Bark Admin')
             ->login()
             ->registration(Register::class)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
@@ -42,6 +45,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                AdminNext7DaysOverview::class,
+                AdminQuickActionsWidget::class,
                 AdminStatsOverview::class,
                 BookingsByDayChart::class,
                 Widgets\AccountWidget::class,

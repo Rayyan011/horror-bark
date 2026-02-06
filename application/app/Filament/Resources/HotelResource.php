@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\HotelResource\Pages;
 use App\Models\Hotel;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
@@ -21,6 +22,11 @@ class HotelResource extends Resource
     {
         return $form->schema([
             // Basic hotel details
+            Forms\Components\Select::make('user_id')
+                ->label('Owner')
+                ->options(User::query()->pluck('name', 'id'))
+                ->searchable()
+                ->required(),
             Forms\Components\TextInput::make('name')
                 ->required()
                 ->maxLength(255),

@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -19,6 +18,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Hotel\Widgets\HotelBookingsByDayChart;
+use App\Filament\Hotel\Widgets\HotelNext7DaysOverview;
+use App\Filament\Hotel\Widgets\HotelQuickActionsWidget;
 use App\Filament\Hotel\Widgets\HotelStatsOverview;
 
 
@@ -33,6 +34,7 @@ class HotelPanelProvider extends PanelProvider
         ->colors([
             'primary' => Color::Rose,
         ])
+        ->brandName('Horror Bark · Hotel Portal')
         ->login()
         ->discoverResources(in: app_path('Filament/Hotel/Resources'), for: 'App\\Filament\\Hotel\\Resources')
         ->discoverPages(in: app_path('Filament/Hotel/Pages'), for: 'App\\Filament\\Hotel\\Pages')
@@ -41,6 +43,8 @@ class HotelPanelProvider extends PanelProvider
         ])
         ->discoverWidgets(in: app_path('Filament/Hotel/Widgets'), for: 'App\\Filament\\Hotel\\Widgets')
         ->widgets([
+            HotelNext7DaysOverview::class,
+            HotelQuickActionsWidget::class,
             HotelStatsOverview::class,
             HotelBookingsByDayChart::class,
             Widgets\AccountWidget::class,
@@ -55,9 +59,6 @@ class HotelPanelProvider extends PanelProvider
             SubstituteBindings::class,
             DisableBladeIconComponents::class,
             DispatchServingFilamentEvent::class,
-        ])
-        ->plugins([
-            FilamentShieldPlugin::make(),
         ])
         ->authMiddleware([
             Authenticate::class,

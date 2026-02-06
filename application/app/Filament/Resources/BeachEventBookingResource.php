@@ -48,7 +48,7 @@ class BeachEventBookingResource extends Resource
                 ->options([
                     'pending'   => 'Pending',
                     'confirmed' => 'Confirmed',
-                    'cancelled' => 'Cancelled',
+                    'canceled' => 'Canceled',
                 ])
                 ->required(),
         ]);
@@ -86,7 +86,7 @@ class BeachEventBookingResource extends Resource
                 ->colors([
                     'pending'   => 'gray',
                     'confirmed' => 'green',
-                    'cancelled' => 'red',
+                    'canceled' => 'red',
                 ]),
         ])
         ->actions([

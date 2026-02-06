@@ -17,8 +17,9 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Game\Widgets\GameBookingsByDayChart;
+use App\Filament\Game\Widgets\GameNext7DaysOverview;
+use App\Filament\Game\Widgets\GameQuickActionsWidget;
 use App\Filament\Game\Widgets\GameStatsOverview;
 
 class GamePanelProvider extends PanelProvider
@@ -31,6 +32,7 @@ class GamePanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Blue, // You can pick a different color if you want
             ])
+            ->brandName('Horror Bark · Game Portal')
             ->login()
             ->discoverResources(in: app_path('Filament/Game/Resources'), for: 'App\\Filament\\Game\\Resources')
             ->discoverPages(in: app_path('Filament/Game/Pages'), for: 'App\\Filament\\Game\\Pages')
@@ -39,6 +41,8 @@ class GamePanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Game/Widgets'), for: 'App\\Filament\\Game\\Widgets')
             ->widgets([
+                GameNext7DaysOverview::class,
+                GameQuickActionsWidget::class,
                 GameStatsOverview::class,
                 GameBookingsByDayChart::class,
                 Widgets\AccountWidget::class,
@@ -53,9 +57,6 @@ class GamePanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
-            ->plugins([
-                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

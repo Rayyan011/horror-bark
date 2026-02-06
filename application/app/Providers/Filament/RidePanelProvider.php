@@ -17,9 +17,12 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Ride\Widgets\RideBookingsByDayChart;
+use App\Filament\Ride\Widgets\RideCapacityUtilizationBySlotChart;
+use App\Filament\Ride\Widgets\RideNext7DaysOverview;
+use App\Filament\Ride\Widgets\RideQuickActionsWidget;
 use App\Filament\Ride\Widgets\RideStatsOverview;
+use App\Filament\Ride\Widgets\RideTopRidesTable;
 
 
 class RidePanelProvider extends PanelProvider
@@ -32,6 +35,7 @@ class RidePanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->brandName('Horror Bark · Ride Portal')
             ->login()
             ->discoverResources(in: app_path('Filament/Ride/Resources'), for: 'App\\Filament\\Ride\\Resources')
             ->discoverPages(in: app_path('Filament/Ride/Pages'), for: 'App\\Filament\\Ride\\Pages')
@@ -40,8 +44,12 @@ class RidePanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Ride/Widgets'), for: 'App\\Filament\\Ride\\Widgets')
             ->widgets([
+                RideNext7DaysOverview::class,
+                RideQuickActionsWidget::class,
                 RideStatsOverview::class,
                 RideBookingsByDayChart::class,
+                RideCapacityUtilizationBySlotChart::class,
+                RideTopRidesTable::class,
                 Widgets\AccountWidget::class,
             ])
             ->middleware([
@@ -54,9 +62,6 @@ class RidePanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
-            ->plugins([
-                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

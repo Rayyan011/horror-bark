@@ -3,7 +3,6 @@
 namespace App\Providers\Filament;
 
 use Filament\Http\Middleware\Authenticate;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -19,7 +18,12 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Ferry\Widgets\FerryBookingsByDayChart;
+use App\Filament\Ferry\Widgets\FerryBookingsByIslandChart;
+use App\Filament\Ferry\Widgets\FerryLoadFactorByHourChart;
+use App\Filament\Ferry\Widgets\FerryNext7DaysOverview;
+use App\Filament\Ferry\Widgets\FerryQuickActionsWidget;
 use App\Filament\Ferry\Widgets\FerryStatsOverview;
+use App\Filament\Ferry\Widgets\FerryTodayDeparturesTable;
 
 class FerryPanelProvider extends PanelProvider
 {
@@ -31,6 +35,7 @@ class FerryPanelProvider extends PanelProvider
         ->colors([
             'primary' => Color::Amber,
         ])
+        ->brandName('Horror Bark · Ferry Portal')
         ->login()
         ->discoverResources(in: app_path('Filament/Ferry/Resources'), for: 'App\\Filament\\Ferry\\Resources')
         ->discoverPages(in: app_path('Filament/Ferry/Pages'), for: 'App\\Filament\\Ferry\\Pages')
@@ -39,8 +44,13 @@ class FerryPanelProvider extends PanelProvider
         ])
         ->discoverWidgets(in: app_path('Filament/Ferry/Widgets'), for: 'App\\Filament\\Ferry\\Widgets')
         ->widgets([
+            FerryNext7DaysOverview::class,
+            FerryQuickActionsWidget::class,
             FerryStatsOverview::class,
             FerryBookingsByDayChart::class,
+            FerryBookingsByIslandChart::class,
+            FerryLoadFactorByHourChart::class,
+            FerryTodayDeparturesTable::class,
             Widgets\AccountWidget::class,
         ])
         ->middleware([
@@ -56,10 +66,6 @@ class FerryPanelProvider extends PanelProvider
         ])
         ->authMiddleware([
             Authenticate::class,
-        ])
-        
-        ->plugins([
-            FilamentShieldPlugin::make(),
         ]);
 }
 

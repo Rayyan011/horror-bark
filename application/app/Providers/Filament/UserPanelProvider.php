@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -19,6 +18,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\User\Widgets\UserBookingsByDayChart;
+use App\Filament\User\Widgets\UserNext7DaysOverview;
+use App\Filament\User\Widgets\UserQuickActionsWidget;
 use App\Filament\User\Widgets\UserStatsOverview;
 
 class UserPanelProvider extends PanelProvider
@@ -31,6 +32,7 @@ class UserPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Indigo,
             ])
+            ->brandName('Horror Bark · Guest Portal')
             ->login()
             ->discoverResources(in: app_path('Filament/User/Resources'), for: 'App\\Filament\\User\\Resources')
             ->discoverPages(in: app_path('Filament/User/Pages'), for: 'App\\Filament\\User\\Pages')
@@ -39,6 +41,8 @@ class UserPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/User/Widgets'), for: 'App\\Filament\\User\\Widgets')
             ->widgets([
+                UserNext7DaysOverview::class,
+                UserQuickActionsWidget::class,
                 UserStatsOverview::class,
                 UserBookingsByDayChart::class,
                 Widgets\AccountWidget::class,
@@ -53,9 +57,6 @@ class UserPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
-            ->plugins([
-                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

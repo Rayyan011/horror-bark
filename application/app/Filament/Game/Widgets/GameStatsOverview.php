@@ -2,13 +2,11 @@
 
 namespace App\Filament\Game\Widgets;
 
-use App\Models\Game;
 use App\Models\GameBooking;
-use Filament\Widgets\StatsOverviewWidget;
+use App\Filament\Widgets\PeriodStatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Carbon;
 
-class GameStatsOverview extends StatsOverviewWidget
+class GameStatsOverview extends PeriodStatsOverviewWidget
 {
     protected static ?int $sort = 1;
 
@@ -16,37 +14,66 @@ class GameStatsOverview extends StatsOverviewWidget
     {
         $ownerId = auth()->id();
 
-        $gameCount = Game::query()
-            ->where('user_id', $ownerId)
-            ->count();
+        [$start, $end] = $this->getPeriodRange();
+        [$prevStart, $prevEnd] = $this->getPreviousPeriodRange();
 
         $bookingsQuery = GameBooking::query()
             ->whereHas('game', fn ($query) => $query->where('user_id', $ownerId));
 
-        $pendingBookings = (clone $bookingsQuery)->where('status', 'pending')->count();
+        $bookings = (clone $bookingsQuery)
+            ->where('status', '!=', 'canceled')
+            ->where('booking_time', '>=', $start)
+            ->where('booking_time', '<', $end);
+        $prevBookings = (clone $bookingsQuery)
+            ->where('status', '!=', 'canceled')
+            ->where('booking_time', '>=', $prevStart)
+            ->where('booking_time', '<', $prevEnd);
 
-        $since = Carbon::now()->subDays(30);
-        $recentBookings = (clone $bookingsQuery)->where('created_at', '>=', $since)->count();
-        $revenueLast30Days = (clone $bookingsQuery)
-            ->where('created_at', '>=', $since)
-            ->sum('total_price');
+        $bookingCount = $bookings->count();
+        $prevBookingCount = $prevBookings->count();
+
+        $playerCount = (clone $bookings)->sum('quantity');
+        $prevPlayerCount = (clone $prevBookings)->sum('quantity');
+
+        $pendingBookings = (clone $bookingsQuery)
+            ->where('status', 'pending')
+            ->where('booking_time', '>=', $start)
+            ->where('booking_time', '<', $end)
+            ->count();
+        $prevPendingBookings = (clone $bookingsQuery)
+            ->where('status', 'pending')
+            ->where('booking_time', '>=', $prevStart)
+            ->where('booking_time', '<', $prevEnd)
+            ->count();
+
+        $revenue = (clone $bookings)->sum('total_price');
+        $prevRevenue = (clone $prevBookings)->sum('total_price');
+
+        [$bookingDesc, $bookingIcon, $bookingColor] = $this->buildDescriptionWithDelta('Bookings in period', $bookingCount, $prevBookingCount);
+        [$playerDesc, $playerIcon, $playerColor] = $this->buildDescriptionWithDelta('Tickets sold', $playerCount, $prevPlayerCount);
+        [$pendingDesc, $pendingIcon, $pendingColor] = $this->buildDescriptionWithDelta('Needs confirmation', $pendingBookings, $prevPendingBookings);
+        [$revenueDesc, $revenueIcon, $revenueColor] = $this->buildDescriptionWithDelta('Bookings in period', $revenue, $prevRevenue);
 
         return [
-            Stat::make('My Games', number_format($gameCount))
-                ->description('Games you manage')
-                ->descriptionIcon('heroicon-m-sparkles')
+            Stat::make('Bookings', number_format($bookingCount))
+                ->description($bookingDesc)
+                ->descriptionIcon($bookingIcon)
+                ->descriptionColor($bookingColor)
                 ->color('primary'),
-            Stat::make('Bookings (30 Days)', number_format($recentBookings))
-                ->description('Recent booking volume')
-                ->descriptionIcon('heroicon-m-ticket')
+            Stat::make('Players', number_format($playerCount))
+                ->description($playerDesc)
+                ->descriptionIcon($playerIcon)
+                ->descriptionColor($playerColor)
                 ->color('info'),
             Stat::make('Pending Bookings', number_format($pendingBookings))
-                ->description('Needs confirmation')
-                ->descriptionIcon('heroicon-m-clock')
+                ->description($pendingDesc)
+                ->descriptionIcon($pendingIcon)
+                ->descriptionColor($pendingColor)
                 ->color('warning'),
-            Stat::make('Revenue (30 Days)', 'MVR ' . number_format($revenueLast30Days, 2))
-                ->description('Bookings created in last 30 days')
-                ->descriptionIcon('heroicon-m-banknotes')
+            Stat::make('Revenue', 'MVR ' . number_format($revenue, 2))
+                ->description($revenueDesc)
+                ->descriptionIcon($revenueIcon)
+                ->descriptionColor($revenueColor)
                 ->color('success'),
         ];
     }
