@@ -5,4 +5,4 @@ storage/logs/
 application/.env
 .cursor/plans/
 .claude/settings.local.json
-
+.codex/
