@@ -18,6 +18,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use App\Filament\Game\Widgets\GameBookingsByDayChart;
+use App\Filament\Game\Widgets\GameStatsOverview;
 
 class GamePanelProvider extends PanelProvider
 {
@@ -37,8 +39,9 @@ class GamePanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Game/Widgets'), for: 'App\\Filament\\Game\\Widgets')
             ->widgets([
+                GameStatsOverview::class,
+                GameBookingsByDayChart::class,
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

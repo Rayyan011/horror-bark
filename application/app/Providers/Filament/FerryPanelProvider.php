@@ -18,6 +18,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Ferry\Widgets\FerryBookingsByDayChart;
+use App\Filament\Ferry\Widgets\FerryStatsOverview;
 
 class FerryPanelProvider extends PanelProvider
 {
@@ -37,8 +39,9 @@ class FerryPanelProvider extends PanelProvider
         ])
         ->discoverWidgets(in: app_path('Filament/Ferry/Widgets'), for: 'App\\Filament\\Ferry\\Widgets')
         ->widgets([
+            FerryStatsOverview::class,
+            FerryBookingsByDayChart::class,
             Widgets\AccountWidget::class,
-            Widgets\FilamentInfoWidget::class,
         ])
         ->middleware([
             EncryptCookies::class,

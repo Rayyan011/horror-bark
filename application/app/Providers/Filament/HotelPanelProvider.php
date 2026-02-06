@@ -18,6 +18,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Hotel\Widgets\HotelBookingsByDayChart;
+use App\Filament\Hotel\Widgets\HotelStatsOverview;
 
 
 
@@ -39,8 +41,9 @@ class HotelPanelProvider extends PanelProvider
         ])
         ->discoverWidgets(in: app_path('Filament/Hotel/Widgets'), for: 'App\\Filament\\Hotel\\Widgets')
         ->widgets([
+            HotelStatsOverview::class,
+            HotelBookingsByDayChart::class,
             Widgets\AccountWidget::class,
-            Widgets\FilamentInfoWidget::class,
         ])
         ->middleware([
             EncryptCookies::class,

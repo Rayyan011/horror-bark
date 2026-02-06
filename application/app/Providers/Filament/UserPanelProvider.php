@@ -18,6 +18,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\User\Widgets\UserBookingsByDayChart;
+use App\Filament\User\Widgets\UserStatsOverview;
 
 class UserPanelProvider extends PanelProvider
 {
@@ -37,8 +39,9 @@ class UserPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/User/Widgets'), for: 'App\\Filament\\User\\Widgets')
             ->widgets([
+                UserStatsOverview::class,
+                UserBookingsByDayChart::class,
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

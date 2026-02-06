@@ -18,6 +18,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use App\Filament\Ride\Widgets\RideBookingsByDayChart;
+use App\Filament\Ride\Widgets\RideStatsOverview;
 
 
 class RidePanelProvider extends PanelProvider
@@ -38,8 +40,9 @@ class RidePanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Ride/Widgets'), for: 'App\\Filament\\Ride\\Widgets')
             ->widgets([
+                RideStatsOverview::class,
+                RideBookingsByDayChart::class,
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
