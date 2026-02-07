@@ -4,4 +4,5 @@ storage/logs/
 .env
 application/.env
 .cursor/plans/
+.claude/settings.local.json
 
