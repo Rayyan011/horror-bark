@@ -3,15 +3,13 @@
 namespace App\Filament\Game\Resources;
 
 use App\Filament\Game\Resources\GameBookingResource\Pages;
-use App\Filament\Game\Resources\GameBookingResource\RelationManagers;
+use App\Models\Game;
 use App\Models\GameBooking;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class GameBookingResource extends Resource
 {

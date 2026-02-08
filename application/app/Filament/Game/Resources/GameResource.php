@@ -3,15 +3,14 @@
 namespace App\Filament\Game\Resources;
 
 use App\Filament\Game\Resources\GameResource\Pages;
-use App\Filament\Game\Resources\GameResource\RelationManagers;
 use App\Models\Game;
+use Dotswan\MapPicker\Fields\Map;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class GameResource extends Resource
 {

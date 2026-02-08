@@ -10,6 +10,8 @@ abstract class QuickActionsWidget extends Widget
 
     protected static ?int $sort = 0;
 
+    protected int | string | array $columnSpan = 'full';
+
     /**
      * @return array<int, array{label: string, url: string, icon?: string, color?: string}>
      */

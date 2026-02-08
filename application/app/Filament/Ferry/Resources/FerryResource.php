@@ -3,10 +3,8 @@
 namespace App\Filament\Ferry\Resources;
 
 
-use App\Filament\Resources\FerryResource\Pages;
+use App\Filament\Ferry\Resources\FerryResource\Pages;
 use App\Models\Ferry;
-use App\Models\User;
-use App\Models\Island;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Components\TextInput;
@@ -14,8 +12,6 @@ use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 
 class FerryResource extends Resource
 {

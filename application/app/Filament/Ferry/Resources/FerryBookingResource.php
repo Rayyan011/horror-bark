@@ -3,15 +3,15 @@
 namespace App\Filament\Ferry\Resources;
 
 use App\Filament\Ferry\Resources\FerryBookingResource\Pages;
-use App\Filament\Ferry\Resources\FerryBookingResource\RelationManagers;
 use App\Models\FerryBooking;
 use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class FerryBookingResource extends Resource
 {
@@ -19,7 +19,6 @@ class FerryBookingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    
     public static function form(Form $form): Form
     {
         return $form
@@ -33,18 +32,18 @@ class FerryBookingResource extends Resource
                     ->required(),
 
                 DateTimePicker::make('booking_time')
-                ->required()
-                ->label('Booking Time'),   //add validation between for booking between 9am and 4pm
+                    ->label('Booking Time')
+                    ->required(),
 
                 TextInput::make('quantity')
                     ->numeric()
-                    ->required()
-                    ->minValue(1),
+                    ->minValue(1)
+                    ->required(),
 
                 TextInput::make('total_price')
                     ->numeric()
-                    ->required()
-                    ->prefix('MVR'),
+                    ->prefix('MVR')
+                    ->required(),
 
                 Select::make('status')
                     ->options([
@@ -60,10 +59,25 @@ class FerryBookingResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('user.name')->label('User'),
+                Tables\Columns\TextColumn::make('ferry.name')->label('Ferry'),
+                Tables\Columns\TextColumn::make('booking_time')->label('Booking Time')->dateTime('Y-m-d H:i'),
+                Tables\Columns\TextColumn::make('quantity')->label('Qty'),
+                Tables\Columns\TextColumn::make('total_price')->money('MVR'),
+                Tables\Columns\BadgeColumn::make('status')
+                    ->colors([
+                        'warning' => 'pending',
+                        'success' => 'confirmed',
+                        'danger' => 'canceled',
+                    ]),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'confirmed' => 'Confirmed',
+                        'canceled' => 'Canceled',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -77,9 +91,7 @@ class FerryBookingResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

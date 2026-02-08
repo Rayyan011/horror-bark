@@ -9,6 +9,8 @@ abstract class PeriodChartWidget extends ChartWidget
 {
     public ?string $filter = '7d';
 
+    protected int | string | array $columnSpan = 'full';
+
     protected function getFilters(): ?array
     {
         return [
