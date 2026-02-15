@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,7 +17,7 @@ use App\Models\GameBooking;
 use App\Models\BeachEventBooking;
 use App\Models\Hotel;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -87,5 +89,22 @@ class User extends Authenticatable
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($this->hasRole('super_admin')) {
+            return true;
+        }
+
+        return match ($panel->getId()) {
+            'admin' => $this->hasRole('admin'),
+            'hotel' => $this->hasRole('hotel_manager'),
+            'ferry' => $this->hasRole('ferry_manager'),
+            'ride' => $this->hasRole('ride_manager'),
+            'game' => $this->hasRole('game_manager'),
+            'user' => $this->hasRole('user'),
+            default => false,
+        };
     }
 }

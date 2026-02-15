@@ -1,86 +1,84 @@
+# Horror Bark (Laravel 11 + Filament)
 
+Horror Bark is a booking platform for a theme park experience. The app includes customer-facing booking flows (hotel, ferry, rides, games, beach events) and multiple Filament panels for operations.
 
-# Laravel Project Setup with Filament and iSeed
+## App URLs
+- App: `http://127.0.0.1:8000`
+- Admin panel: `http://127.0.0.1:8000/admin`
 
-This repository contains a Laravel-based project with **Filament Admin Panel** and **iSeed** for database seeding. Follow these steps to set up the project locally.
+## Local Setup
+1. `cd application`
+2. `composer install`
+3. `npm install`
+4. `cp .env.example .env`
+5. Configure DB credentials in `.env`
+6. `php artisan key:generate`
+7. `php artisan migrate:fresh --seed`
+8. `php artisan storage:link`
+9. `composer dev`
 
----
+## Docker Setup
+1. `docker-compose up -d`
+2. `docker-compose exec php bash`
+3. `cd /var/www/html`
+4. `composer install`
+5. `php artisan key:generate`
+6. `php artisan migrate:fresh --seed`
+7. `php artisan storage:link`
+8. `php artisan vendor:publish --tag=maps-views`
 
-## 🚀 Installation Guide
+If Docker builds fail unexpectedly:
+- `docker compose build --no-cache`
 
-### **1. Clone the Repository**
-```bash
-git clone https://github.com/your-username/your-repository.git
-cd your-repository
+## Seeded Admin Credentials
+- Email: `test@admin.com`
+- Password: `test@admin.com`
+- Default seeded role: `super_admin`
 
-2. Install Dependencies
+## Panel Access (RBAC)
+Panel access is role-based and enforced at panel level.
 
-composer install
-npm install
+| Panel ID / Path | Allowed Roles |
+| --- | --- |
+| `admin` (`/admin`) | `admin`, `super_admin` |
+| `hotel` (`/hotel`) | `hotel_manager`, `super_admin` |
+| `ferry` (`/ferry`) | `ferry_manager`, `super_admin` |
+| `ride` (`/ride`) | `ride_manager`, `super_admin` |
+| `game` (`/game`) | `game_manager`, `super_admin` |
+| `user` (`/user`) | `user`, `super_admin` |
 
-🛠️ Environment Setup
+### Supported Roles
+- `super_admin`
+- `admin`
+- `hotel_manager`
+- `ferry_manager`
+- `ride_manager`
+- `game_manager`
+- `user`
 
-3. Copy the .env File
+Notes:
+- `super_admin` can access all panels.
+- `admin` is restricted to `/admin` only.
+- Users are managed as single-role accounts in the admin user form.
 
-cp .env.example .env
+## Seed Only Roles + Super Admin Assignment
+Run from `application/`:
+- `php artisan db:seed --class=RolesAndPanelAccessSeeder`
 
-Update the .env file with your database credentials.
+## Common Commands (run from `application/`)
+- Full dev stack: `composer dev`
+- Vite only: `npm run dev`
+- Build assets: `npm run build`
+- Run tests: `php artisan test`
+- Format PHP: `php artisan pint`
 
-Example:
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=your_database_name
-DB_USERNAME=root
-DB_PASSWORD=
-
-🔑 Generate App Key
-
-php artisan key:generate
-
-🏗️ Database Setup
-
-4. Run Migrations and Seeders
-
-php artisan migrate:fresh --seed
-
-php artisan storage:link
-
-
-
-php artisan serve
-
-Visit http://127.0.0.1:8000 to view the application.
-
-5. acess admin panel via http://127.0.0.1:8000/admin
-
-6. login  to filament with email:test@admin.com password:test@admin.com
-
-
-// To us with docker:
-1. Build and Start the Containers
-docker-compose up -d
-
-2. Install Laravel Dependencies
-docker-compose exec php bash
-cd /var/www/html
-composer install
-
-3. Generate a new app key
-php artisan key:generate
-
-4. Database setup
-php artisan migrate:fresh --seed
-
-5. Storage symbolic link
-
-
-php artisan vendor:publish --tag=maps-views
-
-
-#if you are facing issues with docker try the following command 
-docker compose build --no-cache
-
-
-
+## Key Paths
+- App code: `application/app/`
+- Routes: `application/routes/`
+- Views/assets: `application/resources/`
+- Migrations/seeders: `application/database/`
+- Tests: `application/tests/`
+- Public assets: `application/public/`
+- Nginx config: `nginx/`
+- PHP-FPM config: `php/`
+- Docker compose: `docker-compose.yml`

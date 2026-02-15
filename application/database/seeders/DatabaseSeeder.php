@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
         $this->call(UsersTableSeeder::class);
+        $this->call(RolesAndPanelAccessSeeder::class);
         $this->call(PagesTableSeeder::class);
         $this->call(HotelsTableSeeder::class);
     }

@@ -16,7 +16,7 @@ class Register extends BaseRegister
         $defaultRole = $roleModel::where('name', 'user')->first();
 
         if ($defaultRole) {
-            $user->assignRole($defaultRole);
+            $user->syncRoles([$defaultRole->name]);
         } else {
             logger()->error('Default "user" role not found.');
         }
