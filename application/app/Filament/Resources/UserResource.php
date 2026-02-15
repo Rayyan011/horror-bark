@@ -48,7 +48,9 @@ class UserResource extends Resource
                     ->multiple()
                     ->preload()
                     ->searchable()
-                    ->label('Roles')
+                    ->label('Role')
+                    ->helperText('Select exactly one role.')
+                    ->rules(['array', 'size:1'])
                     ->required(fn (): bool => Role::query()->exists()),
             ]);
     }
