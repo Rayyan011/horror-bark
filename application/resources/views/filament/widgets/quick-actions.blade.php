@@ -7,23 +7,13 @@
 
 <x-filament-widgets::widget>
     <x-filament::section :heading="$heading">
-        @if ($showEmptyState && filled($emptyStateMessage))
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-                {{ $emptyStateMessage }}
-            </p>
-        @endif
-
-        <div class="flex flex-wrap gap-2">
-            @foreach ($actions as $action)
-                <x-filament::button
-                    tag="a"
-                    :href="$action['url']"
-                    :icon="$action['icon'] ?? null"
-                    :color="$action['color'] ?? 'primary'"
-                >
-                    {{ $action['label'] }}
-                </x-filament::button>
-            @endforeach
-        </div>
+        <x-admin.quick-actions
+            :actions="collect($actions)->map(fn ($action) => [
+                'url' => $action['url'],
+                'label' => $action['label'],
+                'variant' => ($action['color'] ?? 'primary') === 'danger' ? 'danger' : 'primary',
+            ])->values()->all()"
+            :empty-state="$showEmptyState && filled($emptyStateMessage) ? $emptyStateMessage : null"
+        />
     </x-filament::section>
 </x-filament-widgets::widget>

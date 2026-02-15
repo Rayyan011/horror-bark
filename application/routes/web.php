@@ -25,6 +25,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/contact', [ContactController::class, 'create'])->name('contacts.create');
 Route::post('/contact', [ContactController::class, 'store'])->name('contacts.store');
+Route::view('/about', 'pages.about')->name('about');
 Route::get('/beach-events', [BeachEventController::class, 'index'])->name('beach-events.index');
 
 Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index'); // Specific /hotels route first

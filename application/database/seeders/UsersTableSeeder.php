@@ -3,35 +3,26 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UsersTableSeeder extends Seeder
 {
-
-    /**
-     * Auto generated seed file
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
-        
+        $email = 'test@admin.com';
+        $now = now();
 
-        \DB::table('users')->delete();
-        
-        \DB::table('users')->insert(array (
-            0 => 
-            array (
-                'id' => 1,
+        DB::table('users')->updateOrInsert(
+            ['email' => $email],
+            [
                 'name' => 'test@admin',
-                'email' => 'test@admin.com',
-                'email_verified_at' => NULL,
-                'password' => '$2y$12$GwQ3Ievi3fI1BS3.JYZmeuaXE6lJh3QD/noGYpYDFySEJMoDEwytW',
-                'remember_token' => NULL,
-                'created_at' => '2025-02-17 21:57:48',
-                'updated_at' => '2025-02-17 21:57:48',
-            ),
-        ));
-        
-        
+                'email_verified_at' => null,
+                'password' => Hash::make('test@admin.com'),
+                'remember_token' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]
+        );
     }
 }
