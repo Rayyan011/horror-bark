@@ -8,10 +8,16 @@ use App\Models\BeachEventBooking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\InvoiceService;
+use App\Services\IslandAccessService;
 
 class BeachEventBookingController extends Controller
 {
-    public function store(Request $request, BeachEvent $beachEvent, InvoiceService $invoiceService)
+    public function store(
+        Request $request,
+        BeachEvent $beachEvent,
+        InvoiceService $invoiceService,
+        IslandAccessService $islandAccessService
+    )
     {
         $data = $request->validate([
             'booking_date' => ['required', 'date'],
@@ -29,6 +35,17 @@ class BeachEventBookingController extends Controller
         }
 
         $bookingTime = Carbon::parse($bookingDate . ' ' . $data['booking_time'])->setSecond(0);
+
+        $beachEvent->loadMissing('island');
+
+        if (
+            $islandAccessService->beachEventRequiresHotel($beachEvent)
+            && !$islandAccessService->hasConfirmedHotelStayAt($request->user(), $bookingTime)
+        ) {
+            return back()->withErrors([
+                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+            ])->withInput();
+        }
 
         $bookedQuantity = BeachEventBooking::query()
             ->where('beach_event_id', $beachEvent->id)

@@ -8,10 +8,16 @@ use App\Models\FerryBooking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\InvoiceService;
+use App\Services\IslandAccessService;
 
 class FerryBookingController extends Controller
 {
-    public function store(Request $request, Ferry $ferry, InvoiceService $invoiceService)
+    public function store(
+        Request $request,
+        Ferry $ferry,
+        InvoiceService $invoiceService,
+        IslandAccessService $islandAccessService
+    )
     {
         $data = $request->validate([
             'booking_time' => ['required', 'date'],
@@ -25,6 +31,17 @@ class FerryBookingController extends Controller
             return back()->withErrors([
                 'booking_time' => 'Ferry bookings must start on the hour between 9:00 and 16:00.',
             ]);
+        }
+
+        $ferry->loadMissing('island');
+
+        if (
+            $islandAccessService->ferryRequiresHotel($ferry)
+            && !$islandAccessService->hasConfirmedHotelStayAt($request->user(), $bookingTime)
+        ) {
+            return back()->withErrors([
+                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+            ])->withInput();
         }
 
         $bookedQuantity = FerryBooking::query()

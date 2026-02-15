@@ -10,6 +10,7 @@ class BeachEvent extends Model
 {
     protected $fillable = [
         'user_id',    // Organizer of the event
+        'island_id',
         'name',
         'event_date', // Date of the event (YYYY-MM-DD)
         'price',
@@ -22,11 +23,17 @@ class BeachEvent extends Model
 
     protected $casts = [
         'images' => 'array',
+        'event_date' => 'date',
     ];
 
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function island(): BelongsTo
+    {
+        return $this->belongsTo(Island::class);
     }
 
     public function bookings(): HasMany

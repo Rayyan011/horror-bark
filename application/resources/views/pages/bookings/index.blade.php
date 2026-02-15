@@ -25,208 +25,151 @@
         </div>
     </section>
 
-    <form method="GET" class="bg-gray-800 p-4 rounded border border-gray-700 mb-8 grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div>
-            <label class="block text-sm mb-1" for="type">Type</label>
-            <select id="type" name="type" class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white">
-                <option value="">All</option>
-                <option value="hotel" @selected(($filters['type'] ?? '') === 'hotel')>Hotel</option>
-                <option value="ferry" @selected(($filters['type'] ?? '') === 'ferry')>Ferry</option>
-                <option value="ride" @selected(($filters['type'] ?? '') === 'ride')>Ride</option>
-                <option value="game" @selected(($filters['type'] ?? '') === 'game')>Game</option>
-                <option value="beach-event" @selected(($filters['type'] ?? '') === 'beach-event')>Beach Event</option>
-            </select>
+    <form method="GET" class="bg-gray-800 p-4 rounded border border-gray-700 mb-8 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div>
+                <label class="block text-sm mb-1" for="type">Type</label>
+                <select id="type" name="type" class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white">
+                    <option value="">All</option>
+                    <option value="hotel" @selected(($filters['type'] ?? '') === 'hotel')>Hotel</option>
+                    <option value="ferry" @selected(($filters['type'] ?? '') === 'ferry')>Ferry</option>
+                    <option value="ride" @selected(($filters['type'] ?? '') === 'ride')>Ride</option>
+                    <option value="game" @selected(($filters['type'] ?? '') === 'game')>Game</option>
+                    <option value="beach-event" @selected(($filters['type'] ?? '') === 'beach-event')>Beach Event</option>
+                </select>
+            </div>
+            <div class="lg:col-span-2">
+                <label class="block text-sm mb-1" for="search">Search</label>
+                <input id="search" name="search" type="text" value="{{ $filters['search'] ?? '' }}"
+                    placeholder="Search by booking name"
+                    class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+            </div>
+            <div>
+                <label class="block text-sm mb-1" for="from">From</label>
+                <input id="from" name="from" type="date" value="{{ $filters['from'] ?? '' }}"
+                    class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+            </div>
+            <div>
+                <label class="block text-sm mb-1" for="to">To</label>
+                <input id="to" name="to" type="date" value="{{ $filters['to'] ?? '' }}"
+                    class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+            </div>
         </div>
-        <div>
-            <label class="block text-sm mb-1" for="status">Status</label>
-            <select id="status" name="status" class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white">
-                <option value="">Any</option>
-                <option value="confirmed" @selected(($filters['status'] ?? '') === 'confirmed')>Confirmed</option>
-                <option value="canceled" @selected(($filters['status'] ?? '') === 'canceled')>Canceled</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm mb-1" for="from">From</label>
-            <input id="from" name="from" type="date" value="{{ $filters['from'] ?? '' }}"
-                class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
-        </div>
-        <div>
-            <label class="block text-sm mb-1" for="to">To</label>
-            <input id="to" name="to" type="date" value="{{ $filters['to'] ?? '' }}"
-                class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
-        </div>
-        <div>
-            <label class="block text-sm mb-1" for="search">Search</label>
-            <input id="search" name="search" type="text" value="{{ $filters['search'] ?? '' }}"
-                placeholder="Search name or room"
-                class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
-        </div>
-        <div class="md:col-span-5 flex gap-2">
+        <div class="flex gap-2">
             <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Apply</button>
             <a href="{{ route('bookings.index') }}" class="px-4 py-2 rounded border border-gray-600 text-gray-200 hover:text-white">Reset</a>
         </div>
     </form>
 
-    <section class="mb-10">
-        <h2 class="text-2xl font-bold mb-4">Hotel Stays</h2>
-        @forelse ($hotelBookings as $booking)
-            <div class="bg-gray-800 p-4 rounded border border-gray-700 mb-4">
-                <div class="flex flex-wrap justify-between gap-4">
-                    <div>
-                        <p class="text-white font-semibold">{{ $booking->room->hotel->name ?? 'Hotel' }}</p>
-                        <p class="text-gray-400 text-sm">Room {{ $booking->room->room_number ?? '' }}</p>
-                        <p class="text-gray-400 text-sm">Dates: {{ $booking->start_date }} → {{ $booking->end_date }}</p>
-                        <p class="text-gray-400 text-sm">Guests: {{ $booking->quantity }}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-gray-300 text-sm">Total: ${{ number_format($booking->total_price, 2) }}</p>
-                        <p class="text-gray-400 text-sm">Status: {{ ucfirst($booking->status) }}</p>
-                        <a href="{{ route('bookings.hotels.show', $booking) }}" class="text-sm text-red-300 hover:text-red-200">View details</a>
-                        @if ($booking->status !== 'canceled')
-                            <form method="POST" action="{{ route('bookings.hotels.cancel', $booking) }}" class="mt-2">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">
-                                    Cancel
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @empty
-            <p class="text-gray-400">No hotel bookings yet.</p>
-        @endforelse
-        {{ $hotelBookings->withQueryString()->links() }}
-    </section>
+    <section class="space-y-4 mb-10">
+        @php
+            $statuses = [
+                'pending' => 'Pending',
+                'confirmed' => 'Confirmed',
+                'canceled' => 'Canceled',
+            ];
+        @endphp
 
-    <section class="mb-10">
-        <h2 class="text-2xl font-bold mb-4">Ferry Tickets</h2>
-        @forelse ($ferryBookings as $booking)
-            <div class="bg-gray-800 p-4 rounded border border-gray-700 mb-4">
-                <div class="flex flex-wrap justify-between gap-4">
-                    <div>
-                        <p class="text-white font-semibold">{{ $booking->ferry->name ?? 'Ferry' }}</p>
-                        <p class="text-gray-400 text-sm">Time: {{ $booking->booking_time }}</p>
-                        <p class="text-gray-400 text-sm">Tickets: {{ $booking->quantity }}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-gray-300 text-sm">Total: ${{ number_format($booking->total_price, 2) }}</p>
-                        <p class="text-gray-400 text-sm">Status: {{ ucfirst($booking->status) }}</p>
-                        <a href="{{ route('bookings.ferries.show', $booking) }}" class="text-sm text-red-300 hover:text-red-200">View details</a>
-                        @if ($booking->status !== 'canceled')
-                            <form method="POST" action="{{ route('bookings.ferries.cancel', $booking) }}" class="mt-2">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">
-                                    Cancel
-                                </button>
-                            </form>
-                        @endif
-                    </div>
+        @foreach($statuses as $statusKey => $statusLabel)
+            @php
+                $items = $bookingGroups[$statusKey] ?? collect();
+            @endphp
+            <details class="bg-gray-800 rounded border border-gray-700" @if($statusKey === 'confirmed') open @endif>
+                <summary class="cursor-pointer list-none p-4 flex items-center justify-between">
+                    <span class="text-xl font-semibold">{{ $statusLabel }}</span>
+                    <span class="text-sm text-gray-400">{{ $items->count() }} booking(s)</span>
+                </summary>
+                <div class="px-4 pb-4 space-y-4">
+                    @forelse($items as $booking)
+                        <article class="bg-gray-900 p-4 rounded border border-gray-700">
+                            <div class="flex flex-wrap justify-between gap-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-wide text-gray-400">{{ $booking['type_label'] }}</p>
+                                    <p class="text-white font-semibold">{{ $booking['title'] }}</p>
+                                    <p class="text-gray-400 text-sm">{{ $booking['subtitle'] }}</p>
+                                    <p class="text-gray-400 text-sm">Schedule: {{ $booking['schedule'] }}</p>
+                                    <p class="text-gray-400 text-sm">Quantity: {{ $booking['quantity'] }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-gray-300 text-sm">Total: ${{ number_format($booking['total_price'], 2) }}</p>
+                                    <p class="text-gray-400 text-sm">Status: {{ ucfirst($booking['status']) }}</p>
+                                    <a href="{{ $booking['detail_url'] }}" class="text-sm text-red-300 hover:text-red-200">View details</a>
+                                    @if ($booking['can_cancel'])
+                                        <form method="POST" action="{{ $booking['cancel_url'] }}" class="mt-2">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                        </article>
+                    @empty
+                        <p class="text-gray-400 text-sm">No {{ strtolower($statusLabel) }} bookings found for current filters.</p>
+                    @endforelse
                 </div>
-            </div>
-        @empty
-            <p class="text-gray-400">No ferry bookings yet.</p>
-        @endforelse
-        {{ $ferryBookings->withQueryString()->links() }}
-    </section>
-
-    <section class="mb-10">
-        <h2 class="text-2xl font-bold mb-4">Ride Bookings</h2>
-        @forelse ($rideBookings as $booking)
-            <div class="bg-gray-800 p-4 rounded border border-gray-700 mb-4">
-                <div class="flex flex-wrap justify-between gap-4">
-                    <div>
-                        <p class="text-white font-semibold">{{ $booking->ride->name ?? 'Ride' }}</p>
-                        <p class="text-gray-400 text-sm">Time: {{ $booking->booking_time }}</p>
-                        <p class="text-gray-400 text-sm">Tickets: {{ $booking->quantity }}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-gray-300 text-sm">Total: ${{ number_format($booking->total_price, 2) }}</p>
-                        <p class="text-gray-400 text-sm">Status: {{ ucfirst($booking->status) }}</p>
-                        <a href="{{ route('bookings.rides.show', $booking) }}" class="text-sm text-red-300 hover:text-red-200">View details</a>
-                        @if ($booking->status !== 'canceled')
-                            <form method="POST" action="{{ route('bookings.rides.cancel', $booking) }}" class="mt-2">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">
-                                    Cancel
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @empty
-            <p class="text-gray-400">No ride bookings yet.</p>
-        @endforelse
-        {{ $rideBookings->withQueryString()->links() }}
-    </section>
-
-    <section class="mb-10">
-        <h2 class="text-2xl font-bold mb-4">Game Bookings</h2>
-        @forelse ($gameBookings as $booking)
-            <div class="bg-gray-800 p-4 rounded border border-gray-700 mb-4">
-                <div class="flex flex-wrap justify-between gap-4">
-                    <div>
-                        <p class="text-white font-semibold">{{ $booking->game->name ?? 'Game' }}</p>
-                        <p class="text-gray-400 text-sm">Time: {{ $booking->booking_time }}</p>
-                        <p class="text-gray-400 text-sm">Players: {{ $booking->quantity }}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-gray-300 text-sm">Total: ${{ number_format($booking->total_price, 2) }}</p>
-                        <p class="text-gray-400 text-sm">Status: {{ ucfirst($booking->status) }}</p>
-                        <a href="{{ route('bookings.games.show', $booking) }}" class="text-sm text-red-300 hover:text-red-200">View details</a>
-                        @if ($booking->status !== 'canceled')
-                            <form method="POST" action="{{ route('bookings.games.cancel', $booking) }}" class="mt-2">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">
-                                    Cancel
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @empty
-            <p class="text-gray-400">No game bookings yet.</p>
-        @endforelse
-        {{ $gameBookings->withQueryString()->links() }}
+            </details>
+        @endforeach
     </section>
 
     <section>
-        <h2 class="text-2xl font-bold mb-4">Beach Events</h2>
-        @forelse ($beachEventBookings as $booking)
-            <div class="bg-gray-800 p-4 rounded border border-gray-700 mb-4">
-                <div class="flex flex-wrap justify-between gap-4">
-                    <div>
-                        <p class="text-white font-semibold">{{ $booking->beachEvent->name ?? 'Beach Event' }}</p>
-                        <p class="text-gray-400 text-sm">Date: {{ $booking->booking_date }}</p>
-                        <p class="text-gray-400 text-sm">Time: {{ $booking->booking_time }}</p>
-                        <p class="text-gray-400 text-sm">Tickets: {{ $booking->quantity }}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-gray-300 text-sm">Total: ${{ number_format($booking->total_price, 2) }}</p>
-                        <p class="text-gray-400 text-sm">Status: {{ ucfirst($booking->status) }}</p>
-                        <a href="{{ route('bookings.beach-events.show', $booking) }}" class="text-sm text-red-300 hover:text-red-200">View details</a>
-                        @if ($booking->status !== 'canceled')
-                            <form method="POST" action="{{ route('bookings.beach-events.cancel', $booking) }}" class="mt-2">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">
-                                    Cancel
-                                </button>
-                            </form>
-                        @endif
-                    </div>
+        <h2 class="text-2xl font-bold mb-4">Receipts</h2>
+        <form method="GET" class="bg-gray-800 p-4 rounded border border-gray-700 mb-6 space-y-4">
+            <input type="hidden" name="type" value="{{ $filters['type'] ?? '' }}">
+            <input type="hidden" name="search" value="{{ $filters['search'] ?? '' }}">
+            <input type="hidden" name="from" value="{{ $filters['from'] ?? '' }}">
+            <input type="hidden" name="to" value="{{ $filters['to'] ?? '' }}">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="lg:col-span-2">
+                    <label class="block text-sm mb-1" for="receipt_search">Invoice search</label>
+                    <input id="receipt_search" name="receipt_search" type="text" value="{{ $filters['receipt_search'] ?? '' }}"
+                        placeholder="Invoice number"
+                        class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white" />
+                </div>
+                <div>
+                    <label class="block text-sm mb-1" for="receipt_status">Status</label>
+                    <select id="receipt_status" name="receipt_status" class="w-full px-3 py-2 rounded bg-gray-900 border border-gray-700 text-white">
+                        <option value="">Any</option>
+                        <option value="issued" @selected(($filters['receipt_status'] ?? '') === 'issued')>Issued</option>
+                        <option value="canceled" @selected(($filters['receipt_status'] ?? '') === 'canceled')>Canceled</option>
+                    </select>
                 </div>
             </div>
-        @empty
-            <p class="text-gray-400">No beach event bookings yet.</p>
-        @endforelse
-        {{ $beachEventBookings->withQueryString()->links() }}
+            <div class="flex gap-2">
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Apply</button>
+                <a href="{{ route('bookings.index', [
+                    'type' => $filters['type'] ?? null,
+                    'search' => $filters['search'] ?? null,
+                    'from' => $filters['from'] ?? null,
+                    'to' => $filters['to'] ?? null,
+                ]) }}" class="px-4 py-2 rounded border border-gray-600 text-gray-200 hover:text-white">Reset Receipts</a>
+            </div>
+        </form>
+
+        <div class="space-y-3">
+            @forelse($receipts as $invoice)
+                <article class="bg-gray-800 p-4 rounded border border-gray-700 flex flex-wrap justify-between gap-4">
+                    <div>
+                        <p class="text-white font-semibold">{{ $invoice->invoice_number }}</p>
+                        <p class="text-gray-400 text-sm">Issued: {{ optional($invoice->issued_at)->format('Y-m-d H:i') }}</p>
+                        <p class="text-gray-400 text-sm">Status: {{ ucfirst($invoice->status) }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-gray-300 text-sm mb-2">Amount: ${{ number_format($invoice->amount, 2) }}</p>
+                        <a href="{{ route('invoices.show', $invoice) }}" class="text-sm text-red-300 hover:text-red-200">View</a>
+                        <a href="{{ route('invoices.download', $invoice) }}" class="ml-3 text-sm text-red-300 hover:text-red-200">Download PDF</a>
+                    </div>
+                </article>
+            @empty
+                <p class="text-gray-400">No receipts found for current filters.</p>
+            @endforelse
+        </div>
+
+        <div class="mt-6">
+            {{ $receipts->links() }}
+        </div>
     </section>
 </main>
 @endsection

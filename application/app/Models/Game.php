@@ -10,6 +10,7 @@ class Game extends Model
 {
     protected $fillable = [
         'user_id',            // Owner of the game
+        'island_id',
         'name',
         'price',
         'latitude',
@@ -26,6 +27,11 @@ class Game extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function island(): BelongsTo
+    {
+        return $this->belongsTo(Island::class);
     }
 
     public function bookings(): HasMany

@@ -14,6 +14,10 @@
                 <span class="font-semibold">Organizer:</span>
                 {{ $event->owner->name ?? 'N/A' }}
             </p>
+            <p class="text-gray-300 text-sm mb-2">
+                <span class="font-semibold">Island:</span>
+                {{ $event->island->name ?? 'Picnic Island' }}
+            </p>
             <p class="text-gray-300 text-sm">
                 <span class="font-semibold">Date:</span>
                 {{ optional($event->event_date)->format('F d, Y') }}

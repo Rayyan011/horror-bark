@@ -6,6 +6,7 @@ use App\Filament\Resources\RideResource\Pages;
 use App\Filament\Resources\RideResource\RelationManagers;
 use App\Models\Ride;
 use App\Models\User;
+use App\Services\IslandAccessService;
 use Filament\Forms;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
@@ -46,6 +47,12 @@ class RideResource extends Resource
             Forms\Components\TextInput::make('max_booking_quantity')
                 ->numeric()
                 ->required(),
+            Select::make('island_id')
+                ->label('Island')
+                ->relationship('island', 'name', fn ($query) => $query->where('type', IslandAccessService::HORROR_ISLAND))
+                ->required()
+                ->searchable()
+                ->helperText('Rides are available on Horror Island only.'),
             Map::make('location_data')
                 ->label('Select Location on Map')
                 ->columnSpanFull()
@@ -108,6 +115,9 @@ class RideResource extends Resource
             Tables\Columns\TextColumn::make('max_capacity')
                 ->sortable(),
             Tables\Columns\TextColumn::make('max_booking_quantity')
+                ->sortable(),
+            Tables\Columns\TextColumn::make('island.name')
+                ->label('Island')
                 ->sortable(),
             Tables\Columns\TextColumn::make('latitude')
                 ->label('Latitude')

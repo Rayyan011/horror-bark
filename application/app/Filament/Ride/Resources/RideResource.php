@@ -4,6 +4,7 @@ namespace App\Filament\Ride\Resources;
 
 use App\Filament\Ride\Resources\RideResource\Pages;
 use App\Models\Ride;
+use App\Services\IslandAccessService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 
 class RideResource extends Resource
 {
@@ -33,6 +35,12 @@ class RideResource extends Resource
             TextInput::make('price')->numeric()->required(),
             TextInput::make('latitude')->numeric()->required(),
             TextInput::make('longitude')->numeric()->required(),
+            Select::make('island_id')
+                ->label('Island')
+                ->relationship('island', 'name', fn ($query) => $query->where('type', IslandAccessService::HORROR_ISLAND))
+                ->required()
+                ->searchable()
+                ->helperText('Rides are available on Horror Island only.'),
             TextInput::make('max_capacity')->numeric()->required(),
             TextInput::make('max_booking_quantity')->numeric()->required(),
             FileUpload::make('images')
@@ -50,6 +58,7 @@ class RideResource extends Resource
             Tables\Columns\TextColumn::make('id')->sortable(),
             Tables\Columns\TextColumn::make('name')->sortable(),
             Tables\Columns\TextColumn::make('price')->sortable(),
+            Tables\Columns\TextColumn::make('island.name')->label('Island'),
             Tables\Columns\TextColumn::make('max_capacity')->sortable(),
             Tables\Columns\TextColumn::make('max_booking_quantity')->sortable(),
         ]);

@@ -8,10 +8,16 @@ use App\Models\RideBooking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\InvoiceService;
+use App\Services\IslandAccessService;
 
 class RideBookingController extends Controller
 {
-    public function store(Request $request, Ride $ride, InvoiceService $invoiceService)
+    public function store(
+        Request $request,
+        Ride $ride,
+        InvoiceService $invoiceService,
+        IslandAccessService $islandAccessService
+    )
     {
         $data = $request->validate([
             'booking_time' => ['required', 'date'],
@@ -25,6 +31,17 @@ class RideBookingController extends Controller
             return back()->withErrors([
                 'booking_time' => 'Ride bookings are only available at 9:00 or 17:00.',
             ]);
+        }
+
+        $ride->loadMissing('island');
+
+        if (
+            $islandAccessService->rideRequiresHotel($ride)
+            && !$islandAccessService->hasConfirmedHotelStayAt($request->user(), $bookingTime)
+        ) {
+            return back()->withErrors([
+                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+            ])->withInput();
         }
 
         $bookedQuantity = RideBooking::query()

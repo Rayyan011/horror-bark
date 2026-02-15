@@ -8,51 +8,76 @@ use App\Models\FerryBooking;
 use App\Models\GameBooking;
 use App\Models\HotelBooking;
 use App\Models\RideBooking;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Validation\Rule;
 
 class CustomerBookingController extends Controller
 {
     public function index(Request $request)
     {
         $user = $request->user();
-        $filters = [
-            'type' => $request->query('type'),
-            'status' => $request->query('status'),
-            'search' => $request->query('search'),
-            'from' => $request->query('from'),
-            'to' => $request->query('to'),
-        ];
+        $filters = $request->validate([
+            'type' => ['nullable', Rule::in(['hotel', 'ferry', 'ride', 'game', 'beach-event'])],
+            'search' => ['nullable', 'string', 'max:120'],
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date'],
+            'receipt_search' => ['nullable', 'string', 'max:120'],
+            'receipt_status' => ['nullable', Rule::in(['issued', 'canceled'])],
+        ]);
 
-        $hotelBookings = $this->buildHotelQuery($user, $filters)
-            ->paginate(10, ['*'], 'hotel_page');
+        $bookings = collect();
+        $selectedType = $filters['type'] ?? null;
 
-        $ferryBookings = $this->buildFerryQuery($user, $filters)
-            ->paginate(10, ['*'], 'ferry_page');
-
-        $rideBookings = $this->buildRideQuery($user, $filters)
-            ->paginate(10, ['*'], 'ride_page');
-
-        $gameBookings = $this->buildGameQuery($user, $filters)
-            ->paginate(10, ['*'], 'game_page');
-
-        $beachEventBookings = $this->buildBeachEventQuery($user, $filters)
-            ->paginate(10, ['*'], 'beach_event_page');
-
-        if ($filters['type']) {
-            $allowed = [
-                'hotel' => 'hotelBookings',
-                'ferry' => 'ferryBookings',
-                'ride' => 'rideBookings',
-                'game' => 'gameBookings',
-                'beach-event' => 'beachEventBookings',
-            ];
-            foreach ($allowed as $type => $property) {
-                if ($filters['type'] !== $type) {
-                    $$property = $this->emptyPaginator();
-                }
-            }
+        if (!$selectedType || $selectedType === 'hotel') {
+            $bookings = $bookings->merge(
+                $this->buildHotelQuery($user, $filters)->get()->map(
+                    fn (HotelBooking $booking) => $this->mapHotelBooking($booking)
+                )
+            );
         }
+
+        if (!$selectedType || $selectedType === 'ferry') {
+            $bookings = $bookings->merge(
+                $this->buildFerryQuery($user, $filters)->get()->map(
+                    fn (FerryBooking $booking) => $this->mapFerryBooking($booking)
+                )
+            );
+        }
+
+        if (!$selectedType || $selectedType === 'ride') {
+            $bookings = $bookings->merge(
+                $this->buildRideQuery($user, $filters)->get()->map(
+                    fn (RideBooking $booking) => $this->mapRideBooking($booking)
+                )
+            );
+        }
+
+        if (!$selectedType || $selectedType === 'game') {
+            $bookings = $bookings->merge(
+                $this->buildGameQuery($user, $filters)->get()->map(
+                    fn (GameBooking $booking) => $this->mapGameBooking($booking)
+                )
+            );
+        }
+
+        if (!$selectedType || $selectedType === 'beach-event') {
+            $bookings = $bookings->merge(
+                $this->buildBeachEventQuery($user, $filters)->get()->map(
+                    fn (BeachEventBooking $booking) => $this->mapBeachEventBooking($booking)
+                )
+            );
+        }
+
+        $bookings = $bookings
+            ->sortByDesc(fn (array $item) => $item['sort_at']->timestamp)
+            ->values();
+
+        $bookingGroups = [
+            'pending' => $bookings->where('status', 'pending')->values(),
+            'confirmed' => $bookings->where('status', 'confirmed')->values(),
+            'canceled' => $bookings->where('status', 'canceled')->values(),
+        ];
 
         $stats = [
             'total' => $user->hotelBookings()->count()
@@ -68,14 +93,24 @@ class CustomerBookingController extends Controller
                 + $user->beachEventBookings()->sum('total_price')),
         ];
 
+        $receiptsQuery = $user->invoices()->latest('issued_at');
+
+        if (!empty($filters['receipt_search'])) {
+            $search = trim($filters['receipt_search']);
+            $receiptsQuery->where('invoice_number', 'like', '%' . $search . '%');
+        }
+
+        if (!empty($filters['receipt_status'])) {
+            $receiptsQuery->where('status', $filters['receipt_status']);
+        }
+
+        $receipts = $receiptsQuery->paginate(10, ['*'], 'receipt_page')->withQueryString();
+
         return view('pages.bookings.index', compact(
-            'hotelBookings',
-            'ferryBookings',
-            'rideBookings',
-            'gameBookings',
-            'beachEventBookings',
+            'bookingGroups',
             'filters',
-            'stats'
+            'stats',
+            'receipts'
         ));
     }
 
@@ -213,11 +248,7 @@ class CustomerBookingController extends Controller
     {
         $query = $user->hotelBookings()->with('room.hotel')->latest();
 
-        if ($filters['status']) {
-            $query->where('status', $filters['status']);
-        }
-
-        if ($filters['search']) {
+        if (!empty($filters['search'])) {
             $query->where(function ($builder) use ($filters) {
                 $builder->whereHas('room.hotel', function ($inner) use ($filters) {
                     $inner->where('name', 'like', '%' . $filters['search'] . '%');
@@ -227,12 +258,12 @@ class CustomerBookingController extends Controller
             });
         }
 
-        if ($filters['from']) {
-            $query->where('start_date', '>=', $filters['from']);
+        if (!empty($filters['from'])) {
+            $query->whereDate('start_date', '>=', $filters['from']);
         }
 
-        if ($filters['to']) {
-            $query->where('start_date', '<=', $filters['to']);
+        if (!empty($filters['to'])) {
+            $query->whereDate('start_date', '<=', $filters['to']);
         }
 
         return $query;
@@ -242,22 +273,18 @@ class CustomerBookingController extends Controller
     {
         $query = $user->ferryBookings()->with('ferry')->latest();
 
-        if ($filters['status']) {
-            $query->where('status', $filters['status']);
-        }
-
-        if ($filters['search']) {
+        if (!empty($filters['search'])) {
             $query->whereHas('ferry', function ($builder) use ($filters) {
                 $builder->where('name', 'like', '%' . $filters['search'] . '%');
             });
         }
 
-        if ($filters['from']) {
-            $query->where('booking_time', '>=', $filters['from']);
+        if (!empty($filters['from'])) {
+            $query->whereDate('booking_time', '>=', $filters['from']);
         }
 
-        if ($filters['to']) {
-            $query->where('booking_time', '<=', $filters['to']);
+        if (!empty($filters['to'])) {
+            $query->whereDate('booking_time', '<=', $filters['to']);
         }
 
         return $query;
@@ -267,22 +294,18 @@ class CustomerBookingController extends Controller
     {
         $query = $user->rideBookings()->with('ride')->latest();
 
-        if ($filters['status']) {
-            $query->where('status', $filters['status']);
-        }
-
-        if ($filters['search']) {
+        if (!empty($filters['search'])) {
             $query->whereHas('ride', function ($builder) use ($filters) {
                 $builder->where('name', 'like', '%' . $filters['search'] . '%');
             });
         }
 
-        if ($filters['from']) {
-            $query->where('booking_time', '>=', $filters['from']);
+        if (!empty($filters['from'])) {
+            $query->whereDate('booking_time', '>=', $filters['from']);
         }
 
-        if ($filters['to']) {
-            $query->where('booking_time', '<=', $filters['to']);
+        if (!empty($filters['to'])) {
+            $query->whereDate('booking_time', '<=', $filters['to']);
         }
 
         return $query;
@@ -292,22 +315,18 @@ class CustomerBookingController extends Controller
     {
         $query = $user->gameBookings()->with('game')->latest();
 
-        if ($filters['status']) {
-            $query->where('status', $filters['status']);
-        }
-
-        if ($filters['search']) {
+        if (!empty($filters['search'])) {
             $query->whereHas('game', function ($builder) use ($filters) {
                 $builder->where('name', 'like', '%' . $filters['search'] . '%');
             });
         }
 
-        if ($filters['from']) {
-            $query->where('booking_time', '>=', $filters['from']);
+        if (!empty($filters['from'])) {
+            $query->whereDate('booking_time', '>=', $filters['from']);
         }
 
-        if ($filters['to']) {
-            $query->where('booking_time', '<=', $filters['to']);
+        if (!empty($filters['to'])) {
+            $query->whereDate('booking_time', '<=', $filters['to']);
         }
 
         return $query;
@@ -317,33 +336,126 @@ class CustomerBookingController extends Controller
     {
         $query = $user->beachEventBookings()->with('beachEvent')->latest();
 
-        if ($filters['status']) {
-            $query->where('status', $filters['status']);
-        }
-
-        if ($filters['search']) {
+        if (!empty($filters['search'])) {
             $query->whereHas('beachEvent', function ($builder) use ($filters) {
                 $builder->where('name', 'like', '%' . $filters['search'] . '%');
             });
         }
 
-        if ($filters['from']) {
-            $query->where('booking_date', '>=', $filters['from']);
+        if (!empty($filters['from'])) {
+            $query->whereDate('booking_date', '>=', $filters['from']);
         }
 
-        if ($filters['to']) {
-            $query->where('booking_date', '<=', $filters['to']);
+        if (!empty($filters['to'])) {
+            $query->whereDate('booking_date', '<=', $filters['to']);
         }
 
         return $query;
     }
 
-    private function emptyPaginator(): LengthAwarePaginator
+    private function mapHotelBooking(HotelBooking $booking): array
     {
-        $paginator = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
-        $paginator->setPath(url()->current());
+        $sortAt = Carbon::parse($booking->start_date);
 
-        return $paginator;
+        return [
+            'id' => $booking->id,
+            'type' => 'hotel',
+            'type_label' => 'Hotel',
+            'status' => $booking->status,
+            'title' => $booking->room->hotel->name ?? 'Hotel',
+            'subtitle' => 'Room ' . ($booking->room->room_number ?? 'N/A'),
+            'schedule' => Carbon::parse($booking->start_date)->toDateString() . ' → ' . Carbon::parse($booking->end_date)->toDateString(),
+            'quantity' => $booking->quantity,
+            'total_price' => (float) $booking->total_price,
+            'detail_url' => route('bookings.hotels.show', $booking),
+            'cancel_url' => route('bookings.hotels.cancel', $booking),
+            'can_cancel' => $booking->status !== 'canceled',
+            'sort_at' => $sortAt,
+        ];
+    }
+
+    private function mapFerryBooking(FerryBooking $booking): array
+    {
+        $sortAt = Carbon::parse($booking->booking_time);
+
+        return [
+            'id' => $booking->id,
+            'type' => 'ferry',
+            'type_label' => 'Ferry',
+            'status' => $booking->status,
+            'title' => $booking->ferry->name ?? 'Ferry',
+            'subtitle' => 'Ferry ticket',
+            'schedule' => $sortAt->format('Y-m-d H:i'),
+            'quantity' => $booking->quantity,
+            'total_price' => (float) $booking->total_price,
+            'detail_url' => route('bookings.ferries.show', $booking),
+            'cancel_url' => route('bookings.ferries.cancel', $booking),
+            'can_cancel' => $booking->status !== 'canceled',
+            'sort_at' => $sortAt,
+        ];
+    }
+
+    private function mapRideBooking(RideBooking $booking): array
+    {
+        $sortAt = Carbon::parse($booking->booking_time);
+
+        return [
+            'id' => $booking->id,
+            'type' => 'ride',
+            'type_label' => 'Ride',
+            'status' => $booking->status,
+            'title' => $booking->ride->name ?? 'Ride',
+            'subtitle' => 'Ride ticket',
+            'schedule' => $sortAt->format('Y-m-d H:i'),
+            'quantity' => $booking->quantity,
+            'total_price' => (float) $booking->total_price,
+            'detail_url' => route('bookings.rides.show', $booking),
+            'cancel_url' => route('bookings.rides.cancel', $booking),
+            'can_cancel' => $booking->status !== 'canceled',
+            'sort_at' => $sortAt,
+        ];
+    }
+
+    private function mapGameBooking(GameBooking $booking): array
+    {
+        $sortAt = Carbon::parse($booking->booking_time);
+
+        return [
+            'id' => $booking->id,
+            'type' => 'game',
+            'type_label' => 'Game',
+            'status' => $booking->status,
+            'title' => $booking->game->name ?? 'Game',
+            'subtitle' => 'Game pass',
+            'schedule' => $sortAt->format('Y-m-d H:i'),
+            'quantity' => $booking->quantity,
+            'total_price' => (float) $booking->total_price,
+            'detail_url' => route('bookings.games.show', $booking),
+            'cancel_url' => route('bookings.games.cancel', $booking),
+            'can_cancel' => $booking->status !== 'canceled',
+            'sort_at' => $sortAt,
+        ];
+    }
+
+    private function mapBeachEventBooking(BeachEventBooking $booking): array
+    {
+        $sortAt = Carbon::parse($booking->booking_time);
+
+        return [
+            'id' => $booking->id,
+            'type' => 'beach-event',
+            'type_label' => 'Beach Event',
+            'status' => $booking->status,
+            'title' => $booking->beachEvent->name ?? 'Beach Event',
+            'subtitle' => 'Event ticket',
+            'schedule' => Carbon::parse($booking->booking_date)->toDateString() . ' ' . $sortAt->format('H:i'),
+            'quantity' => $booking->quantity,
+            'total_price' => (float) $booking->total_price,
+            'detail_url' => route('bookings.beach-events.show', $booking),
+            'cancel_url' => route('bookings.beach-events.cancel', $booking),
+            'can_cancel' => $booking->status !== 'canceled',
+            'sort_at' => $sortAt,
+        ];
     }
 
     private function countUpcoming($user): int

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BeachEventResource\Pages;
 use App\Filament\Resources\BeachEventResource\RelationManagers;
 use App\Models\BeachEvent;
+use App\Services\IslandAccessService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -42,6 +43,12 @@ class BeachEventResource extends Resource
             Forms\Components\TextInput::make('max_booking_quantity')
                 ->numeric()
                 ->required(),
+            Forms\Components\Select::make('island_id')
+                ->label('Island')
+                ->relationship('island', 'name', fn ($query) => $query->where('type', IslandAccessService::PICNIC_ISLAND))
+                ->required()
+                ->searchable()
+                ->helperText('Beach events are available on Picnic Island only.'),
             Map::make('location_data')
                 ->label('Select Location on Map')
                 ->columnSpanFull()
@@ -102,6 +109,7 @@ class BeachEventResource extends Resource
             Tables\Columns\TextColumn::make('price'),
             Tables\Columns\TextColumn::make('max_capacity'),
             Tables\Columns\TextColumn::make('max_booking_quantity'),
+            Tables\Columns\TextColumn::make('island.name')->label('Island'),
             Tables\Columns\TextColumn::make('latitude')
                 ->label('Latitude')
                 ->sortable(),

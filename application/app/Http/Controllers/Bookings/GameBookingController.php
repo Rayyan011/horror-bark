@@ -8,10 +8,16 @@ use App\Models\GameBooking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\InvoiceService;
+use App\Services\IslandAccessService;
 
 class GameBookingController extends Controller
 {
-    public function store(Request $request, Game $game, InvoiceService $invoiceService)
+    public function store(
+        Request $request,
+        Game $game,
+        InvoiceService $invoiceService,
+        IslandAccessService $islandAccessService
+    )
     {
         $data = $request->validate([
             'booking_time' => ['required', 'date'],
@@ -25,6 +31,17 @@ class GameBookingController extends Controller
             return back()->withErrors([
                 'booking_time' => 'Game bookings are only available at 9:00 or 17:00.',
             ]);
+        }
+
+        $game->loadMissing('island');
+
+        if (
+            $islandAccessService->gameRequiresHotel($game)
+            && !$islandAccessService->hasConfirmedHotelStayAt($request->user(), $bookingTime)
+        ) {
+            return back()->withErrors([
+                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+            ])->withInput();
         }
 
         $bookedQuantity = GameBooking::query()
