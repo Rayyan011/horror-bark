@@ -23,7 +23,7 @@
                 {{ optional($event->event_date)->format('F d, Y') }}
             </p>
             <p class="text-gray-300 text-sm">
-                <span class="font-semibold">Price:</span> ${{ number_format($event->price, 2) }}
+                <span class="font-semibold">Price:</span> MVR {{ number_format($event->price, 2) }}
             </p>
             <p class="text-gray-300 text-sm">
                 <span class="font-semibold">Max Capacity:</span> {{ $event->max_capacity }}

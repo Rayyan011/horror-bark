@@ -77,7 +77,7 @@
                                     <img src="https://picsum.photos/seed/{{ $ride->id }}/400/300" alt="{{ $ride->name }} image" class="w-full h-48 object-cover" />
                                 @endif
                                 <p class="text-gray-400 mb-1">Island: {{ $ride->island->name ?? 'Horror Island' }}</p>
-                                <p class="text-gray-400 mb-1">Price: ${{ number_format($ride->price, 2) }}</p>
+                                <p class="text-gray-400 mb-1">Price: MVR {{ number_format($ride->price, 2) }}</p>
                                 <p class="text-gray-400 mb-1">Max Capacity: {{ $ride->max_capacity ?? 'N/A' }}</p>
                                 <p class="text-gray-300 mt-2">{{ $ride->description ?? 'Experience the thrill!' }}</p>
                             </div>
@@ -134,7 +134,7 @@
                                     <img src="https://picsum.photos/seed/{{ $game->id }}/400/300" alt="{{ $game->name }} image" class="w-full h-48 object-cover" />
                                 @endif
                                 <p class="text-gray-400 mb-1">Island: {{ $game->island->name ?? 'Horror Island' }}</p>
-                                <p class="text-gray-400 mb-1">Price: ${{ number_format($game->price, 2) }}</p>
+                                <p class="text-gray-400 mb-1">Price: MVR {{ number_format($game->price, 2) }}</p>
                                 <p class="text-gray-400 mb-1">Max Players per Booking: {{ $game->max_booking_quantity ?? 'N/A' }}</p>
                                 <p class="text-gray-300 mt-2">{{ $game->description ?? 'Test your skills!' }}</p>
                             </div>

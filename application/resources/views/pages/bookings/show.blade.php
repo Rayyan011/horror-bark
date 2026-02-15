@@ -11,7 +11,7 @@
         <p class="text-gray-300"><span class="text-gray-400">Status:</span> {{ ucfirst($booking->status) }}</p>
         <p class="text-gray-300"><span class="text-gray-400">Quantity:</span> {{ $booking->quantity }}</p>
         @if (!is_null($booking->total_price))
-            <p class="text-gray-300"><span class="text-gray-400">Total:</span> ${{ number_format($booking->total_price, 2) }}</p>
+            <p class="text-gray-300"><span class="text-gray-400">Total:</span> MVR {{ number_format($booking->total_price, 2) }}</p>
         @endif
     </section>
 

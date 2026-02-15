@@ -77,7 +77,7 @@
                     <h2 class="text-2xl font-bold mb-2 text-white">{{ $ferry->name }}</h2>
                     <p class="text-gray-400 mb-1">Island: {{ $ferry->island->name ?? 'Horror Island' }}</p>
                     {{-- Display other ferry details --}}
-                    <p class="text-gray-400 mb-1">Price: ${{ number_format($ferry->price, 2) }}</p>
+                    <p class="text-gray-400 mb-1">Price: MVR {{ number_format($ferry->price, 2) }}</p>
                     <p class="text-gray-400 mb-1">Max Capacity: {{ $ferry->max_capacity }}</p>
                     {{-- Add more details as needed from the Ferry model --}}
 

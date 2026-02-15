@@ -21,7 +21,7 @@
         </div>
         <div class="bg-gray-800 p-4 rounded border border-gray-700">
             <p class="text-gray-400 text-sm">Total spent</p>
-            <p class="text-2xl font-semibold">${{ number_format($stats['spent'], 2) }}</p>
+            <p class="text-2xl font-semibold">MVR {{ number_format($stats['spent'], 2) }}</p>
         </div>
     </section>
 
@@ -91,7 +91,7 @@
                                     <p class="text-gray-400 text-sm">Quantity: {{ $booking['quantity'] }}</p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-gray-300 text-sm">Total: ${{ number_format($booking['total_price'], 2) }}</p>
+                                    <p class="text-gray-300 text-sm">Total: MVR {{ number_format($booking['total_price'], 2) }}</p>
                                     <p class="text-gray-400 text-sm">Status: {{ ucfirst($booking['status']) }}</p>
                                     <a href="{{ $booking['detail_url'] }}" class="text-sm text-red-300 hover:text-red-200">View details</a>
                                     @if ($booking['can_cancel'])
@@ -157,7 +157,7 @@
                         <p class="text-gray-400 text-sm">Status: {{ ucfirst($invoice->status) }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-gray-300 text-sm mb-2">Amount: ${{ number_format($invoice->amount, 2) }}</p>
+                        <p class="text-gray-300 text-sm mb-2">Amount: MVR {{ number_format($invoice->amount, 2) }}</p>
                         <a href="{{ route('invoices.show', $invoice) }}" class="text-sm text-red-300 hover:text-red-200">View</a>
                         <a href="{{ route('invoices.download', $invoice) }}" class="ml-3 text-sm text-red-300 hover:text-red-200">Download PDF</a>
                     </div>

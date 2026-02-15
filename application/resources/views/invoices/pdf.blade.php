@@ -22,7 +22,7 @@
 
     <div class="section">
         <h2>Summary</h2>
-        <p><span class="label">Amount:</span> ${{ number_format($invoice->amount, 2) }}</p>
+        <p><span class="label">Amount:</span> MVR {{ number_format($invoice->amount, 2) }}</p>
         <p><span class="label">Status:</span> {{ ucfirst($invoice->status) }}</p>
     </div>
 

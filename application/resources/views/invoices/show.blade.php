@@ -13,7 +13,7 @@
 
     <section class="bg-gray-800 p-6 rounded border border-gray-700 space-y-2">
         <p><span class="text-gray-400">Issued:</span> {{ $invoice->issued_at }}</p>
-        <p><span class="text-gray-400">Amount:</span> ${{ number_format($invoice->amount, 2) }}</p>
+        <p><span class="text-gray-400">Amount:</span> MVR {{ number_format($invoice->amount, 2) }}</p>
         <p><span class="text-gray-400">Status:</span> {{ ucfirst($invoice->status) }}</p>
     </section>
 

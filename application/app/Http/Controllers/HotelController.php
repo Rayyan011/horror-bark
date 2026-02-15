@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hotel;
+use App\Models\HotelBooking;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -63,7 +65,19 @@ class HotelController extends Controller
 
     public function show(Hotel $hotel)
     {
-        $hotel->load('rooms'); // get hotel and its rooms
+        $hotel->load(['rooms' => fn ($query) => $query->where('status', 'available')]);
+
+        $today = Carbon::today();
+
+        foreach ($hotel->rooms as $room) {
+            $bookedQuantity = HotelBooking::where('room_id', $room->id)
+                ->where('status', '!=', 'canceled')
+                ->where('end_date', '>', $today)
+                ->sum('quantity');
+
+            $room->available_spots = max(0, $room->max_occupancy - $bookedQuantity);
+        }
+
         return view('pages.hotels.show', compact('hotel'));
     }
 }
