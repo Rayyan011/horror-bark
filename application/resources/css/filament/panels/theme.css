@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;1,400&family=Lato:wght@300;400;700&display=swap');
+
+:root {
+    --hb-bg: #050505;
+    --hb-bg-soft: #1c1a1e;
+    --hb-surface: rgba(28, 26, 30, 0.92);
+    --hb-border: rgba(96, 92, 98, 0.28);
+    --hb-text: #605c62;
+    --hb-title: #d1d1d4;
+    --hb-muted: rgba(209, 209, 212, 0.62);
+}
+
+body.fi-body {
+    background-color: var(--hb-bg);
+    background-image:
+        linear-gradient(to bottom, rgba(5, 5, 5, 0.92), rgba(10, 9, 11, 0.98)),
+        url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    color: var(--hb-text);
+    font-family: 'Lato', sans-serif;
+}
+
+.fi .fi-simple-layout {
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+}
+
+.fi .fi-simple-main-ctn {
+    padding: 3rem 1.25rem;
+}
+
+.fi .fi-simple-main {
+    width: min(100%, 38rem);
+    border: 1px solid var(--hb-border);
+    background: var(--hb-surface);
+    box-shadow: 0 22px 55px -20px rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(6px);
+}
+
+.fi .fi-simple-header-heading {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--hb-title);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.75);
+}
+
+.fi .fi-simple-header-subheading {
+    font-family: 'Playfair Display', serif;
+    color: var(--hb-muted);
+}
+
+.fi .fi-logo {
+    color: var(--hb-title);
+}
+
+.fi .fi-simple-main input,
+.fi .fi-simple-main select,
+.fi .fi-simple-main textarea {
+    border-color: rgba(96, 92, 98, 0.35) !important;
+    background-color: rgba(10, 9, 11, 0.86) !important;
+    color: var(--hb-title) !important;
+    font-family: 'Lato', sans-serif;
+}
+
+.fi .fi-simple-main input::placeholder,
+.fi .fi-simple-main textarea::placeholder {
+    color: rgba(209, 209, 212, 0.45) !important;
+}
+
+.fi .fi-simple-main .fi-input-wrp,
+.fi .fi-simple-main .fi-select-input {
+    border-color: rgba(96, 92, 98, 0.35) !important;
+    background-color: rgba(10, 9, 11, 0.86) !important;
+}
+
+.fi .fi-simple-main .fi-btn,
+.fi .fi-simple-main button[type='submit'] {
+    border: 1px solid rgba(96, 92, 98, 0.45) !important;
+    background: #000 !important;
+    color: var(--hb-title) !important;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.fi .fi-simple-main a {
+    color: rgba(209, 209, 212, 0.84);
+}
+
+.fi .fi-simple-main a:hover {
+    color: #fff;
+}

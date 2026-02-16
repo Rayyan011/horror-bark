@@ -20,6 +20,9 @@
         ['label' => 'Login', 'href' => route('login'), 'active' => request()->routeIs('login')],
         ['label' => 'Register', 'href' => route('register'), 'active' => request()->routeIs('register')],
     ];
+
+    $heroRoutes = ['home', 'login', 'register', 'password.request', 'password.reset'];
+    $showHero = request()->routeIs($heroRoutes);
 @endphp
 
 <x-ui.app-shell :title="trim($__env->yieldContent('title')) ?: 'Horror-Bark Theme Park'">
@@ -32,16 +35,20 @@
         />
     </x-slot:header>
 
-    <x-slot:hero>
-        @hasSection('hero')
-            @yield('hero')
-        @else
-            <x-ui.hero-banner
-                :image="asset('images/banner.webp')"
-                title="Welcome to Horror-Bark"
-            />
-        @endif
-    </x-slot:hero>
+    @if ($showHero)
+        <x-slot:hero>
+            @hasSection('hero')
+                @yield('hero')
+            @else
+                <x-ui.hero-banner
+                    :image="asset('images/banner.webp')"
+                    title="Welcome to Horror-Bark"
+                    subtitle="Reserve your stay, cross the channel, and explore every corner of the island."
+                    height="h-[62vh]"
+                />
+            @endif
+        </x-slot:hero>
+    @endif
 
     @yield('content')
 

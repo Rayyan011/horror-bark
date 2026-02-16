@@ -36,6 +36,7 @@ class HotelPanelProvider extends PanelProvider
         ])
         ->brandName('Horror Bark · Hotel Portal')
         ->login()
+        ->viteTheme('resources/css/filament/panels/theme.css')
         ->discoverResources(in: app_path('Filament/Hotel/Resources'), for: 'App\\Filament\\Hotel\\Resources')
         ->discoverPages(in: app_path('Filament/Hotel/Pages'), for: 'App\\Filament\\Hotel\\Pages')
         ->pages([

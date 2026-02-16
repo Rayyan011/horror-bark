@@ -1,10 +1,18 @@
 @props([
-    'title' => 'Featured Experiences',
+    'title' => 'Silver Experiences',
+    'subtitle' => 'Curated specifically for the creatures of the night.',
 ])
 
-<section>
-    <x-ui.section-heading :title="$title" size="md" class="mb-4" />
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<section class="py-12">
+    <x-ui.section-heading
+        :title="$title"
+        :subtitle="$subtitle"
+        size="lg"
+        align="center"
+        class="mb-14"
+    />
+
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-3 md:[&>*:nth-child(2)]:-translate-y-8">
         {{ $slot }}
     </div>
 </section>

@@ -7,11 +7,11 @@
 
 @php
     $titleSize = [
-        'sm' => 'text-xl',
-        'md' => 'text-2xl',
-        'lg' => 'text-3xl',
-        'xl' => 'text-4xl',
-    ][$size] ?? 'text-3xl';
+        'sm' => 'text-xl md:text-2xl',
+        'md' => 'text-3xl md:text-4xl',
+        'lg' => 'text-4xl md:text-5xl',
+        'xl' => 'text-4xl md:text-6xl',
+    ][$size] ?? 'text-4xl md:text-5xl';
 
     $alignClass = [
         'left' => 'text-left',
@@ -21,8 +21,8 @@
 @endphp
 
 <div {{ $attributes->class([$alignClass]) }}>
-    <h2 class="{{ $titleSize }} font-bold horror-font">{{ $title }}</h2>
+    <h2 class="{{ $titleSize }} gothic-title drop-shadow-md">{{ $title }}</h2>
     @if ($subtitle)
-        <p class="mt-2 text-gray-300">{{ $subtitle }}</p>
+        <p class="gothic-subtitle mt-3 text-base md:text-lg">{{ $subtitle }}</p>
     @endif
 </div>

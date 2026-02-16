@@ -34,6 +34,7 @@ class GamePanelProvider extends PanelProvider
             ])
             ->brandName('Horror Bark · Game Portal')
             ->login()
+            ->viteTheme('resources/css/filament/panels/theme.css')
             ->discoverResources(in: app_path('Filament/Game/Resources'), for: 'App\\Filament\\Game\\Resources')
             ->discoverPages(in: app_path('Filament/Game/Pages'), for: 'App\\Filament\\Game\\Pages')
             ->pages([

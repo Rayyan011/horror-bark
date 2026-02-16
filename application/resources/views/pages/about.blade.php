@@ -2,14 +2,6 @@
 
 @section('title', 'About Us - Horror-Bark Theme Park')
 
-@section('hero')
-    <x-ui.hero-banner
-        :image="asset('images/banner.webp')"
-        title="Our Story at Horror-Bark"
-        subtitle="Unveiling the mysteries behind the thrills."
-    />
-@endsection
-
 @section('content')
     <section class="mb-12">
         <x-ui.section-heading title="The Genesis of Fear" size="lg" class="mb-6" />

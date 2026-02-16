@@ -2,3 +2,146 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: #050505;
+        background-image:
+            linear-gradient(to bottom, rgba(5, 5, 5, 0.92), rgba(10, 9, 11, 0.98)),
+            url('https://www.transparenttextures.com/patterns/dark-matter.png');
+        background-attachment: fixed;
+        color: #605c62;
+    }
+
+    ::selection {
+        background: rgba(96, 92, 98, 0.55);
+        color: #fff;
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #050505;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #1c1a1e;
+        border-radius: 4px;
+        border: 1px solid #050505;
+    }
+}
+
+@layer components {
+    .horror-font {
+        @apply font-display tracking-[0.08em];
+    }
+
+    .text-metallic {
+        background: linear-gradient(to bottom, #d1d1d4 0%, #605c62 50%, #28242a 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+    }
+
+    .border-metallic {
+        border-image: linear-gradient(to right, #1c1a1e, #605c62, #1c1a1e) 1;
+    }
+
+    .divider-iron {
+        @apply my-16 flex items-center justify-center text-primary;
+    }
+
+    .divider-iron::before,
+    .divider-iron::after {
+        content: '';
+        @apply mx-4 flex-1 border-b border-primary;
+    }
+
+    .divider-icon {
+        @apply text-4xl text-primary-light;
+        text-shadow: 0 0 8px rgba(96, 92, 98, 0.4);
+    }
+
+    .gothic-panel {
+        @apply border border-primary-light/25 bg-primary-dark/95 shadow-cold-shadow;
+        backdrop-filter: blur(4px);
+    }
+
+    .midnight-protocol-panel {
+        @apply mx-auto w-full max-w-6xl rounded-sm border border-primary-light/25 bg-primary-dark/90 shadow-cold-shadow ring-1 ring-primary-light/10;
+        backdrop-filter: blur(6px);
+    }
+
+    .midnight-protocol-icon {
+        @apply text-3xl text-primary-light/80;
+    }
+
+    .midnight-protocol-title {
+        @apply font-display text-3xl uppercase tracking-[0.14em] text-moonlight md:text-4xl;
+    }
+
+    .midnight-protocol-message {
+        @apply font-serif text-2xl leading-relaxed text-primary-light/70;
+    }
+
+    .gothic-title {
+        @apply font-display uppercase tracking-[0.16em] text-moonlight;
+    }
+
+    .gothic-subtitle {
+        @apply font-serif italic text-primary-light;
+    }
+
+    .gothic-link {
+        @apply border-b border-primary-light pb-1 text-xs font-serif uppercase tracking-[0.2em] text-primary-light transition-all duration-300 hover:border-white hover:text-white;
+    }
+
+    .horror-map-shell {
+        filter: grayscale(72%) contrast(110%) brightness(0.55);
+        transition: filter 0.4s ease;
+    }
+
+    .horror-map-shell:hover {
+        filter: grayscale(62%) contrast(110%) brightness(0.65);
+    }
+
+    .haunts-carousel {
+        @apply mx-auto w-full max-w-7xl;
+    }
+
+    .haunts-carousel-viewport {
+        @apply overflow-hidden;
+        min-height: 31rem;
+    }
+
+    @media (min-width: 768px) {
+        .haunts-carousel-viewport {
+            min-height: 33rem;
+        }
+    }
+
+    .haunts-carousel-controls {
+        @apply mt-8 flex items-center justify-center gap-5;
+    }
+
+    .haunts-carousel-button {
+        @apply inline-flex h-11 w-11 items-center justify-center rounded-sm border border-primary-light/35 bg-primary-dark/80 text-primary-light transition duration-300 hover:border-primary-light hover:text-moonlight disabled:cursor-not-allowed disabled:opacity-40;
+    }
+
+    .haunts-carousel-dots {
+        @apply flex items-center gap-2;
+    }
+
+    .haunts-carousel-dot {
+        @apply h-2.5 w-2.5 rounded-full border border-primary-light/60 bg-primary-dark/80 transition duration-300;
+    }
+
+    .haunts-carousel-dot.is-active {
+        @apply scale-110 border-primary-light bg-moonlight;
+    }
+}

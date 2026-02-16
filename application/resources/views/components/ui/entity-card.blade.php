@@ -17,18 +17,18 @@
         />
     @endif
 
-    <div class="p-4 flex-1 flex flex-col">
+    <div class="flex flex-1 flex-col p-5">
         <div class="space-y-2">
-            <h4 class="font-bold text-xl horror-font">{{ $title }}</h4>
+            <h4 class="font-display text-2xl tracking-wide text-moonlight">{{ $title }}</h4>
 
             @foreach ($meta as $item)
-                <p class="text-sm {{ ($item['tone'] ?? 'default') === 'muted' ? 'text-gray-400' : 'text-gray-300' }}">
-                    <span class="font-semibold">{{ $item['label'] }}:</span> {{ $item['value'] }}
+                <p class="text-sm font-serif {{ ($item['tone'] ?? 'default') === 'muted' ? 'text-primary-light/80' : 'text-primary-light' }}">
+                    <span class="font-semibold text-moonlight">{{ $item['label'] }}:</span> {{ $item['value'] }}
                 </p>
             @endforeach
 
             @if ($description)
-                <p class="text-gray-300 text-sm">{{ $description }}</p>
+                <p class="font-serif text-sm leading-relaxed text-primary-light">{{ $description }}</p>
             @endif
 
             @isset($details)

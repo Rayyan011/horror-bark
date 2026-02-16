@@ -30,7 +30,7 @@
 
 @if ($totalSlides === 0)
     @if ($resolvedFallback)
-        <img src="{{ $resolvedFallback }}" alt="{{ $alt }}" class="w-full {{ $height }} object-cover" loading="lazy" />
+        <img src="{{ $resolvedFallback }}" alt="{{ $alt }}" class="h-full w-full object-cover grayscale-[65%] brightness-[0.65] contrast-110 {{ $height }}" loading="lazy" />
     @endif
 @elseif ($shouldCarousel)
     <div
@@ -66,7 +66,7 @@
                 x-transition:leave-end="opacity-0"
                 class="w-full h-full"
             >
-                <img src="{{ $image }}" alt="{{ $alt }} - Image {{ $index + 1 }}" class="w-full {{ $height }} object-cover" loading="lazy" />
+                <img src="{{ $image }}" alt="{{ $alt }} - Image {{ $index + 1 }}" class="h-full w-full object-cover grayscale-[65%] brightness-[0.65] contrast-110 {{ $height }}" loading="lazy" />
             </div>
         @endforeach
 
@@ -74,13 +74,13 @@
             @foreach ($resolvedImages as $index => $image)
                 <button
                     @click="currentSlide = {{ $index }}; clearInterval(interval); interval = null;"
-                    :class="{ 'bg-white': currentSlide === {{ $index }}, 'bg-gray-400': currentSlide !== {{ $index }} }"
-                    class="w-2 h-2 rounded-full hover:bg-white focus:outline-none"
+                    :class="{ 'bg-moonlight': currentSlide === {{ $index }}, 'bg-primary-light/70': currentSlide !== {{ $index }} }"
+                    class="h-2 w-2 rounded-full border border-primary-light/60 hover:bg-moonlight focus:outline-none"
                     aria-label="Go to slide {{ $index + 1 }}"
                 ></button>
             @endforeach
         </div>
     </div>
 @else
-    <img src="{{ $resolvedImages->first() }}" alt="{{ $alt }}" class="w-full {{ $height }} object-cover" loading="lazy" />
+    <img src="{{ $resolvedImages->first() }}" alt="{{ $alt }}" class="h-full w-full object-cover grayscale-[65%] brightness-[0.65] contrast-110 {{ $height }}" loading="lazy" />
 @endif

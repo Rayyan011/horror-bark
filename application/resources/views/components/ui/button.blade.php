@@ -10,19 +10,19 @@
 
 @php
     $variantClass = match ($variant) {
-        'secondary' => 'bg-gray-700 text-white hover:bg-gray-600',
-        'danger' => 'bg-red-700 text-white hover:bg-red-600',
-        'ghost' => 'border border-gray-600 text-gray-200 hover:text-white',
-        default => 'bg-red-600 text-white hover:bg-red-700',
+        'secondary' => 'border border-primary-light/35 bg-transparent text-primary-light hover:border-primary-light hover:bg-primary-dark/70 hover:text-white',
+        'danger' => 'border border-rose-700/60 bg-rose-900/70 text-rose-100 hover:bg-rose-800',
+        'ghost' => 'border border-primary-light/30 bg-background-dark/60 text-primary-light hover:border-primary-light hover:bg-white/5 hover:text-white',
+        default => 'border border-primary-light/30 bg-primary-dark text-moonlight hover:border-primary-light hover:bg-primary',
     };
 
     $sizeClass = match ($size) {
-        'sm' => 'px-3 py-1 text-sm',
-        'lg' => 'px-5 py-3 text-lg',
-        default => 'px-4 py-2',
+        'sm' => 'px-3 py-1.5 text-xs uppercase tracking-[0.15em]',
+        'lg' => 'px-6 py-3 text-base uppercase tracking-[0.18em]',
+        default => 'px-4 py-2 text-sm uppercase tracking-[0.16em]',
     };
 
-    $classes = trim($variantClass . ' ' . $sizeClass . ' rounded transition ' . ($block ? 'w-full text-center' : ''));
+    $classes = trim('inline-flex items-center justify-center gap-2 font-serif transition duration-300 ' . $variantClass . ' ' . $sizeClass . ($block ? ' w-full text-center' : ''));
 @endphp
 
 @if ($href && strtoupper($method) === 'GET')

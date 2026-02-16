@@ -37,6 +37,7 @@ class FerryPanelProvider extends PanelProvider
         ])
         ->brandName('Horror Bark · Ferry Portal')
         ->login()
+        ->viteTheme('resources/css/filament/panels/theme.css')
         ->discoverResources(in: app_path('Filament/Ferry/Resources'), for: 'App\\Filament\\Ferry\\Resources')
         ->discoverPages(in: app_path('Filament/Ferry/Pages'), for: 'App\\Filament\\Ferry\\Pages')
         ->pages([

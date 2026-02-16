@@ -37,6 +37,7 @@ class RidePanelProvider extends PanelProvider
             ])
             ->brandName('Horror Bark · Ride Portal')
             ->login()
+            ->viteTheme('resources/css/filament/panels/theme.css')
             ->discoverResources(in: app_path('Filament/Ride/Resources'), for: 'App\\Filament\\Ride\\Resources')
             ->discoverPages(in: app_path('Filament/Ride/Pages'), for: 'App\\Filament\\Ride\\Pages')
             ->pages([

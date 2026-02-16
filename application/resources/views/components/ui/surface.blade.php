@@ -8,10 +8,10 @@
 
 @php
     $base = match ($variant) {
-        'muted' => 'bg-gray-900',
-        'highlight' => 'bg-gray-700',
-        'danger' => 'bg-red-900',
-        default => 'bg-gray-800',
+        'muted' => 'bg-background-dark/85',
+        'highlight' => 'bg-primary/80',
+        'danger' => 'bg-rose-900/70',
+        default => 'bg-primary-dark/90',
     };
 @endphp
 
@@ -19,10 +19,10 @@
     {{ $attributes->class([
         $base,
         $padding,
-        'rounded',
-        'border border-gray-700' => $border,
-        'shadow' => $shadow,
-        'transition hover:-translate-y-0.5' => $interactive,
+        'rounded-sm',
+        'border border-primary-light/20' => $border,
+        'shadow-cold-shadow' => $shadow,
+        'transition duration-300 hover:-translate-y-0.5 hover:border-primary-light/45' => $interactive,
     ]) }}
 >
     {{ $slot }}
