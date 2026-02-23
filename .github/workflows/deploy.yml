@@ -28,6 +28,10 @@ jobs:
             docker compose build
             docker compose up -d
 
+            # Restart Traefik so it picks up recreated containers
+            docker restart coolify-proxy
+            sleep 3
+
             # Install PHP dependencies
             docker exec horrorbark-php composer install --no-dev --optimize-autoloader
 
