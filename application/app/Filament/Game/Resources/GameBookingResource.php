@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class GameBookingResource extends Resource
 {
@@ -17,16 +18,20 @@ class GameBookingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('game', fn (Builder $q) => $q->where('user_id', auth()->id()));
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
-            // Select the user making the booking
             Forms\Components\Select::make('user_id')
                 ->relationship('user', 'name')
                 ->required(),
-            // Select the game; reactive so that changes update total_price
             Forms\Components\Select::make('game_id')
-                ->relationship('game', 'name')
+                ->options(fn () => Game::where('user_id', auth()->id())->pluck('name', 'id'))
                 ->reactive()
                 ->afterStateUpdated(function (callable $get, callable $set) {
                     $gameId = $get('game_id');

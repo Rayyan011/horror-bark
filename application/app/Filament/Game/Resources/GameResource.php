@@ -12,6 +12,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class GameResource extends Resource
 {
@@ -19,13 +20,16 @@ class GameResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('user_id', auth()->id());
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
-            // Owner of the game
-            Forms\Components\Select::make('user_id')
-                ->label('Owner')
-                ->relationship('owner', 'name')
+            Forms\Components\Hidden::make('user_id')
+                ->default(fn () => auth()->id())
                 ->required(),
             Forms\Components\TextInput::make('name')
                 ->required(),
