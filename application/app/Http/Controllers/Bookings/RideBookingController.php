@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bookings;
 use App\Http\Controllers\Controller;
 use App\Models\Ride;
 use App\Models\RideBooking;
+use App\Notifications\BookingConfirmedNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\InvoiceService;
@@ -66,6 +67,8 @@ class RideBookingController extends Controller
         ]);
 
         $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
+
+        $request->user()->notify(new BookingConfirmedNotification($booking, 'Ride'));
 
         return back()->with('status', 'Ride booking created.');
     }

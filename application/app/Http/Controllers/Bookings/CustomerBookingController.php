@@ -8,6 +8,7 @@ use App\Models\FerryBooking;
 use App\Models\GameBooking;
 use App\Models\HotelBooking;
 use App\Models\RideBooking;
+use App\Notifications\BookingCanceledNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -183,6 +184,7 @@ class CustomerBookingController extends Controller
             if ($hotelBooking->invoice) {
                 $hotelBooking->invoice->update(['status' => 'canceled']);
             }
+            $hotelBooking->user->notify(new BookingCanceledNotification($hotelBooking, 'Hotel'));
         }
 
         return back()->with('status', 'Hotel booking canceled.');
@@ -197,6 +199,7 @@ class CustomerBookingController extends Controller
             if ($ferryBooking->invoice) {
                 $ferryBooking->invoice->update(['status' => 'canceled']);
             }
+            $ferryBooking->user->notify(new BookingCanceledNotification($ferryBooking, 'Ferry'));
         }
 
         return back()->with('status', 'Ferry booking canceled.');
@@ -211,6 +214,7 @@ class CustomerBookingController extends Controller
             if ($rideBooking->invoice) {
                 $rideBooking->invoice->update(['status' => 'canceled']);
             }
+            $rideBooking->user->notify(new BookingCanceledNotification($rideBooking, 'Ride'));
         }
 
         return back()->with('status', 'Ride booking canceled.');
@@ -225,6 +229,7 @@ class CustomerBookingController extends Controller
             if ($gameBooking->invoice) {
                 $gameBooking->invoice->update(['status' => 'canceled']);
             }
+            $gameBooking->user->notify(new BookingCanceledNotification($gameBooking, 'Game'));
         }
 
         return back()->with('status', 'Game booking canceled.');
@@ -239,6 +244,7 @@ class CustomerBookingController extends Controller
             if ($beachEventBooking->invoice) {
                 $beachEventBooking->invoice->update(['status' => 'canceled']);
             }
+            $beachEventBooking->user->notify(new BookingCanceledNotification($beachEventBooking, 'Beach Event'));
         }
 
         return back()->with('status', 'Beach event booking canceled.');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bookings;
 use App\Http\Controllers\Controller;
 use App\Models\BeachEvent;
 use App\Models\BeachEventBooking;
+use App\Notifications\BookingConfirmedNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\InvoiceService;
@@ -71,6 +72,8 @@ class BeachEventBookingController extends Controller
         ]);
 
         $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
+
+        $request->user()->notify(new BookingConfirmedNotification($booking, 'Beach Event'));
 
         return back()->with('status', 'Beach event booking created.');
     }
