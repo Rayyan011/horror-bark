@@ -24,6 +24,7 @@
                     'max' => $ferry->max_booking_quantity,
                     'default' => 1,
                 ]"
+                :slot-picker="['type' => 'ferry', 'id' => $ferry->id]"
                 :id-prefix="'ferry_' . $ferry->id"
             />
         @else

@@ -15,6 +15,7 @@
     'idPrefix' => 'booking',
     'hidden' => [],
     'values' => [],
+    'slotPicker' => null,
 ])
 
 @php
@@ -26,7 +27,14 @@
         <input type="hidden" name="{{ $name }}" value="{{ $value }}" />
     @endforeach
 
-    @if ($mode === 'date-range')
+    @if ($slotPicker)
+        <x-booking.slot-picker
+            :entity-type="$slotPicker['type']"
+            :entity-id="$slotPicker['id']"
+            :input-name="$slotPicker['inputName'] ?? 'booking_time'"
+            :id-prefix="$idPrefix"
+        />
+    @elseif ($mode === 'date-range')
         <x-ui.field
             :label="$values['start_label'] ?? 'Check-in'"
             :name="$values['start_name'] ?? 'start_date'"
@@ -71,7 +79,7 @@
         />
     @endif
 
-    @if ($rulesHint)
+    @if ($rulesHint && !$slotPicker)
         <p class="text-xs text-gray-400">{{ $rulesHint }}</p>
     @endif
 

@@ -46,6 +46,7 @@
                     'max' => $item->max_booking_quantity,
                     'default' => 1,
                 ]"
+                :slot-picker="['type' => $isGame ? 'game' : 'ride', 'id' => $item->id]"
                 :id-prefix="($isGame ? 'game_' : 'ride_') . $item->id"
             />
         @else

@@ -20,8 +20,11 @@ use App\Http\Controllers\Bookings\RideBookingController;
 use App\Http\Controllers\Bookings\GameBookingController;
 use App\Http\Controllers\Bookings\BeachEventBookingController;
 use App\Http\Controllers\Bookings\CustomerBookingController;
+use App\Http\Controllers\Api\SlotAvailabilityController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/api/slots', SlotAvailabilityController::class)->name('api.slots');
 
 Route::get('/contact', [ContactController::class, 'create'])->name('contacts.create');
 Route::post('/contact', [ContactController::class, 'store'])->name('contacts.store');
