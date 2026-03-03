@@ -9,8 +9,12 @@ use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
+        if ($request->has('redirect')) {
+            $request->session()->put('url.intended', $request->query('redirect'));
+        }
+
         return view('auth.login');
     }
 
