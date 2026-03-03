@@ -13,10 +13,12 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use App\Filament\Concerns\HasBookingBulkActions;
 use Illuminate\Validation\ValidationException;
 
 class RideBookingResource extends Resource
 {
+    use HasBookingBulkActions;
     protected static ?string $model = RideBooking::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -88,6 +90,12 @@ class RideBookingResource extends Resource
             Tables\Columns\TextColumn::make('quantity')->sortable(),
             Tables\Columns\TextColumn::make('total_price')->sortable(),
             Tables\Columns\TextColumn::make('status')->sortable(),
+        ])
+        ->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                ...static::getBookingBulkActions(),
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ]);
     }
 

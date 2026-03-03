@@ -10,11 +10,13 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Concerns\HasBookingBulkActions;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 
 class BeachEventBookingResource extends Resource
 {
+    use HasBookingBulkActions;
     protected static ?string $model = BeachEventBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -93,7 +95,10 @@ class BeachEventBookingResource extends Resource
             Tables\Actions\EditAction::make(),
         ])
         ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
+            Tables\Actions\BulkActionGroup::make([
+                ...static::getBookingBulkActions(),
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ]);
     }
 

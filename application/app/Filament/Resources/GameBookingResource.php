@@ -11,11 +11,13 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Concerns\HasBookingBulkActions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class GameBookingResource extends Resource
 {
+    use HasBookingBulkActions;
     protected static ?string $model = GameBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -87,6 +89,12 @@ class GameBookingResource extends Resource
             Tables\Columns\TextColumn::make('quantity')->sortable(),
             Tables\Columns\TextColumn::make('total_price')->sortable(),
             Tables\Columns\TextColumn::make('status')->sortable(),
+        ])
+        ->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                ...static::getBookingBulkActions(),
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ]);
     }
 

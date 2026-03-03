@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Concerns\HasBookingBulkActions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
@@ -21,6 +22,7 @@ use Carbon\Carbon;
 
 class HotelBookingResource extends Resource
 {
+    use HasBookingBulkActions;
     protected static ?string $model = HotelBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -156,7 +158,10 @@ class HotelBookingResource extends Resource
                 ->sortable(),
         ])
         ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
+            Tables\Actions\BulkActionGroup::make([
+                ...static::getBookingBulkActions(),
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ]);
     }
 

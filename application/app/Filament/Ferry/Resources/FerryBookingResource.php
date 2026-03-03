@@ -13,10 +13,12 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Concerns\HasBookingBulkActions;
 use Illuminate\Database\Eloquent\Builder;
 
 class FerryBookingResource extends Resource
 {
+    use HasBookingBulkActions;
     protected static ?string $model = FerryBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -92,6 +94,7 @@ class FerryBookingResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    ...static::getBookingBulkActions(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Filament\Concerns\HasBookingBulkActions;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -19,6 +20,7 @@ use Carbon\Carbon;
 
 class RideBookingResource extends Resource
 {
+    use HasBookingBulkActions;
     protected static ?string $model = RideBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
@@ -89,6 +91,12 @@ class RideBookingResource extends Resource
             Tables\Columns\TextColumn::make('quantity'),
             Tables\Columns\TextColumn::make('total_price'),
             Tables\Columns\TextColumn::make('status'),
+        ])
+        ->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                ...static::getBookingBulkActions(),
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ]);
     }
 
