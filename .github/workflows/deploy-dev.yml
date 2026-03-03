@@ -1,0 +1,65 @@
+name: Deploy to Dev
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: root
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            set -e
+
+            DEV_DIR="/opt/horror-bark-dev"
+
+            # First-time setup: clone if directory doesn't exist
+            if [ ! -d "$DEV_DIR" ]; then
+              git clone https://github.com/Rayyan011/horror-bark.git "$DEV_DIR"
+              cd "$DEV_DIR"
+              git checkout dev
+
+              # Copy prod .env as base, then override for dev
+              cp /opt/horror-bark/application/.env "$DEV_DIR/application/.env"
+              sed -i 's/APP_ENV=.*/APP_ENV=staging/' "$DEV_DIR/application/.env"
+              sed -i 's/APP_DEBUG=.*/APP_DEBUG=true/' "$DEV_DIR/application/.env"
+              sed -i 's|APP_URL=.*|APP_URL=https://dev.horrorbark.rayyanameez.com|' "$DEV_DIR/application/.env"
+              sed -i 's/DB_DATABASE=.*/DB_DATABASE=horrorbark_dev/' "$DEV_DIR/application/.env"
+
+              # Create dev database if it doesn't exist
+              docker exec horrorbark-mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS horrorbark_dev;" 2>/dev/null || true
+            fi
+
+            cd "$DEV_DIR"
+
+            # Pull latest dev code (keep docker-compose.yml)
+            git stash --include-untracked || true
+            git pull origin dev
+            git checkout stash -- docker-compose.yml 2>/dev/null || true
+            git stash drop 2>/dev/null || true
+
+            # Build and restart dev containers
+            docker compose -f docker-compose.yml build
+            docker compose -f docker-compose.yml up -d
+
+            # Restart Traefik so it picks up recreated containers
+            docker restart coolify-proxy
+            sleep 3
+
+            # Install PHP dependencies
+            docker exec horrorbark-dev-php composer install --optimize-autoloader
+
+            # Build frontend assets
+            docker run --rm -v "$DEV_DIR/application:/app" -w /app node:20-alpine sh -c 'npm ci && npm run build'
+
+            # Run migrations and optimize
+            docker exec horrorbark-dev-php php artisan migrate --force
+            docker exec horrorbark-dev-php chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+            docker exec horrorbark-dev-php php artisan optimize
+            echo "Dev deploy complete!"
