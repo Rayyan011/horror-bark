@@ -14,11 +14,12 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Concerns\HasBookingBulkActions;
+use App\Filament\Concerns\HasBookingExport;
 use Illuminate\Database\Eloquent\Builder;
 
 class FerryBookingResource extends Resource
 {
-    use HasBookingBulkActions;
+    use HasBookingBulkActions, HasBookingExport;
     protected static ?string $model = FerryBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -88,6 +89,9 @@ class FerryBookingResource extends Resource
                         'confirmed' => 'Confirmed',
                         'canceled' => 'Canceled',
                     ]),
+            ])
+            ->headerActions([
+                static::getExportHeaderAction(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

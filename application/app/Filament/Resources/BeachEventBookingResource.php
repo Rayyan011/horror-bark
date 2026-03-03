@@ -11,12 +11,13 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Concerns\HasBookingBulkActions;
+use App\Filament\Concerns\HasBookingExport;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 
 class BeachEventBookingResource extends Resource
 {
-    use HasBookingBulkActions;
+    use HasBookingBulkActions, HasBookingExport;
     protected static ?string $model = BeachEventBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -94,12 +95,34 @@ class BeachEventBookingResource extends Resource
         ->actions([
             Tables\Actions\EditAction::make(),
         ])
+        ->headerActions([
+            static::getExportHeaderAction(),
+        ])
         ->bulkActions([
             Tables\Actions\BulkActionGroup::make([
                 ...static::getBookingBulkActions(),
                 Tables\Actions\DeleteBulkAction::make(),
             ]),
         ]);
+    }
+
+    protected static function getExportColumns(): array
+    {
+        return [
+            'ID' => 'id',
+            'Customer' => fn ($r) => $r->user?->name ?? 'N/A',
+            'Beach Event' => fn ($r) => $r->beachEvent?->name ?? 'N/A',
+            'Booking Date' => 'booking_date',
+            'Quantity' => 'quantity',
+            'Total Price' => 'total_price',
+            'Status' => 'status',
+            'Created At' => fn ($r) => $r->created_at?->toDateTimeString(),
+        ];
+    }
+
+    protected static function getExportRelations(): array
+    {
+        return ['user', 'beachEvent'];
     }
 
     public static function getPages(): array

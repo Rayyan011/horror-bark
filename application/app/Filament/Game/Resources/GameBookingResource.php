@@ -11,11 +11,12 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Concerns\HasBookingBulkActions;
+use App\Filament\Concerns\HasBookingExport;
 use Illuminate\Database\Eloquent\Builder;
 
 class GameBookingResource extends Resource
 {
-    use HasBookingBulkActions;
+    use HasBookingBulkActions, HasBookingExport;
 
     protected static ?string $model = GameBooking::class;
 
@@ -92,6 +93,9 @@ class GameBookingResource extends Resource
             Tables\Columns\TextColumn::make('quantity')->sortable(),
             Tables\Columns\TextColumn::make('total_price')->sortable(),
             Tables\Columns\TextColumn::make('status')->sortable(),
+        ])
+        ->headerActions([
+            static::getExportHeaderAction(),
         ])
         ->bulkActions([
             Tables\Actions\BulkActionGroup::make([

@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Concerns\HasBookingBulkActions;
+use App\Filament\Concerns\HasBookingExport;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
@@ -22,7 +23,7 @@ use Carbon\Carbon;
 
 class HotelBookingResource extends Resource
 {
-    use HasBookingBulkActions;
+    use HasBookingBulkActions, HasBookingExport;
     protected static ?string $model = HotelBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -157,12 +158,36 @@ class HotelBookingResource extends Resource
                 ->dateTime()
                 ->sortable(),
         ])
+        ->headerActions([
+            static::getExportHeaderAction(),
+        ])
         ->bulkActions([
             Tables\Actions\BulkActionGroup::make([
                 ...static::getBookingBulkActions(),
                 Tables\Actions\DeleteBulkAction::make(),
             ]),
         ]);
+    }
+
+    protected static function getExportColumns(): array
+    {
+        return [
+            'ID' => 'id',
+            'Customer' => fn ($r) => $r->user?->name ?? 'N/A',
+            'Room' => fn ($r) => $r->room?->room_number ?? 'N/A',
+            'Hotel' => fn ($r) => $r->room?->hotel?->name ?? 'N/A',
+            'Check-in' => 'start_date',
+            'Check-out' => 'end_date',
+            'Quantity' => 'quantity',
+            'Total Price' => 'total_price',
+            'Status' => 'status',
+            'Created At' => fn ($r) => $r->created_at?->toDateTimeString(),
+        ];
+    }
+
+    protected static function getExportRelations(): array
+    {
+        return ['user', 'room.hotel'];
     }
 
     public static function getRelations(): array

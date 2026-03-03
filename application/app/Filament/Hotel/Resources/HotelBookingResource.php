@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Concerns\HasBookingBulkActions;
+use App\Filament\Concerns\HasBookingExport;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -21,7 +22,7 @@ use Carbon\Carbon;
 
 class HotelBookingResource extends Resource
 {
-    use HasBookingBulkActions;
+    use HasBookingBulkActions, HasBookingExport;
     protected static ?string $model = HotelBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -126,6 +127,9 @@ class HotelBookingResource extends Resource
             Tables\Columns\TextColumn::make('total_price')->sortable(),
             Tables\Columns\TextColumn::make('status')->sortable(),
             Tables\Columns\TextColumn::make('created_at')->dateTime()->label('Created')->sortable(),
+        ])
+        ->headerActions([
+            static::getExportHeaderAction(),
         ])
         ->bulkActions([
             Tables\Actions\BulkActionGroup::make([

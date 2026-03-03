@@ -16,11 +16,12 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Concerns\HasBookingBulkActions;
+use App\Filament\Concerns\HasBookingExport;
 use Illuminate\Database\Eloquent\Builder;
 
 class FerryBookingResource extends Resource
 {
-    use HasBookingBulkActions;
+    use HasBookingBulkActions, HasBookingExport;
     protected static ?string $model = FerryBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -85,6 +86,9 @@ class FerryBookingResource extends Resource
                         'canceled' => 'Canceled',
                     ]),
             ])
+            ->headerActions([
+                static::getExportHeaderAction(),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -99,6 +103,25 @@ class FerryBookingResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    protected static function getExportColumns(): array
+    {
+        return [
+            'ID' => 'id',
+            'Customer' => fn ($r) => $r->user?->name ?? 'N/A',
+            'Ferry' => fn ($r) => $r->ferry?->name ?? 'N/A',
+            'Booking Time' => fn ($r) => $r->booking_time,
+            'Quantity' => 'quantity',
+            'Total Price' => 'total_price',
+            'Status' => 'status',
+            'Created At' => fn ($r) => $r->created_at?->toDateTimeString(),
+        ];
+    }
+
+    protected static function getExportRelations(): array
+    {
+        return ['user', 'ferry'];
     }
 
     public static function getPages(): array

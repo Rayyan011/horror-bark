@@ -14,11 +14,12 @@ use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Concerns\HasBookingBulkActions;
+use App\Filament\Concerns\HasBookingExport;
 use Illuminate\Validation\ValidationException;
 
 class RideBookingResource extends Resource
 {
-    use HasBookingBulkActions;
+    use HasBookingBulkActions, HasBookingExport;
     protected static ?string $model = RideBooking::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -91,12 +92,34 @@ class RideBookingResource extends Resource
             Tables\Columns\TextColumn::make('total_price')->sortable(),
             Tables\Columns\TextColumn::make('status')->sortable(),
         ])
+        ->headerActions([
+            static::getExportHeaderAction(),
+        ])
         ->bulkActions([
             Tables\Actions\BulkActionGroup::make([
                 ...static::getBookingBulkActions(),
                 Tables\Actions\DeleteBulkAction::make(),
             ]),
         ]);
+    }
+
+    protected static function getExportColumns(): array
+    {
+        return [
+            'ID' => 'id',
+            'Customer' => fn ($r) => $r->user?->name ?? 'N/A',
+            'Ride' => fn ($r) => $r->ride?->name ?? 'N/A',
+            'Booking Time' => fn ($r) => $r->booking_time,
+            'Quantity' => 'quantity',
+            'Total Price' => 'total_price',
+            'Status' => 'status',
+            'Created At' => fn ($r) => $r->created_at?->toDateTimeString(),
+        ];
+    }
+
+    protected static function getExportRelations(): array
+    {
+        return ['user', 'ride'];
     }
 
     public static function getPages(): array
