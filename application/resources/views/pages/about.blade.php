@@ -6,7 +6,7 @@
     <section class="mb-12">
         <x-ui.section-heading title="The Genesis of Fear" size="lg" class="mb-6" />
         <p class="text-gray-300 leading-relaxed mb-4">
-            Horror-Bark Theme Park began with a chilling vision: to create an immersive world where the darkest imaginations could take form. Founded in [Year], by a collective of thrill-seekers and horror aficionados, our journey started with a single haunted attraction.
+            Horror-Bark Theme Park began with a chilling vision: to create an immersive world where the darkest imaginations could take form. Founded in 2019, by a collective of thrill-seekers and horror aficionados, our journey started with a single haunted attraction.
         </p>
         <p class="text-gray-300 leading-relaxed mb-4">
             Driven by a passion for the macabre and a desire to push the boundaries of themed entertainment, we meticulously crafted each scare, each story, and each environment.
@@ -19,9 +19,9 @@
     <section class="mb-12">
         <x-ui.section-heading title="Meet the Minds Behind the Mayhem" size="lg" class="mb-6" />
         <x-about.team-grid :members="[
-            ['name' => 'Evelyn Thorne', 'role' => 'Visionary Founder', 'image' => asset('images/hotel.png')],
-            ['name' => 'Silas Blackwood', 'role' => 'Creative Director', 'image' => asset('images/ride.png')],
-            ['name' => 'Jasper Crowe', 'role' => 'Lead Engineer', 'image' => asset('images/game.png')],
+            ['name' => 'Evelyn Thorne', 'role' => 'Visionary Founder', 'image' => 'https://ui-avatars.com/api/?name=Evelyn+Thorne&size=256&background=7c3aed&color=fff&bold=true'],
+            ['name' => 'Silas Blackwood', 'role' => 'Creative Director', 'image' => 'https://ui-avatars.com/api/?name=Silas+Blackwood&size=256&background=dc2626&color=fff&bold=true'],
+            ['name' => 'Jasper Crowe', 'role' => 'Lead Engineer', 'image' => 'https://ui-avatars.com/api/?name=Jasper+Crowe&size=256&background=0f766e&color=fff&bold=true'],
         ]" />
         <p class="mt-4 text-gray-300">Our dedicated team of designers, storytellers, and engineers work tirelessly to bring your darkest dreams to life.</p>
     </section>
