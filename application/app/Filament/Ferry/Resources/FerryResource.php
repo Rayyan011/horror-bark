@@ -7,16 +7,23 @@ use App\Filament\Ferry\Resources\FerryResource\Pages;
 use App\Models\Ferry;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class FerryResource extends Resource
 {
     protected static ?string $model = Ferry::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('user_id', auth()->id());
+    }
 
     public static function form(Form $form): Form
     {
@@ -26,10 +33,9 @@ class FerryResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                Select::make('user_id')
-                    ->relationship('owner', 'name')
-                    ->required()
-                    ->label('Owner'),
+                Hidden::make('user_id')
+                    ->default(fn () => auth()->id())
+                    ->required(),
 
                 Select::make('island_id')
                     ->relationship('island', 'name')
@@ -94,25 +100,4 @@ class FerryResource extends Resource
         ];
     }
 
-    // ➡️ This is the important part to restrict what each Ferry Operator can see
-    // public static function getEloquentQuery(): Builder
-    // {
-    //     return parent::getEloquentQuery()
-    //         ->where('user_id', Auth::id());
-    // }
-
-    // public static function canEdit($record): bool
-    // {
-    //     return $record->user_id === Auth::id();
-    // }
-
-    // public static function canDelete($record): bool
-    // {
-    //     return $record->user_id === Auth::id();
-    // }
-
-    // public static function canView($record): bool
-    // {
-    //     return $record->user_id === Auth::id();
-    // }
 }

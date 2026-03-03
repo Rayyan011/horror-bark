@@ -3,6 +3,7 @@
 namespace App\Filament\Ferry\Resources;
 
 use App\Filament\Ferry\Resources\FerryBookingResource\Pages;
+use App\Models\Ferry;
 use App\Models\FerryBooking;
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
@@ -12,12 +13,19 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class FerryBookingResource extends Resource
 {
     protected static ?string $model = FerryBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('ferry', fn (Builder $q) => $q->where('user_id', auth()->id()));
+    }
 
     public static function form(Form $form): Form
     {
@@ -28,7 +36,7 @@ class FerryBookingResource extends Resource
                     ->required(),
 
                 Select::make('ferry_id')
-                    ->relationship('ferry', 'name')
+                    ->options(fn () => Ferry::where('user_id', auth()->id())->pluck('name', 'id'))
                     ->required(),
 
                 DateTimePicker::make('booking_time')
