@@ -5,17 +5,15 @@ namespace App\Filament\Ride\Resources;
 use App\Filament\Ride\Resources\RideBookingResource\Pages;
 use App\Models\Ride;
 use App\Models\RideBooking;
-use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Hidden;
-use Carbon\Carbon;
 
 class RideBookingResource extends Resource
 {
@@ -25,7 +23,8 @@ class RideBookingResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', auth()->id());
+        return parent::getEloquentQuery()
+            ->whereHas('ride', fn (Builder $query) => $query->where('user_id', auth()->id()));
     }
 
     public static function form(Form $form): Form

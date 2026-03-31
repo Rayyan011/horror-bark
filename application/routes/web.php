@@ -1,25 +1,27 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PagesController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\BeachEventController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\HotelController;
-use App\Http\Controllers\FerryController;
-use App\Http\Controllers\ThemeParkController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\Bookings\HotelBookingController;
-use App\Http\Controllers\Bookings\FerryBookingController;
-use App\Http\Controllers\Bookings\RideBookingController;
-use App\Http\Controllers\Bookings\GameBookingController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\BeachEventController;
 use App\Http\Controllers\Bookings\BeachEventBookingController;
 use App\Http\Controllers\Bookings\CustomerBookingController;
+use App\Http\Controllers\Bookings\FerryBookingController;
+use App\Http\Controllers\Bookings\GameBookingController;
+use App\Http\Controllers\Bookings\HotelBookingController;
+use App\Http\Controllers\Bookings\RideBookingController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FerryController;
+use App\Http\Controllers\FerryOperatorReportController;
+use App\Http\Controllers\FerryPassController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HotelController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PagesController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ThemeParkController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -55,6 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bookings/rides/{rideBooking}', [CustomerBookingController::class, 'showRide'])->name('bookings.rides.show');
     Route::get('/bookings/games/{gameBooking}', [CustomerBookingController::class, 'showGame'])->name('bookings.games.show');
     Route::get('/bookings/beach-events/{beachEventBooking}', [CustomerBookingController::class, 'showBeachEvent'])->name('bookings.beach-events.show');
+    Route::get('/bookings/ferries/{ferryBooking}/pass', [FerryPassController::class, 'download'])->name('bookings.ferries.pass');
 
     Route::post('/bookings/hotels/rooms/{room}', [HotelBookingController::class, 'store'])->name('bookings.hotels.store');
     Route::post('/bookings/ferries/{ferry}', [FerryBookingController::class, 'store'])->name('bookings.ferries.store');
@@ -74,10 +77,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
     Route::get('/invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
+
+    Route::get('/ferry/passenger-reports', [FerryOperatorReportController::class, 'index'])->name('ferry-reports.index');
+    Route::get('/ferry/passenger-reports/export', [FerryOperatorReportController::class, 'export'])->name('ferry-reports.export');
 });
 
 Route::get('/{page_name}', [PagesController::class, 'show'])->name('custom_page'); // Generic route AFTER all specific routes
-
-
 
 // ...

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    $passDownloadUrl = $passDownloadUrl ?? null;
+@endphp
+
 @section('title', 'Booking Details - Horror-Bark')
 
 @section('content')
@@ -23,6 +27,14 @@
             :status="$invoice->status"
             :download-href="route('invoices.download', $invoice)"
         />
+    @endif
+
+    @if (!empty($passDownloadUrl))
+        <x-ui.surface class="space-y-3">
+            <h2 class="text-xl font-semibold">Ferry Pass</h2>
+            <p class="text-gray-300">Download the issued ferry pass for boarding and manifest checks.</p>
+            <x-ui.button :href="$passDownloadUrl" variant="secondary">Download ferry pass</x-ui.button>
+        </x-ui.surface>
     @endif
 
     @if ($booking->status !== 'canceled')

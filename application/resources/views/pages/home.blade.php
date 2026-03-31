@@ -30,6 +30,28 @@
         <span class="material-symbols-outlined divider-icon">church</span>
     </div>
 
+    @if ($promotions->isNotEmpty())
+        <section class="space-y-6">
+            <x-ui.section-heading title="Promotions Under The Pale Moon" size="lg" />
+
+            <x-home.featured-grid>
+                @foreach ($promotions as $promotion)
+                    <x-featured-card
+                        :title="filled($promotion->discount_percentage) ? $promotion->title . ' · ' . number_format((float) $promotion->discount_percentage, 0) . '% Off' : $promotion->title"
+                        :description="$promotion->description"
+                        :images="array_filter([$promotion->image_path])"
+                        :link="$promotion->cta_url"
+                        :link-text="$promotion->resolved_cta_label"
+                    />
+                @endforeach
+            </x-home.featured-grid>
+        </section>
+
+        <div class="divider-iron px-4 opacity-60">
+            <span class="material-symbols-outlined divider-icon">local_activity</span>
+        </div>
+    @endif
+
     <x-home.featured-grid>
         @if ($featuredHotel)
             <x-featured-card

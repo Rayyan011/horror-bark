@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Bookings;
 use App\Http\Controllers\Controller;
 use App\Models\Ferry;
 use App\Models\FerryBooking;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use App\Services\FerryPassService;
 use App\Services\InvoiceService;
 use App\Services\IslandAccessService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class FerryBookingController extends Controller
 {
@@ -16,12 +17,12 @@ class FerryBookingController extends Controller
         Request $request,
         Ferry $ferry,
         InvoiceService $invoiceService,
+        FerryPassService $ferryPassService,
         IslandAccessService $islandAccessService
-    )
-    {
+    ) {
         $data = $request->validate([
             'booking_time' => ['required', 'date'],
-            'quantity' => ['required', 'integer', 'min:1', 'max:' . $ferry->max_booking_quantity],
+            'quantity' => ['required', 'integer', 'min:1', 'max:'.$ferry->max_booking_quantity],
         ]);
 
         $bookingTime = Carbon::parse($data['booking_time'])->setSecond(0);
@@ -37,7 +38,7 @@ class FerryBookingController extends Controller
 
         if (
             $islandAccessService->ferryRequiresHotel($ferry)
-            && !$islandAccessService->hasConfirmedHotelStayAt($request->user(), $bookingTime)
+            && ! $islandAccessService->hasConfirmedHotelStayAt($request->user(), $bookingTime)
         ) {
             return back()->withErrors([
                 'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
@@ -66,6 +67,7 @@ class FerryBookingController extends Controller
         ]);
 
         $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
+        $ferryPassService->createForBooking($booking);
 
         return back()->with('status', 'Ferry booking created.');
     }

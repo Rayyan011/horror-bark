@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Carbon\Carbon;
 
 class FerryBooking extends Model
 {
@@ -16,14 +15,20 @@ class FerryBooking extends Model
         'quantity',
         'total_price',
         'status',
+        'pass_number',
+        'pass_path',
     ];
 
-    public function user(): BelongsTo 
+    protected $casts = [
+        'booking_time' => 'datetime',
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function ferry(): BelongsTo 
+    public function ferry(): BelongsTo
     {
         return $this->belongsTo(Ferry::class);
     }
@@ -33,9 +38,8 @@ class FerryBooking extends Model
         return $this->morphOne(Invoice::class, 'invoiceable');
     }
 
-    public function isPending(): bool 
+    public function isPending(): bool
     {
         return $this->status === 'pending';
     }
-
 }

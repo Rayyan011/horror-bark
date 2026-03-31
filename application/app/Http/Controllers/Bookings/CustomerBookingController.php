@@ -29,7 +29,7 @@ class CustomerBookingController extends Controller
         $bookings = collect();
         $selectedType = $filters['type'] ?? null;
 
-        if (!$selectedType || $selectedType === 'hotel') {
+        if (! $selectedType || $selectedType === 'hotel') {
             $bookings = $bookings->merge(
                 $this->buildHotelQuery($user, $filters)->get()->map(
                     fn (HotelBooking $booking) => $this->mapHotelBooking($booking)
@@ -37,7 +37,7 @@ class CustomerBookingController extends Controller
             );
         }
 
-        if (!$selectedType || $selectedType === 'ferry') {
+        if (! $selectedType || $selectedType === 'ferry') {
             $bookings = $bookings->merge(
                 $this->buildFerryQuery($user, $filters)->get()->map(
                     fn (FerryBooking $booking) => $this->mapFerryBooking($booking)
@@ -45,7 +45,7 @@ class CustomerBookingController extends Controller
             );
         }
 
-        if (!$selectedType || $selectedType === 'ride') {
+        if (! $selectedType || $selectedType === 'ride') {
             $bookings = $bookings->merge(
                 $this->buildRideQuery($user, $filters)->get()->map(
                     fn (RideBooking $booking) => $this->mapRideBooking($booking)
@@ -53,7 +53,7 @@ class CustomerBookingController extends Controller
             );
         }
 
-        if (!$selectedType || $selectedType === 'game') {
+        if (! $selectedType || $selectedType === 'game') {
             $bookings = $bookings->merge(
                 $this->buildGameQuery($user, $filters)->get()->map(
                     fn (GameBooking $booking) => $this->mapGameBooking($booking)
@@ -61,7 +61,7 @@ class CustomerBookingController extends Controller
             );
         }
 
-        if (!$selectedType || $selectedType === 'beach-event') {
+        if (! $selectedType || $selectedType === 'beach-event') {
             $bookings = $bookings->merge(
                 $this->buildBeachEventQuery($user, $filters)->get()->map(
                     fn (BeachEventBooking $booking) => $this->mapBeachEventBooking($booking)
@@ -95,12 +95,12 @@ class CustomerBookingController extends Controller
 
         $receiptsQuery = $user->invoices()->latest('issued_at');
 
-        if (!empty($filters['receipt_search'])) {
+        if (! empty($filters['receipt_search'])) {
             $search = trim($filters['receipt_search']);
-            $receiptsQuery->where('invoice_number', 'like', '%' . $search . '%');
+            $receiptsQuery->where('invoice_number', 'like', '%'.$search.'%');
         }
 
-        if (!empty($filters['receipt_status'])) {
+        if (! empty($filters['receipt_status'])) {
             $receiptsQuery->where('status', $filters['receipt_status']);
         }
 
@@ -135,6 +135,7 @@ class CustomerBookingController extends Controller
             'type' => 'Ferry',
             'invoice' => $ferryBooking->invoice,
             'cancelRoute' => route('bookings.ferries.cancel', $ferryBooking),
+            'passDownloadUrl' => route('bookings.ferries.pass', $ferryBooking),
         ]);
     }
 
@@ -147,6 +148,7 @@ class CustomerBookingController extends Controller
             'type' => 'Ride',
             'invoice' => $rideBooking->invoice,
             'cancelRoute' => route('bookings.rides.cancel', $rideBooking),
+            'passDownloadUrl' => null,
         ]);
     }
 
@@ -159,6 +161,7 @@ class CustomerBookingController extends Controller
             'type' => 'Game',
             'invoice' => $gameBooking->invoice,
             'cancelRoute' => route('bookings.games.cancel', $gameBooking),
+            'passDownloadUrl' => null,
         ]);
     }
 
@@ -171,6 +174,7 @@ class CustomerBookingController extends Controller
             'type' => 'Beach Event',
             'invoice' => $beachEventBooking->invoice,
             'cancelRoute' => route('bookings.beach-events.cancel', $beachEventBooking),
+            'passDownloadUrl' => null,
         ]);
     }
 
@@ -248,21 +252,21 @@ class CustomerBookingController extends Controller
     {
         $query = $user->hotelBookings()->with('room.hotel')->latest();
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->where(function ($builder) use ($filters) {
                 $builder->whereHas('room.hotel', function ($inner) use ($filters) {
-                    $inner->where('name', 'like', '%' . $filters['search'] . '%');
+                    $inner->where('name', 'like', '%'.$filters['search'].'%');
                 })->orWhereHas('room', function ($inner) use ($filters) {
-                    $inner->where('room_number', 'like', '%' . $filters['search'] . '%');
+                    $inner->where('room_number', 'like', '%'.$filters['search'].'%');
                 });
             });
         }
 
-        if (!empty($filters['from'])) {
+        if (! empty($filters['from'])) {
             $query->whereDate('start_date', '>=', $filters['from']);
         }
 
-        if (!empty($filters['to'])) {
+        if (! empty($filters['to'])) {
             $query->whereDate('start_date', '<=', $filters['to']);
         }
 
@@ -273,17 +277,17 @@ class CustomerBookingController extends Controller
     {
         $query = $user->ferryBookings()->with('ferry')->latest();
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->whereHas('ferry', function ($builder) use ($filters) {
-                $builder->where('name', 'like', '%' . $filters['search'] . '%');
+                $builder->where('name', 'like', '%'.$filters['search'].'%');
             });
         }
 
-        if (!empty($filters['from'])) {
+        if (! empty($filters['from'])) {
             $query->whereDate('booking_time', '>=', $filters['from']);
         }
 
-        if (!empty($filters['to'])) {
+        if (! empty($filters['to'])) {
             $query->whereDate('booking_time', '<=', $filters['to']);
         }
 
@@ -294,17 +298,17 @@ class CustomerBookingController extends Controller
     {
         $query = $user->rideBookings()->with('ride')->latest();
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->whereHas('ride', function ($builder) use ($filters) {
-                $builder->where('name', 'like', '%' . $filters['search'] . '%');
+                $builder->where('name', 'like', '%'.$filters['search'].'%');
             });
         }
 
-        if (!empty($filters['from'])) {
+        if (! empty($filters['from'])) {
             $query->whereDate('booking_time', '>=', $filters['from']);
         }
 
-        if (!empty($filters['to'])) {
+        if (! empty($filters['to'])) {
             $query->whereDate('booking_time', '<=', $filters['to']);
         }
 
@@ -315,17 +319,17 @@ class CustomerBookingController extends Controller
     {
         $query = $user->gameBookings()->with('game')->latest();
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->whereHas('game', function ($builder) use ($filters) {
-                $builder->where('name', 'like', '%' . $filters['search'] . '%');
+                $builder->where('name', 'like', '%'.$filters['search'].'%');
             });
         }
 
-        if (!empty($filters['from'])) {
+        if (! empty($filters['from'])) {
             $query->whereDate('booking_time', '>=', $filters['from']);
         }
 
-        if (!empty($filters['to'])) {
+        if (! empty($filters['to'])) {
             $query->whereDate('booking_time', '<=', $filters['to']);
         }
 
@@ -336,17 +340,17 @@ class CustomerBookingController extends Controller
     {
         $query = $user->beachEventBookings()->with('beachEvent')->latest();
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->whereHas('beachEvent', function ($builder) use ($filters) {
-                $builder->where('name', 'like', '%' . $filters['search'] . '%');
+                $builder->where('name', 'like', '%'.$filters['search'].'%');
             });
         }
 
-        if (!empty($filters['from'])) {
+        if (! empty($filters['from'])) {
             $query->whereDate('booking_date', '>=', $filters['from']);
         }
 
-        if (!empty($filters['to'])) {
+        if (! empty($filters['to'])) {
             $query->whereDate('booking_date', '<=', $filters['to']);
         }
 
@@ -363,8 +367,8 @@ class CustomerBookingController extends Controller
             'type_label' => 'Hotel',
             'status' => $booking->status,
             'title' => $booking->room->hotel->name ?? 'Hotel',
-            'subtitle' => 'Room ' . ($booking->room->room_number ?? 'N/A'),
-            'schedule' => Carbon::parse($booking->start_date)->toDateString() . ' → ' . Carbon::parse($booking->end_date)->toDateString(),
+            'subtitle' => 'Room '.($booking->room->room_number ?? 'N/A'),
+            'schedule' => Carbon::parse($booking->start_date)->toDateString().' → '.Carbon::parse($booking->end_date)->toDateString(),
             'quantity' => $booking->quantity,
             'total_price' => (float) $booking->total_price,
             'detail_url' => route('bookings.hotels.show', $booking),
@@ -448,7 +452,7 @@ class CustomerBookingController extends Controller
             'status' => $booking->status,
             'title' => $booking->beachEvent->name ?? 'Beach Event',
             'subtitle' => 'Event ticket',
-            'schedule' => Carbon::parse($booking->booking_date)->toDateString() . ' ' . $sortAt->format('H:i'),
+            'schedule' => Carbon::parse($booking->booking_date)->toDateString().' '.$sortAt->format('H:i'),
             'quantity' => $booking->quantity,
             'total_price' => (float) $booking->total_price,
             'detail_url' => route('bookings.beach-events.show', $booking),

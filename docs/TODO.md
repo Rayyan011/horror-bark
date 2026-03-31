@@ -1,27 +1,19 @@
-# Improvements Backlog (Proposed)
+# Forward Backlog
 
-## Product/UX
-- [ ] Add search and filters for catalog pages (hotels, ferries, rides, games).
-- [ ] Add booking confirmation emails with calendar attachments.
-- [ ] Add payment status and gateway integration (stripe/paypal/etc.).
-- [ ] Improve customer portal with booking history and receipts list.
-- [ ] Refresh the public site UI (modern typography, updated layouts, mobile-first).
-- [ ] Update imagery and visual branding to reduce "dated" feel.
+## Product
+- [ ] Add payment status and gateway integration.
+- [ ] Send booking confirmation emails with document attachments.
+- [ ] Improve public-site visual polish and image curation.
+- [ ] Refine operator-side booking creation flows to better support walk-up/manual bookings.
 
-## Admin/Analytics
-- [ ] Add Filament stat dashboards (KPIs, revenue, bookings, cancellations).
-- [ ] Add trend charts for booking volume by product and date range.
+## Admin / Reporting
+- [ ] Expand exports beyond ferry CSV to other product types.
+- [ ] Add richer charts for revenue and attendance trends over longer periods.
 
-## Reliability/Operations
-- [ ] Add CI pipeline for tests and linting (PHPUnit + Pint + JS build).
-- [ ] Add structured logging and error reporting (Sentry/Logtail/etc.).
-- [ ] Add background jobs for emails/invoices using the DB queue (Redis optional).
-- [ ] Add backup/restore docs for database and storage.
+## Reliability
+- [ ] Add deployment notes for backup/restore of database and document storage.
+- [ ] Add production-grade error reporting and log aggregation.
 
 ## Security
-- [ ] Add role-based admin permissions and audit logs.
-
-## Engineering Quality
-- [ ] Add feature tests for booking flows and cancellations.
-- [ ] Add factories/seeders for realistic demo data.
-- [ ] Document API-like endpoints or internal services (if needed).
+- [ ] Add audit logs for sensitive admin/operator actions.
+- [ ] Review cross-panel permissions beyond the current ownership scoping pass.

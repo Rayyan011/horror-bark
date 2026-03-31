@@ -1,7 +1,8 @@
 # Docs
 
-- `docs/ARCHITECTURE.md`: System overview and ASCII diagrams.
-- `docs/DEVELOPER.md`: Developer setup, workflows, and app map.
-- `docs/TODO.md`: Proposed improvements backlog.
-- `docs/BOOKING_FILTERS.md`: Query params for catalog/portal filter UX.
-- `docs/ISLAND_ACCESS_RULES.md`: Horror/Picnic island booking access matrix.
+- `docs/ARCHITECTURE.md`: current system overview and runtime shape
+- `docs/DEVELOPER.md`: setup, workflows, and panel/app map
+- `docs/REQUIREMENTS_GAP.md`: verified status review of resolved vs remaining gaps
+- `docs/TODO.md`: forward-looking backlog after the latest recovery work
+- `docs/BOOKING_FILTERS.md`: customer-facing filter/query behavior
+- `docs/ISLAND_ACCESS_RULES.md`: enforced Horror/Picnic island access rules
