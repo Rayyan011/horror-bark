@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
@@ -16,6 +15,12 @@ class GameBooking extends Model
         'total_price',
         'quantity',
         'status',
+        'reminder_sent_at',
+    ];
+
+    protected $casts = [
+        'booking_time' => 'datetime',
+        'reminder_sent_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -37,5 +42,4 @@ class GameBooking extends Model
     {
         return $this->status === 'pending';
     }
-
 }

@@ -5,24 +5,23 @@ namespace App\Http\Controllers\Bookings;
 use App\Http\Controllers\Controller;
 use App\Models\BeachEvent;
 use App\Models\BeachEventBooking;
+use App\Services\BookingLifecycleService;
+use App\Services\IslandAccessService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Services\InvoiceService;
-use App\Services\IslandAccessService;
 
 class BeachEventBookingController extends Controller
 {
     public function store(
         Request $request,
         BeachEvent $beachEvent,
-        InvoiceService $invoiceService,
+        BookingLifecycleService $bookingLifecycleService,
         IslandAccessService $islandAccessService
-    )
-    {
+    ) {
         $data = $request->validate([
             'booking_date' => ['required', 'date'],
             'booking_time' => ['required', 'date_format:H:i'],
-            'quantity' => ['required', 'integer', 'min:1', 'max:' . $beachEvent->max_booking_quantity],
+            'quantity' => ['required', 'integer', 'min:1', 'max:'.$beachEvent->max_booking_quantity],
         ]);
 
         $bookingDate = Carbon::parse($data['booking_date'])->toDateString();
@@ -34,13 +33,13 @@ class BeachEventBookingController extends Controller
             ]);
         }
 
-        $bookingTime = Carbon::parse($bookingDate . ' ' . $data['booking_time'])->setSecond(0);
+        $bookingTime = Carbon::parse($bookingDate.' '.$data['booking_time'])->setSecond(0);
 
         $beachEvent->loadMissing('island');
 
         if (
             $islandAccessService->beachEventRequiresHotel($beachEvent)
-            && !$islandAccessService->hasConfirmedHotelStayAt($request->user(), $bookingTime)
+            && ! $islandAccessService->hasConfirmedHotelStayAt($request->user(), $bookingTime)
         ) {
             return back()->withErrors([
                 'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
@@ -70,7 +69,7 @@ class BeachEventBookingController extends Controller
             'status' => 'confirmed',
         ]);
 
-        $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
+        $bookingLifecycleService->createConfirmedBooking($booking, $request->user());
 
         return back()->with('status', 'Beach event booking created.');
     }

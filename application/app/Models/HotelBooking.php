@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Carbon\Carbon;
 
 class HotelBooking extends Model
 {
@@ -17,6 +16,13 @@ class HotelBooking extends Model
         'total_price',
         'quantity',
         'status',
+        'reminder_sent_at',
+    ];
+
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'reminder_sent_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -38,6 +44,4 @@ class HotelBooking extends Model
     {
         return $this->status === 'pending';
     }
-
-
 }

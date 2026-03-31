@@ -17,10 +17,12 @@ class FerryBooking extends Model
         'status',
         'pass_number',
         'pass_path',
+        'reminder_sent_at',
     ];
 
     protected $casts = [
         'booking_time' => 'datetime',
+        'reminder_sent_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

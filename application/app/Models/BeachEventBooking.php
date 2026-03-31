@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Carbon\Carbon;
 
 class BeachEventBooking extends Model
 {
@@ -17,6 +16,13 @@ class BeachEventBooking extends Model
         'quantity',
         'total_price',
         'status',
+        'reminder_sent_at',
+    ];
+
+    protected $casts = [
+        'booking_date' => 'date',
+        'booking_time' => 'datetime',
+        'reminder_sent_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -33,5 +39,4 @@ class BeachEventBooking extends Model
     {
         return $this->morphOne(Invoice::class, 'invoiceable');
     }
-
 }

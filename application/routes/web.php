@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\FerryPassController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\OperatorReportController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ThemeParkController;
@@ -70,6 +72,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/bookings/rides/{rideBooking}/cancel', [CustomerBookingController::class, 'cancelRide'])->name('bookings.rides.cancel');
     Route::patch('/bookings/games/{gameBooking}/cancel', [CustomerBookingController::class, 'cancelGame'])->name('bookings.games.cancel');
     Route::patch('/bookings/beach-events/{beachEventBooking}/cancel', [CustomerBookingController::class, 'cancelBeachEvent'])->name('bookings.beach-events.cancel');
+    Route::patch('/bookings/hotels/{hotelBooking}/reschedule', [CustomerBookingController::class, 'rescheduleHotel'])->name('bookings.hotels.reschedule');
+    Route::patch('/bookings/ferries/{ferryBooking}/reschedule', [CustomerBookingController::class, 'rescheduleFerry'])->name('bookings.ferries.reschedule');
+    Route::patch('/bookings/rides/{rideBooking}/reschedule', [CustomerBookingController::class, 'rescheduleRide'])->name('bookings.rides.reschedule');
+    Route::patch('/bookings/games/{gameBooking}/reschedule', [CustomerBookingController::class, 'rescheduleGame'])->name('bookings.games.reschedule');
+    Route::patch('/bookings/beach-events/{beachEventBooking}/reschedule', [CustomerBookingController::class, 'rescheduleBeachEvent'])->name('bookings.beach-events.reschedule');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -80,6 +87,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/ferry/passenger-reports', [FerryOperatorReportController::class, 'index'])->name('ferry-reports.index');
     Route::get('/ferry/passenger-reports/export', [FerryOperatorReportController::class, 'export'])->name('ferry-reports.export');
+    Route::get('/reports/admin', [AdminReportController::class, 'index'])->name('admin-reports.index');
+    Route::get('/reports/admin/export', [AdminReportController::class, 'export'])->name('admin-reports.export');
+    Route::get('/reports/{domain}', [OperatorReportController::class, 'index'])
+        ->whereIn('domain', ['hotel', 'ferry', 'ride', 'game'])
+        ->name('operator-reports.index');
+    Route::get('/reports/{domain}/export', [OperatorReportController::class, 'export'])
+        ->whereIn('domain', ['hotel', 'ferry', 'ride', 'game'])
+        ->name('operator-reports.export');
 });
 
 Route::get('/{page_name}', [PagesController::class, 'show'])->name('custom_page'); // Generic route AFTER all specific routes

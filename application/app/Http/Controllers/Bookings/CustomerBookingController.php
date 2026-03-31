@@ -8,7 +8,9 @@ use App\Models\FerryBooking;
 use App\Models\GameBooking;
 use App\Models\HotelBooking;
 use App\Models\RideBooking;
-use Carbon\Carbon;
+use App\Services\BookingLifecycleService;
+use App\Support\BookingSupport;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -32,7 +34,7 @@ class CustomerBookingController extends Controller
         if (! $selectedType || $selectedType === 'hotel') {
             $bookings = $bookings->merge(
                 $this->buildHotelQuery($user, $filters)->get()->map(
-                    fn (HotelBooking $booking) => $this->mapHotelBooking($booking)
+                    fn (HotelBooking $booking) => $this->mapBookingCard($booking)
                 )
             );
         }
@@ -40,7 +42,7 @@ class CustomerBookingController extends Controller
         if (! $selectedType || $selectedType === 'ferry') {
             $bookings = $bookings->merge(
                 $this->buildFerryQuery($user, $filters)->get()->map(
-                    fn (FerryBooking $booking) => $this->mapFerryBooking($booking)
+                    fn (FerryBooking $booking) => $this->mapBookingCard($booking)
                 )
             );
         }
@@ -48,7 +50,7 @@ class CustomerBookingController extends Controller
         if (! $selectedType || $selectedType === 'ride') {
             $bookings = $bookings->merge(
                 $this->buildRideQuery($user, $filters)->get()->map(
-                    fn (RideBooking $booking) => $this->mapRideBooking($booking)
+                    fn (RideBooking $booking) => $this->mapBookingCard($booking)
                 )
             );
         }
@@ -56,7 +58,7 @@ class CustomerBookingController extends Controller
         if (! $selectedType || $selectedType === 'game') {
             $bookings = $bookings->merge(
                 $this->buildGameQuery($user, $filters)->get()->map(
-                    fn (GameBooking $booking) => $this->mapGameBooking($booking)
+                    fn (GameBooking $booking) => $this->mapBookingCard($booking)
                 )
             );
         }
@@ -64,7 +66,7 @@ class CustomerBookingController extends Controller
         if (! $selectedType || $selectedType === 'beach-event') {
             $bookings = $bookings->merge(
                 $this->buildBeachEventQuery($user, $filters)->get()->map(
-                    fn (BeachEventBooking $booking) => $this->mapBeachEventBooking($booking)
+                    fn (BeachEventBooking $booking) => $this->mapBookingCard($booking)
                 )
             );
         }
@@ -116,136 +118,211 @@ class CustomerBookingController extends Controller
 
     public function showHotel(HotelBooking $hotelBooking)
     {
-        $this->authorize('view', $hotelBooking);
-
-        return view('pages.bookings.show', [
-            'booking' => $hotelBooking->load('room.hotel', 'invoice'),
-            'type' => 'Hotel',
-            'invoice' => $hotelBooking->invoice,
-            'cancelRoute' => route('bookings.hotels.cancel', $hotelBooking),
-        ]);
+        return $this->showBooking(
+            $hotelBooking,
+            ['room.hotel', 'invoice'],
+            route('bookings.hotels.cancel', $hotelBooking),
+            route('bookings.hotels.reschedule', $hotelBooking)
+        );
     }
 
     public function showFerry(FerryBooking $ferryBooking)
     {
-        $this->authorize('view', $ferryBooking);
-
-        return view('pages.bookings.show', [
-            'booking' => $ferryBooking->load('ferry', 'invoice'),
-            'type' => 'Ferry',
-            'invoice' => $ferryBooking->invoice,
-            'cancelRoute' => route('bookings.ferries.cancel', $ferryBooking),
-            'passDownloadUrl' => route('bookings.ferries.pass', $ferryBooking),
-        ]);
+        return $this->showBooking(
+            $ferryBooking,
+            ['ferry.island', 'invoice'],
+            route('bookings.ferries.cancel', $ferryBooking),
+            route('bookings.ferries.reschedule', $ferryBooking),
+            route('bookings.ferries.pass', $ferryBooking)
+        );
     }
 
     public function showRide(RideBooking $rideBooking)
     {
-        $this->authorize('view', $rideBooking);
-
-        return view('pages.bookings.show', [
-            'booking' => $rideBooking->load('ride', 'invoice'),
-            'type' => 'Ride',
-            'invoice' => $rideBooking->invoice,
-            'cancelRoute' => route('bookings.rides.cancel', $rideBooking),
-            'passDownloadUrl' => null,
-        ]);
+        return $this->showBooking(
+            $rideBooking,
+            ['ride.island', 'invoice'],
+            route('bookings.rides.cancel', $rideBooking),
+            route('bookings.rides.reschedule', $rideBooking)
+        );
     }
 
     public function showGame(GameBooking $gameBooking)
     {
-        $this->authorize('view', $gameBooking);
-
-        return view('pages.bookings.show', [
-            'booking' => $gameBooking->load('game', 'invoice'),
-            'type' => 'Game',
-            'invoice' => $gameBooking->invoice,
-            'cancelRoute' => route('bookings.games.cancel', $gameBooking),
-            'passDownloadUrl' => null,
-        ]);
+        return $this->showBooking(
+            $gameBooking,
+            ['game.island', 'invoice'],
+            route('bookings.games.cancel', $gameBooking),
+            route('bookings.games.reschedule', $gameBooking)
+        );
     }
 
     public function showBeachEvent(BeachEventBooking $beachEventBooking)
     {
-        $this->authorize('view', $beachEventBooking);
+        return $this->showBooking(
+            $beachEventBooking,
+            ['beachEvent.island', 'invoice'],
+            route('bookings.beach-events.cancel', $beachEventBooking),
+            route('bookings.beach-events.reschedule', $beachEventBooking)
+        );
+    }
+
+    public function cancelHotel(HotelBooking $hotelBooking, BookingLifecycleService $bookingLifecycleService)
+    {
+        return $this->cancelBooking($hotelBooking, $bookingLifecycleService, 'Hotel booking canceled.');
+    }
+
+    public function cancelFerry(FerryBooking $ferryBooking, BookingLifecycleService $bookingLifecycleService)
+    {
+        return $this->cancelBooking($ferryBooking, $bookingLifecycleService, 'Ferry booking canceled.');
+    }
+
+    public function cancelRide(RideBooking $rideBooking, BookingLifecycleService $bookingLifecycleService)
+    {
+        return $this->cancelBooking($rideBooking, $bookingLifecycleService, 'Ride booking canceled.');
+    }
+
+    public function cancelGame(GameBooking $gameBooking, BookingLifecycleService $bookingLifecycleService)
+    {
+        return $this->cancelBooking($gameBooking, $bookingLifecycleService, 'Game booking canceled.');
+    }
+
+    public function cancelBeachEvent(BeachEventBooking $beachEventBooking, BookingLifecycleService $bookingLifecycleService)
+    {
+        return $this->cancelBooking($beachEventBooking, $bookingLifecycleService, 'Beach event booking canceled.');
+    }
+
+    public function rescheduleHotel(
+        Request $request,
+        HotelBooking $hotelBooking,
+        BookingLifecycleService $bookingLifecycleService
+    ) {
+        return $this->rescheduleBooking(
+            $request,
+            $hotelBooking,
+            $bookingLifecycleService,
+            [
+                'start_date' => ['required', 'date'],
+                'end_date' => ['required', 'date', 'after:start_date'],
+            ],
+            'Hotel booking rescheduled.'
+        );
+    }
+
+    public function rescheduleFerry(
+        Request $request,
+        FerryBooking $ferryBooking,
+        BookingLifecycleService $bookingLifecycleService
+    ) {
+        return $this->rescheduleBooking(
+            $request,
+            $ferryBooking,
+            $bookingLifecycleService,
+            [
+                'booking_time' => ['required', 'date'],
+            ],
+            'Ferry booking rescheduled.'
+        );
+    }
+
+    public function rescheduleRide(
+        Request $request,
+        RideBooking $rideBooking,
+        BookingLifecycleService $bookingLifecycleService
+    ) {
+        return $this->rescheduleBooking(
+            $request,
+            $rideBooking,
+            $bookingLifecycleService,
+            [
+                'booking_time' => ['required', 'date'],
+            ],
+            'Ride booking rescheduled.'
+        );
+    }
+
+    public function rescheduleGame(
+        Request $request,
+        GameBooking $gameBooking,
+        BookingLifecycleService $bookingLifecycleService
+    ) {
+        return $this->rescheduleBooking(
+            $request,
+            $gameBooking,
+            $bookingLifecycleService,
+            [
+                'booking_time' => ['required', 'date'],
+            ],
+            'Game booking rescheduled.'
+        );
+    }
+
+    public function rescheduleBeachEvent(
+        Request $request,
+        BeachEventBooking $beachEventBooking,
+        BookingLifecycleService $bookingLifecycleService
+    ) {
+        return $this->rescheduleBooking(
+            $request,
+            $beachEventBooking,
+            $bookingLifecycleService,
+            [
+                'booking_date' => ['required', 'date'],
+                'booking_time' => ['required', 'date_format:H:i'],
+            ],
+            'Beach event booking rescheduled.'
+        );
+    }
+
+    private function showBooking(
+        Model $booking,
+        array $relations,
+        string $cancelRoute,
+        string $rescheduleRoute,
+        ?string $passDownloadUrl = null
+    ) {
+        $this->authorize('view', $booking);
+
+        $booking->load($relations);
 
         return view('pages.bookings.show', [
-            'booking' => $beachEventBooking->load('beachEvent', 'invoice'),
-            'type' => 'Beach Event',
-            'invoice' => $beachEventBooking->invoice,
-            'cancelRoute' => route('bookings.beach-events.cancel', $beachEventBooking),
-            'passDownloadUrl' => null,
+            'booking' => $booking,
+            'type' => BookingSupport::typeLabel($booking),
+            'invoice' => $booking->invoice,
+            'cancelRoute' => $cancelRoute,
+            'rescheduleRoute' => $rescheduleRoute,
+            'passDownloadUrl' => $booking->status === 'canceled' ? null : $passDownloadUrl,
+            'canSelfServiceChange' => BookingSupport::canSelfServiceChange($booking),
+            'changeCutoffAt' => BookingSupport::cutoffAt($booking),
+            'rescheduleFields' => $this->rescheduleFields($booking),
         ]);
     }
 
-    public function cancelHotel(HotelBooking $hotelBooking)
+    private function cancelBooking(Model $booking, BookingLifecycleService $bookingLifecycleService, string $message)
     {
-        $this->authorize('update', $hotelBooking);
+        $this->authorize('update', $booking);
 
-        if ($hotelBooking->status !== 'canceled') {
-            $hotelBooking->update(['status' => 'canceled']);
-            if ($hotelBooking->invoice) {
-                $hotelBooking->invoice->update(['status' => 'canceled']);
-            }
-        }
+        $bookingLifecycleService->cancelBooking($booking, request()->user());
 
-        return back()->with('status', 'Hotel booking canceled.');
+        return back()->with('status', $message);
     }
 
-    public function cancelFerry(FerryBooking $ferryBooking)
-    {
-        $this->authorize('update', $ferryBooking);
+    private function rescheduleBooking(
+        Request $request,
+        Model $booking,
+        BookingLifecycleService $bookingLifecycleService,
+        array $rules,
+        string $message
+    ) {
+        $this->authorize('update', $booking);
 
-        if ($ferryBooking->status !== 'canceled') {
-            $ferryBooking->update(['status' => 'canceled']);
-            if ($ferryBooking->invoice) {
-                $ferryBooking->invoice->update(['status' => 'canceled']);
-            }
-        }
+        $bookingLifecycleService->rescheduleBooking(
+            $booking,
+            $request->validate($rules),
+            $request->user()
+        );
 
-        return back()->with('status', 'Ferry booking canceled.');
-    }
-
-    public function cancelRide(RideBooking $rideBooking)
-    {
-        $this->authorize('update', $rideBooking);
-
-        if ($rideBooking->status !== 'canceled') {
-            $rideBooking->update(['status' => 'canceled']);
-            if ($rideBooking->invoice) {
-                $rideBooking->invoice->update(['status' => 'canceled']);
-            }
-        }
-
-        return back()->with('status', 'Ride booking canceled.');
-    }
-
-    public function cancelGame(GameBooking $gameBooking)
-    {
-        $this->authorize('update', $gameBooking);
-
-        if ($gameBooking->status !== 'canceled') {
-            $gameBooking->update(['status' => 'canceled']);
-            if ($gameBooking->invoice) {
-                $gameBooking->invoice->update(['status' => 'canceled']);
-            }
-        }
-
-        return back()->with('status', 'Game booking canceled.');
-    }
-
-    public function cancelBeachEvent(BeachEventBooking $beachEventBooking)
-    {
-        $this->authorize('update', $beachEventBooking);
-
-        if ($beachEventBooking->status !== 'canceled') {
-            $beachEventBooking->update(['status' => 'canceled']);
-            if ($beachEventBooking->invoice) {
-                $beachEventBooking->invoice->update(['status' => 'canceled']);
-            }
-        }
-
-        return back()->with('status', 'Beach event booking canceled.');
+        return back()->with('status', $message);
     }
 
     private function buildHotelQuery($user, array $filters)
@@ -357,109 +434,66 @@ class CustomerBookingController extends Controller
         return $query;
     }
 
-    private function mapHotelBooking(HotelBooking $booking): array
+    private function mapBookingCard(Model $booking): array
     {
-        $sortAt = Carbon::parse($booking->start_date);
-
         return [
             'id' => $booking->id,
-            'type' => 'hotel',
-            'type_label' => 'Hotel',
+            'type' => BookingSupport::typeKey($booking),
+            'type_label' => BookingSupport::typeLabel($booking),
             'status' => $booking->status,
-            'title' => $booking->room->hotel->name ?? 'Hotel',
-            'subtitle' => 'Room '.($booking->room->room_number ?? 'N/A'),
-            'schedule' => Carbon::parse($booking->start_date)->toDateString().' → '.Carbon::parse($booking->end_date)->toDateString(),
+            'title' => BookingSupport::title($booking),
+            'subtitle' => $booking instanceof HotelBooking
+                ? 'Room '.($booking->room->room_number ?? 'N/A')
+                : (BookingSupport::typeLabel($booking).' booking'),
+            'schedule' => BookingSupport::scheduleLabel($booking),
             'quantity' => $booking->quantity,
             'total_price' => (float) $booking->total_price,
-            'detail_url' => route('bookings.hotels.show', $booking),
-            'cancel_url' => route('bookings.hotels.cancel', $booking),
-            'can_cancel' => $booking->status !== 'canceled',
-            'sort_at' => $sortAt,
+            'detail_url' => $this->detailRoute($booking),
+            'cancel_url' => $this->cancelRoute($booking),
+            'can_cancel' => BookingSupport::canSelfServiceChange($booking),
+            'sort_at' => BookingSupport::startAt($booking),
         ];
     }
 
-    private function mapFerryBooking(FerryBooking $booking): array
+    private function detailRoute(Model $booking): string
     {
-        $sortAt = Carbon::parse($booking->booking_time);
-
-        return [
-            'id' => $booking->id,
-            'type' => 'ferry',
-            'type_label' => 'Ferry',
-            'status' => $booking->status,
-            'title' => $booking->ferry->name ?? 'Ferry',
-            'subtitle' => 'Ferry ticket',
-            'schedule' => $sortAt->format('Y-m-d H:i'),
-            'quantity' => $booking->quantity,
-            'total_price' => (float) $booking->total_price,
-            'detail_url' => route('bookings.ferries.show', $booking),
-            'cancel_url' => route('bookings.ferries.cancel', $booking),
-            'can_cancel' => $booking->status !== 'canceled',
-            'sort_at' => $sortAt,
-        ];
+        return match (true) {
+            $booking instanceof HotelBooking => route('bookings.hotels.show', $booking),
+            $booking instanceof FerryBooking => route('bookings.ferries.show', $booking),
+            $booking instanceof RideBooking => route('bookings.rides.show', $booking),
+            $booking instanceof GameBooking => route('bookings.games.show', $booking),
+            $booking instanceof BeachEventBooking => route('bookings.beach-events.show', $booking),
+            default => route('bookings.index'),
+        };
     }
 
-    private function mapRideBooking(RideBooking $booking): array
+    private function cancelRoute(Model $booking): string
     {
-        $sortAt = Carbon::parse($booking->booking_time);
-
-        return [
-            'id' => $booking->id,
-            'type' => 'ride',
-            'type_label' => 'Ride',
-            'status' => $booking->status,
-            'title' => $booking->ride->name ?? 'Ride',
-            'subtitle' => 'Ride ticket',
-            'schedule' => $sortAt->format('Y-m-d H:i'),
-            'quantity' => $booking->quantity,
-            'total_price' => (float) $booking->total_price,
-            'detail_url' => route('bookings.rides.show', $booking),
-            'cancel_url' => route('bookings.rides.cancel', $booking),
-            'can_cancel' => $booking->status !== 'canceled',
-            'sort_at' => $sortAt,
-        ];
+        return match (true) {
+            $booking instanceof HotelBooking => route('bookings.hotels.cancel', $booking),
+            $booking instanceof FerryBooking => route('bookings.ferries.cancel', $booking),
+            $booking instanceof RideBooking => route('bookings.rides.cancel', $booking),
+            $booking instanceof GameBooking => route('bookings.games.cancel', $booking),
+            $booking instanceof BeachEventBooking => route('bookings.beach-events.cancel', $booking),
+            default => route('bookings.index'),
+        };
     }
 
-    private function mapGameBooking(GameBooking $booking): array
+    private function rescheduleFields(Model $booking): array
     {
-        $sortAt = Carbon::parse($booking->booking_time);
-
-        return [
-            'id' => $booking->id,
-            'type' => 'game',
-            'type_label' => 'Game',
-            'status' => $booking->status,
-            'title' => $booking->game->name ?? 'Game',
-            'subtitle' => 'Game pass',
-            'schedule' => $sortAt->format('Y-m-d H:i'),
-            'quantity' => $booking->quantity,
-            'total_price' => (float) $booking->total_price,
-            'detail_url' => route('bookings.games.show', $booking),
-            'cancel_url' => route('bookings.games.cancel', $booking),
-            'can_cancel' => $booking->status !== 'canceled',
-            'sort_at' => $sortAt,
-        ];
-    }
-
-    private function mapBeachEventBooking(BeachEventBooking $booking): array
-    {
-        $sortAt = Carbon::parse($booking->booking_time);
-
-        return [
-            'id' => $booking->id,
-            'type' => 'beach-event',
-            'type_label' => 'Beach Event',
-            'status' => $booking->status,
-            'title' => $booking->beachEvent->name ?? 'Beach Event',
-            'subtitle' => 'Event ticket',
-            'schedule' => Carbon::parse($booking->booking_date)->toDateString().' '.$sortAt->format('H:i'),
-            'quantity' => $booking->quantity,
-            'total_price' => (float) $booking->total_price,
-            'detail_url' => route('bookings.beach-events.show', $booking),
-            'cancel_url' => route('bookings.beach-events.cancel', $booking),
-            'can_cancel' => $booking->status !== 'canceled',
-            'sort_at' => $sortAt,
-        ];
+        return match (true) {
+            $booking instanceof HotelBooking => [
+                ['name' => 'start_date', 'label' => 'Start date', 'type' => 'date', 'value' => $booking->start_date->toDateString()],
+                ['name' => 'end_date', 'label' => 'End date', 'type' => 'date', 'value' => $booking->end_date->toDateString()],
+            ],
+            $booking instanceof BeachEventBooking => [
+                ['name' => 'booking_date', 'label' => 'Event date', 'type' => 'date', 'value' => $booking->booking_date->toDateString()],
+                ['name' => 'booking_time', 'label' => 'Event time', 'type' => 'time', 'value' => $booking->booking_time->format('H:i')],
+            ],
+            default => [
+                ['name' => 'booking_time', 'label' => 'Booking time', 'type' => 'datetime-local', 'value' => BookingSupport::startAt($booking)->format('Y-m-d\TH:i')],
+            ],
+        };
     }
 
     private function countUpcoming($user): int

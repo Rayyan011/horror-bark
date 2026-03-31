@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Bookings;
 use App\Http\Controllers\Controller;
 use App\Models\Ferry;
 use App\Models\FerryBooking;
-use App\Services\FerryPassService;
-use App\Services\InvoiceService;
+use App\Services\BookingLifecycleService;
 use App\Services\IslandAccessService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,8 +15,7 @@ class FerryBookingController extends Controller
     public function store(
         Request $request,
         Ferry $ferry,
-        InvoiceService $invoiceService,
-        FerryPassService $ferryPassService,
+        BookingLifecycleService $bookingLifecycleService,
         IslandAccessService $islandAccessService
     ) {
         $data = $request->validate([
@@ -66,8 +64,7 @@ class FerryBookingController extends Controller
             'status' => 'confirmed',
         ]);
 
-        $invoiceService->createForBooking($booking, $request->user()->id, (float) $booking->total_price);
-        $ferryPassService->createForBooking($booking);
+        $bookingLifecycleService->createConfirmedBooking($booking, $request->user());
 
         return back()->with('status', 'Ferry booking created.');
     }
