@@ -1,15 +1,16 @@
 # Developer Guide
 
-## Tech Stack
-- Laravel 11 (PHP 8.2+)
-- Filament v3 (admin panels)
-- Blade + Vite (frontend assets)
-- MySQL (Docker default) or SQLite (local default in `.env.example`)
-- Nginx + PHP-FPM (Docker)
+## Stack
+- Laravel 11 / PHP 8.2+
+- Filament v3
+- Blade + Tailwind + Alpine + Vite
+- SQLite by default locally, MySQL in Docker
+- DomPDF for invoices and ferry passes
+- Spatie Permission + Filament Shield
 
-## Local Setup (Non-Docker)
+## Local Setup
 Run from `application/`:
-```
+```bash
 composer install
 npm install
 cp .env.example .env
@@ -18,14 +19,9 @@ php artisan migrate:fresh --seed
 php artisan storage:link
 composer dev
 ```
-App: `http://127.0.0.1:8000`  
-Admin: `http://127.0.0.1:8000/admin`
-
-Admin login (seeded):
-- `test@admin.com` / `test@admin.com`
 
 ## Docker Setup
-```
+```bash
 docker-compose up -d
 docker-compose exec php bash
 cd /var/www/html
@@ -35,65 +31,34 @@ php artisan migrate:fresh --seed
 php artisan storage:link
 php artisan vendor:publish --tag=maps-views
 ```
-App: `http://localhost:8080`  
-Admin: `http://localhost:8080/admin`
 
-## Key Workflows
-- Dev server + queue + logs + Vite: `composer dev`
-- Vite only: `npm run dev`
-- Build assets: `npm run build`
-- Tests: `php artisan test` or `vendor/bin/phpunit`
-- Format PHP: `php artisan pint`
+## Seeded Admin
+- `test@admin.com`
+- password `test@admin.com`
 
-## Queue (DB Driver)
-Use the database queue to avoid extra infrastructure.
-1) Create the jobs table:
-```
-php artisan queue:table
-php artisan migrate
-```
-2) Set `.env`:
-```
-QUEUE_CONNECTION=database
-```
-3) Run a worker:
-```
-php artisan queue:work
-```
+## Common Commands
+- `composer dev`
+- `php artisan test`
+- `./vendor/bin/pint --test`
+- `npm run build`
 
 ## App Map
 - Routes: `application/routes/web.php`
 - Controllers: `application/app/Http/Controllers/`
 - Booking controllers: `application/app/Http/Controllers/Bookings/`
+- Services: `application/app/Services/`
+- Filament resources/panels: `application/app/Filament/`
 - Models: `application/app/Models/`
-- Filament resources: `application/app/Filament/Resources/`
 - Views/assets: `application/resources/`
-- Migrations/seeders: `application/database/`
+- Tests: `application/tests/`
 
-## Core Features
-- Public catalog pages: hotels, ferries, theme park rides, games, beach events
-- Customer auth + booking portal
-- Booking creation and cancellations
-- Invoices (view + download)
-- Contact form
-- CMS pages
-- Filament admin resources for all core domains
+## Current Implementation Notes
+- Promotions are admin-managed through `PromotionResource` and rendered on the public homepage.
+- Ferry bookings issue both an invoice and a ferry pass.
+- Ferry passenger reports live on `/ferry/passenger-reports` and support CSV export.
+- Island-aware booking enforcement is implemented in `IslandAccessService`.
+- Operator resources are scoped by ownership rather than showing global inventory.
 
-## Data Model (High Level)
-- `Hotel` -> `Room` -> `HotelBooking`
-- `Ferry` -> `FerryBooking` (with slots)
-- `Ride` -> `RideBooking`
-- `Game` -> `GameBooking`
-- `BeachEvent` -> `BeachEventBooking`
-- `Invoice` tied to bookings
-- `Page` for CMS content
-- `Contact` for contact form submissions
-
-## Admin (Filament)
-Admins manage catalog data, bookings, invoices, pages, users, and contacts.
-See `application/app/Filament/Resources/` for per-domain configuration.
-
-## Notes
-- `composer dev` starts a queue listener, but the app currently has few or no
-  custom queued jobs defined. If adding mail/async processing, consider jobs.
-- `.env.example` defaults to SQLite; switch to MySQL for parity with Docker.
+## Verification Notes
+- The repo now includes a GitHub Actions workflow at `.github/workflows/ci.yml`.
+- Local verification still requires installing Composer and npm dependencies because vendor/node modules are not committed.

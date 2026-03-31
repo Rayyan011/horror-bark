@@ -1,11 +1,7 @@
 # Architecture
 
 ## Overview
-This is a Laravel 11 monolith for a theme park booking site with a Filament
-admin panel. The customer-facing site supports browsing and booking hotels,
-ferry tickets, rides, games, and beach events, plus a contact form, CMS pages,
-and a customer booking portal. Admins manage catalog data and bookings via
-Filament resources.
+Horror Bark is a Laravel 11 monolith with Blade/Vite on the public site and Filament v3 for admin/operator panels. The same codebase serves customer browsing/booking, operator workflows, PDF document generation, and marketing/content management.
 
 ## High-Level Diagram
 ```
@@ -16,85 +12,77 @@ Filament resources.
                        v
            +-----------------------+
            |     Laravel App       |
-           |  routes + middleware  |
+           | routes + middleware   |
            +-----------+-----------+
                        |
-        +--------------+-------------------+
-        |                                  |
-        v                                  v
-+-------------------+            +-----------------------+
-| MVC Controllers   |            |  Filament Admin       |
-| (web + bookings)  |            |  /admin resources     |
-+---------+---------+            +-----------+-----------+
-          |                                  |
-          v                                  v
-+-------------------+            +-----------------------+
-| Blade Views +     |            |  Eloquent Models      |
-| Vite Assets        |            |  + Policies           |
-+---------+---------+            +-----------+-----------+
-          |                                  |
-          +---------------+------------------+
-                          v
-                  +---------------+
-                  |   Database    |
-                  +---------------+
-                          |
-                          v
-                  +---------------+
-                  |  Storage/FS   |
-                  +---------------+
+        +--------------+------------------------------+
+        |                                             |
+        v                                             v
++------------------------+                +---------------------------+
+| Public MVC Controllers |                | Filament Panels           |
+| catalogs + bookings    |                | admin + operator portals  |
++-----------+------------+                +-------------+-------------+
+            |                                             |
+            v                                             v
++------------------------+                +---------------------------+
+| Blade Views + Vite     |                | Eloquent Models + Queries |
+| homepage + portal      |                | scoped by role/ownership  |
++-----------+------------+                +-------------+-------------+
+            +-----------------------------+-------------+
+                                          v
+                                  +---------------+
+                                  |   Database    |
+                                  +-------+-------+
+                                          |
+                                          v
+                                  +---------------+
+                                  | Storage / PDF |
+                                  +---------------+
 ```
 
-## Booking Flow (Customer)
-```
-[Browse] -> [Select item] -> [Create Booking] -> [Invoice] -> [Portal]
-   |            |                  |               |          |
-   |            |                  |               |          +-- View/cancel booking
-   |            |                  |               +------------- Download invoice
-   |            |                  +----------------------------- Booking record
-   +------------+----------------------------------------------- Public catalog
-```
-
-## Key Modules
-- Web routes: `application/routes/web.php`
-- Controllers: `application/app/Http/Controllers/`
-- Booking controllers: `application/app/Http/Controllers/Bookings/`
-- Models: `application/app/Models/`
-- Filament resources: `application/app/Filament/Resources/`
-- Views/assets: `application/resources/`
-
-## Core Domain Entities
+## Core Domains
 - Hotels, Rooms, HotelBookings
-- Ferries, FerrySlots, FerryBookings
+- Ferries, FerrySlots, FerryBookings, Ferry Passes
 - Rides, RideBookings
 - Games, GameBookings
 - BeachEvents, BeachEventBookings
-- Islands
-- Pages (CMS)
-- Contacts (contact form)
 - Invoices
-- Users
-
-## Admin (Filament)
-Admins use Filament resources to manage:
-- Catalog data (hotels, rooms, ferries, slots, rides, games, events, islands)
-- CMS pages
-- Users
+- Promotions
+- Islands
+- Pages
 - Contacts
-- Bookings and invoices
+- Users and role-based panel access
 
-## Data & State
+## Public Flow
 ```
-Catalog (hotels/ferries/rides/games/events)
-        |
-        v
-Bookings (per user)
-        |
-        v
-Invoices + Downloads
+[Browse] -> [Select item] -> [Create booking] -> [Invoice / Ferry Pass] -> [Portal]
+     |             |                |                    |                |
+     |             |                |                    |                +-- View / cancel
+     |             |                |                    +------------------- Download documents
+     |             |                +---------------------------------------- Persist booking
+     +-------------+--------------------------------------------------------- Catalog + marketing
 ```
 
-## Runtime/Deployment
-- Local dev: `composer dev` in `application/`
-- Docker stack: `docker-compose.yml` with PHP-FPM + Nginx + MySQL
-- Public files via `storage:link`
+## Panels
+- `admin`: full management, dashboards, promotions, content, users, bookings
+- `hotel`: hotel inventory and hotel booking operations
+- `ferry`: ferry inventory, ferry booking operations, passenger reports
+- `ride`: ride inventory and ride booking operations
+- `game`: game inventory and game booking operations
+- `user`: customer-facing booking widgets and summaries
+
+## Important Runtime Rules
+- Ferry bookings require a valid overlapping hotel stay only when the destination is Horror Island.
+- Ride and game bookings require a valid overlapping hotel stay on Horror Island.
+- Beach events default to Picnic Island access rules unless explicitly linked otherwise.
+- Ferry operators, game operators, ride operators, and hotel operators are scoped to their own records in their panels.
+
+## Documents and Reporting
+- Invoices are generated as PDFs for all booking types.
+- Ferry bookings generate a separate ferry pass PDF.
+- Ferry operators can view passenger manifests and export CSV trip reports.
+
+## Deployment
+- Local dev via `composer dev`
+- Docker via `docker-compose.yml`
+- CI via GitHub Actions for tests, Pint, and frontend build

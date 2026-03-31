@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  laravel:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: application
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, dom, fileinfo, pdo_sqlite
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: application/package-lock.json
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          touch database/database.sqlite
+          php artisan key:generate
+
+      - name: Run PHPUnit
+        run: php artisan test
+
+      - name: Run Pint
+        run: >
+          ./vendor/bin/pint --test
+          app/Filament/Ferry/Resources/FerryBookingResource.php
+          app/Filament/Ferry/Resources/FerryResource.php
+          app/Filament/Ferry/Widgets/FerryQuickActionsWidget.php
+          app/Filament/Game/Resources/GameBookingResource.php
+          app/Filament/Game/Resources/GameResource.php
+          app/Filament/Ride/Resources/RideBookingResource.php
+          app/Filament/Resources/PromotionResource.php
+          app/Filament/Resources/PromotionResource/Pages/ListPromotions.php
+          app/Filament/Resources/PromotionResource/Pages/CreatePromotion.php
+          app/Filament/Resources/PromotionResource/Pages/EditPromotion.php
+          app/Http/Controllers/Bookings/CustomerBookingController.php
+          app/Http/Controllers/Bookings/FerryBookingController.php
+          app/Http/Controllers/FerryOperatorReportController.php
+          app/Http/Controllers/FerryPassController.php
+          app/Http/Controllers/HomeController.php
+          app/Models/FerryBooking.php
+          app/Models/Promotion.php
+          app/Services/FerryPassService.php
+          database/migrations/2026_03_31_000001_create_promotions_table.php
+          database/migrations/2026_03_31_000002_add_pass_fields_to_ferry_bookings_table.php
+          database/seeders/HotelsTableSeeder.php
+          routes/web.php
+          tests/Feature/ExampleTest.php
+          tests/Feature/OperatorPanelScopingTest.php
+          tests/Feature/PromotionsAndFerryOperationsTest.php
+
+      - name: Build frontend assets
+        run: npm run build

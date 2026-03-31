@@ -1,21 +1,34 @@
-# Horror Bark (Laravel 11 + Filament)
+# Horror Bark
 
-Horror Bark is a booking platform for a theme park experience. The app includes customer-facing booking flows (hotel, ferry, rides, games, beach events) and multiple Filament panels for operations.
+Horror Bark is a Laravel 11 + Filament booking platform for a horror-themed island resort and theme park. The public app supports hotel stays, ferry tickets, rides, games, beach events, invoices, ferry passes, CMS pages, promotions, and a customer booking portal. Filament panels handle admin and operator workflows for hotels, ferries, rides, games, and end users.
+
+## Current State
+- Mature academic/demo MVP rather than a starter project.
+- Core customer booking flows are implemented and covered by feature tests.
+- Operator/admin dashboards exist across panels.
+- Island-aware booking rules are enforced in code.
+- Promotions, ferry passes, and ferry passenger reports are now implemented.
+- CI is configured to run PHP tests, Pint, and the frontend production build.
 
 ## App URLs
 - App: `http://127.0.0.1:8000`
-- Admin panel: `http://127.0.0.1:8000/admin`
+- Admin: `http://127.0.0.1:8000/admin`
+- Hotel panel: `http://127.0.0.1:8000/hotel`
+- Ferry panel: `http://127.0.0.1:8000/ferry`
+- Ride panel: `http://127.0.0.1:8000/ride`
+- Game panel: `http://127.0.0.1:8000/game`
+- User panel: `http://127.0.0.1:8000/user`
 
 ## Local Setup
-1. `cd application`
-2. `composer install`
-3. `npm install`
-4. `cp .env.example .env`
-5. Configure DB credentials in `.env`
-6. `php artisan key:generate`
-7. `php artisan migrate:fresh --seed`
-8. `php artisan storage:link`
-9. `composer dev`
+Run from `application/`:
+
+1. `composer install`
+2. `npm install`
+3. `cp .env.example .env`
+4. `php artisan key:generate`
+5. `php artisan migrate:fresh --seed`
+6. `php artisan storage:link`
+7. `composer dev`
 
 ## Docker Setup
 1. `docker-compose up -d`
@@ -27,50 +40,26 @@ Horror Bark is a booking platform for a theme park experience. The app includes 
 7. `php artisan storage:link`
 8. `php artisan vendor:publish --tag=maps-views`
 
-If Docker builds fail unexpectedly:
-- `docker compose build --no-cache`
-
-## Seeded Admin Credentials
+## Seeded Admin
 - Email: `test@admin.com`
 - Password: `test@admin.com`
-- Default seeded role: `super_admin`
+- Role: `super_admin`
 
-## Panel Access (RBAC)
-Panel access is role-based and enforced at panel level.
+## Implemented Highlights
+- Public catalogs for hotels, ferries, rides, games, and beach events
+- Customer registration/login and booking portal
+- Invoice PDF generation and download
+- Ferry pass generation and download
+- Island-aware access rules for Horror Island vs Picnic Island
+- Promotions managed via Filament and rendered on the homepage
+- Ferry passenger/trip reporting with CSV export
+- Multi-panel Filament dashboards and role-based panel access
 
-| Panel ID / Path | Allowed Roles |
-| --- | --- |
-| `admin` (`/admin`) | `admin`, `super_admin` |
-| `hotel` (`/hotel`) | `hotel_manager`, `super_admin` |
-| `ferry` (`/ferry`) | `ferry_manager`, `super_admin` |
-| `ride` (`/ride`) | `ride_manager`, `super_admin` |
-| `game` (`/game`) | `game_manager`, `super_admin` |
-| `user` (`/user`) | `user`, `super_admin` |
-
-### Supported Roles
-- `super_admin`
-- `admin`
-- `hotel_manager`
-- `ferry_manager`
-- `ride_manager`
-- `game_manager`
-- `user`
-
-Notes:
-- `super_admin` can access all panels.
-- `admin` is restricted to `/admin` only.
-- Users are managed as single-role accounts in the admin user form.
-
-## Seed Only Roles + Super Admin Assignment
+## Tests and Checks
 Run from `application/`:
-- `php artisan db:seed --class=RolesAndPanelAccessSeeder`
-
-## Common Commands (run from `application/`)
-- Full dev stack: `composer dev`
-- Vite only: `npm run dev`
-- Build assets: `npm run build`
-- Run tests: `php artisan test`
-- Format PHP: `php artisan pint`
+- `php artisan test`
+- `./vendor/bin/pint --test`
+- `npm run build`
 
 ## Key Paths
 - App code: `application/app/`
@@ -78,7 +67,8 @@ Run from `application/`:
 - Views/assets: `application/resources/`
 - Migrations/seeders: `application/database/`
 - Tests: `application/tests/`
-- Public assets: `application/public/`
-- Nginx config: `nginx/`
-- PHP-FPM config: `php/`
-- Docker compose: `docker-compose.yml`
+- Docker config: `docker-compose.yml`, `nginx/`, `php/`
+
+## Notes
+- `uwe-course.md` is a UWE module specification, not the authoritative feature/status document for this repo.
+- See `docs/` for the current architecture, developer notes, and backlog.

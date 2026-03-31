@@ -6,6 +6,7 @@ use App\Models\BeachEvent;
 use App\Models\Game;
 use App\Models\Hotel;
 use App\Models\Island;
+use App\Models\Promotion;
 use App\Models\Ride;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -34,6 +35,13 @@ class HomeController extends Controller
             ->whereNotNull('longitude')
             ->get();
 
+        $promotions = Promotion::query()
+            ->active()
+            ->orderByDesc('starts_at')
+            ->orderByDesc('created_at')
+            ->limit(3)
+            ->get();
+
         $hauntRides = Ride::query()
             ->orderBy('name')
             ->orderBy('id')
@@ -52,7 +60,7 @@ class HomeController extends Controller
 
         $otherHaunts = $this->buildOtherHaunts($hauntRides, $hauntGames, $hauntBeachEvents);
 
-        return view('pages.home', compact('hotels', 'islands', 'rides', 'games', 'beachEvents', 'otherHaunts'));
+        return view('pages.home', compact('hotels', 'islands', 'rides', 'games', 'beachEvents', 'promotions', 'otherHaunts'));
     }
 
     private function buildOtherHaunts(Collection $rides, Collection $games, Collection $beachEvents): Collection
@@ -77,7 +85,7 @@ class HomeController extends Controller
             foreach (array_keys($queues) as $type) {
                 $item = $queues[$type]->get($positions[$type]);
 
-                if (!$item) {
+                if (! $item) {
                     continue;
                 }
 
@@ -90,7 +98,7 @@ class HomeController extends Controller
                 }
             }
 
-            if (!$addedInRound) {
+            if (! $addedInRound) {
                 break;
             }
         }
@@ -119,14 +127,14 @@ class HomeController extends Controller
         };
 
         $images = is_array($item->images) ? $item->images : [];
-        $fallbackSeed = Str::slug($type . '-' . $item->id);
+        $fallbackSeed = Str::slug($type.'-'.$item->id);
 
         return [
             'type' => $type,
             'title' => $item->name,
             'description' => filled($item->description ?? null) ? $item->description : $defaultDescription,
             'images' => $images,
-            'image' => empty($images) ? 'https://picsum.photos/seed/' . $fallbackSeed . '/800/1000' : null,
+            'image' => empty($images) ? 'https://picsum.photos/seed/'.$fallbackSeed.'/800/1000' : null,
             'href' => $href,
             'linkText' => $linkText,
         ];

@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 
 class HotelsTableSeeder extends Seeder
 {
-
     /**
      * Auto generated seed file
      *
@@ -14,22 +13,19 @@ class HotelsTableSeeder extends Seeder
      */
     public function run()
     {
-        
 
         \DB::table('hotels')->delete();
-        
-        \DB::table('hotels')->insert(array (
-            0 => 
-            array (
+
+        \DB::table('hotels')->insert([
+            0 => [
                 'id' => 1,
                 'user_id' => 1,
-                'name' => 'The shining my nigga',
+                'name' => 'The Shining Manor',
                 'location' => 'Main island ',
                 'created_at' => '2025-03-18 12:10:21',
                 'updated_at' => '2025-03-18 12:10:21',
-            ),
-        ));
-        
-        
+            ],
+        ]);
+
     }
 }

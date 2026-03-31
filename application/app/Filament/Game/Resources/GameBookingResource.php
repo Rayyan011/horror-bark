@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class GameBookingResource extends Resource
 {
@@ -17,16 +18,28 @@ class GameBookingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('game', fn (Builder $query) => $query->where('user_id', auth()->id()));
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
-            // Select the user making the booking
             Forms\Components\Select::make('user_id')
                 ->relationship('user', 'name')
+                ->searchable()
+                ->preload()
                 ->required(),
-            // Select the game; reactive so that changes update total_price
             Forms\Components\Select::make('game_id')
-                ->relationship('game', 'name')
+                ->label('Game')
+                ->options(fn () => Game::query()
+                    ->where('user_id', auth()->id())
+                    ->orderBy('name')
+                    ->pluck('name', 'id')
+                    ->toArray())
+                ->searchable()
                 ->reactive()
                 ->afterStateUpdated(function (callable $get, callable $set) {
                     $gameId = $get('game_id');
@@ -39,10 +52,8 @@ class GameBookingResource extends Resource
                     }
                 })
                 ->required(),
-            // Booking time field
             Forms\Components\DateTimePicker::make('booking_time')
                 ->required(),
-            // Quantity field; reactive so that changes update total_price
             Forms\Components\TextInput::make('quantity')
                 ->numeric()
                 ->minValue(1)
@@ -58,16 +69,14 @@ class GameBookingResource extends Resource
                     }
                 })
                 ->required(),
-            // Calculated total_price field (read-only but dehydrated)
             Forms\Components\TextInput::make('total_price')
                 ->numeric()
                 ->disabled()
                 ->dehydrated(true)
                 ->required(),
-            // Booking status field
             Forms\Components\Select::make('status')
                 ->options([
-                    'pending'   => 'Pending',
+                    'pending' => 'Pending',
                     'confirmed' => 'Confirmed',
                     'canceled' => 'Canceled',
                 ])
@@ -90,9 +99,9 @@ class GameBookingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListGameBookings::route('/'),
+            'index' => Pages\ListGameBookings::route('/'),
             'create' => Pages\CreateGameBooking::route('/create'),
-            'edit'   => Pages\EditGameBooking::route('/{record}/edit'),
+            'edit' => Pages\EditGameBooking::route('/{record}/edit'),
         ];
     }
 }
