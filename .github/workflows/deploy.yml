@@ -42,7 +42,7 @@ jobs:
 
             # Build and restart containers while the app is in maintenance mode.
             docker compose build
-            docker compose up -d
+            docker compose up -d --force-recreate --remove-orphans
 
             # Install PHP dependencies
             docker exec horrorbark-php composer install --no-dev --optimize-autoloader
@@ -58,13 +58,10 @@ jobs:
             docker exec horrorbark-php chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
             docker exec horrorbark-php php artisan optimize
 
-            # Gracefully reload PHP-FPM workers so every request picks up the same Vite manifest and built assets.
-            docker exec horrorbark-php sh -lc 'kill -USR2 1'
-            sleep 2
-
-            # Restart Traefik only after the new release is ready.
-            docker restart coolify-proxy
-            sleep 3
+            # Fully restart PHP while the app is still down so no stale worker
+            # can keep an old Vite manifest cached in memory.
+            docker compose restart php
+            sleep 5
 
             deploy_succeeded=1
             echo "Deploy complete!"
