@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\BeachEvent;
+use App\Models\Ferry;
 use App\Models\Game;
 use App\Models\Hotel;
 use App\Models\Island;
-use App\Models\Ferry;
 use App\Models\Promotion;
 use App\Models\Ride;
 use App\Services\HorrorAtlasService;
+use App\Support\HorrorGeneratedMediaCatalog;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
@@ -149,14 +149,13 @@ class HomeController extends Controller
         };
 
         $images = is_array($item->images) ? $item->images : [];
-        $fallbackSeed = Str::slug($type.'-'.$item->id);
 
         return [
             'type' => $type,
             'title' => $item->name,
             'description' => filled($item->description ?? null) ? $item->description : $defaultDescription,
             'images' => $images,
-            'image' => empty($images) ? 'https://picsum.photos/seed/'.$fallbackSeed.'/800/1000' : null,
+            'image' => empty($images) ? HorrorGeneratedMediaCatalog::path('fallbacks', $type === 'beach_event' ? 'beach-event' : $type) : null,
             'href' => $href,
             'linkText' => $linkText,
         ];

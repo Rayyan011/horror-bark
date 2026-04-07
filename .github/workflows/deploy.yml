@@ -15,8 +15,22 @@ jobs:
           username: root
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            set -e
+            set -Eeuo pipefail
             cd /opt/horror-bark
+
+            deploy_succeeded=0
+
+            finish_deploy() {
+              if [ "$deploy_succeeded" -eq 1 ]; then
+                docker exec horrorbark-php php artisan up || true
+              else
+                echo "Deployment failed; application remains in maintenance mode."
+              fi
+            }
+
+            trap finish_deploy EXIT
+
+            docker exec horrorbark-php php artisan down --retry=60 || true
 
             # Pull latest code (keep production docker-compose.yml)
             git stash --include-untracked || true
@@ -24,13 +38,11 @@ jobs:
             git checkout stash -- docker-compose.yml 2>/dev/null || true
             git stash drop 2>/dev/null || true
 
-            # Build and restart containers
+            docker exec horrorbark-php php artisan optimize:clear || true
+
+            # Build and restart containers while the app is in maintenance mode.
             docker compose build
             docker compose up -d
-
-            # Restart Traefik so it picks up recreated containers
-            docker restart coolify-proxy
-            sleep 3
 
             # Install PHP dependencies
             docker exec horrorbark-php composer install --no-dev --optimize-autoloader
@@ -42,4 +54,10 @@ jobs:
             docker exec horrorbark-php php artisan migrate --force
             docker exec horrorbark-php chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
             docker exec horrorbark-php php artisan optimize
+
+            # Restart Traefik only after the new release is ready.
+            docker restart coolify-proxy
+            sleep 3
+
+            deploy_succeeded=1
             echo "Deploy complete!"
