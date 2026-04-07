@@ -50,10 +50,17 @@ jobs:
             # Build frontend assets
             docker run --rm -v /opt/horror-bark/application:/app -w /app node:20-alpine sh -c 'npm ci && npm run build'
 
+            # Clear Laravel caches after the new asset manifest is written.
+            docker exec horrorbark-php php artisan optimize:clear
+
             # Run migrations and optimize
             docker exec horrorbark-php php artisan migrate --force
             docker exec horrorbark-php chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
             docker exec horrorbark-php php artisan optimize
+
+            # Reload app workers so every request picks up the same Vite manifest and built assets.
+            docker compose restart php nginx
+            sleep 3
 
             # Restart Traefik only after the new release is ready.
             docker restart coolify-proxy
