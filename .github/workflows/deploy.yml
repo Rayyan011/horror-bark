@@ -38,7 +38,15 @@ jobs:
             git checkout stash -- docker-compose.yml 2>/dev/null || true
             git stash drop 2>/dev/null || true
 
+            # Clear host-side compiled artifacts before containers come back up.
+            find application/storage/framework/views -type f -delete || true
+            find application/bootstrap/cache -maxdepth 1 -type f ! -name '.gitignore' -delete || true
+
             docker exec horrorbark-php php artisan optimize:clear || true
+
+            # Remove any lingering app containers so the proxy cannot keep
+            # routing traffic to an older Horror Bark runtime.
+            docker ps -aq --format '{{.ID}} {{.Names}}' | awk '$2 ~ /^horrorbark-(nginx|php)/ { print $1 }' | xargs -r docker rm -f
 
             # Build and restart containers while the app is in maintenance mode.
             docker compose build
