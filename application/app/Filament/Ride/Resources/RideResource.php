@@ -32,15 +32,40 @@ class RideResource extends Resource
         return $form->schema([
             Hidden::make('user_id')->default(fn () => auth()->id())->required(),
             TextInput::make('name')->required(),
+            Forms\Components\Textarea::make('description')
+                ->rows(4)
+                ->columnSpanFull(),
             TextInput::make('price')->numeric()->required(),
-            TextInput::make('latitude')->numeric()->required(),
-            TextInput::make('longitude')->numeric()->required(),
             Select::make('island_id')
                 ->label('Island')
                 ->relationship('island', 'name', fn ($query) => $query->where('type', IslandAccessService::HORROR_ISLAND))
                 ->required()
                 ->searchable()
                 ->helperText('Rides are available on Horror Island only.'),
+            Forms\Components\Section::make('Public Map Placement')
+                ->schema([
+                    Forms\Components\Placeholder::make('horror_map_picker')
+                        ->hiddenLabel()
+                        ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
+                    Forms\Components\Grid::make(2)
+                        ->schema([
+                            TextInput::make('map_x')
+                                ->label('Map X')
+                                ->numeric()
+                                ->default(50)
+                                ->readOnly()
+                                ->extraInputAttributes(['data-horror-map-x' => '1']),
+                            TextInput::make('map_y')
+                                ->label('Map Y')
+                                ->numeric()
+                                ->default(50)
+                                ->readOnly()
+                                ->extraInputAttributes(['data-horror-map-y' => '1']),
+                        ]),
+                ])
+                ->columnSpanFull(),
+            TextInput::make('latitude')->numeric(),
+            TextInput::make('longitude')->numeric(),
             TextInput::make('max_capacity')->numeric()->required(),
             TextInput::make('max_booking_quantity')->numeric()->required(),
             FileUpload::make('images')

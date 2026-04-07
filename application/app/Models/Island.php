@@ -12,6 +12,8 @@ class Island extends Model
         'description',
         'latitude',
         'longitude',
+        'map_x',
+        'map_y',
         'images',
     ];
 

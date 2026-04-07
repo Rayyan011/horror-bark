@@ -25,6 +25,7 @@ class BeachEventController extends Controller
             $search = trim($filters['search']);
             $query->where(function ($builder) use ($search) {
                 $builder->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
                     ->orWhereHas('owner', function ($ownerQuery) use ($search) {
                         $ownerQuery->where('name', 'like', '%' . $search . '%');
                     });

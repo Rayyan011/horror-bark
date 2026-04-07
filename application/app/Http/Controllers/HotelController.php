@@ -26,7 +26,8 @@ class HotelController extends Controller
             $search = trim($filters['search']);
             $query->where(function ($builder) use ($search) {
                 $builder->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('location', 'like', '%' . $search . '%');
+                    ->orWhere('location', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
             });
         }
 

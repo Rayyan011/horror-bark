@@ -58,7 +58,7 @@
                 :title="$featuredHotel->name"
                 :description="$featuredHotel->description ?? 'Stone walls, whispered secrets, and suites draped in moonlit velvet.'"
                 :images="$featuredHotel->images"
-                :image="empty($featuredHotel->images) ? 'https://picsum.photos/seed/' . $featuredHotel->id . '/800/1000' : null"
+                :image="empty($featuredHotel->images) ? \App\Support\HorrorGeneratedMediaCatalog::path('fallbacks', 'hotel') : null"
                 :link="route('hotels.index')"
                 link-text="View Chambers"
             />
@@ -69,7 +69,7 @@
                 :title="$featuredRide->name"
                 :description="$featuredRide->description ?? 'Rides forged from twisted iron and fog. The laughter may not be your own.'"
                 :images="$featuredRide->images"
-                :image="empty($featuredRide->images) ? 'https://picsum.photos/seed/' . $featuredRide->id . '/800/1000' : null"
+                :image="empty($featuredRide->images) ? \App\Support\HorrorGeneratedMediaCatalog::path('fallbacks', 'ride') : null"
                 :link="route('themepark.index')"
                 link-text="Acquire Ticket"
             />
@@ -80,7 +80,7 @@
                 :title="$featuredBeachEvent->name"
                 :description="$featuredBeachEvent->description ?? 'Midnight gatherings where black ocean meets gray sand and distant music.'"
                 :images="$featuredBeachEvent->images"
-                :image="empty($featuredBeachEvent->images) ? 'https://picsum.photos/seed/' . $featuredBeachEvent->id . '/800/1000' : null"
+                :image="empty($featuredBeachEvent->images) ? \App\Support\HorrorGeneratedMediaCatalog::path('fallbacks', 'beach-event') : null"
                 :link="route('beach-events.index')"
                 link-text="Observe Events"
             />
@@ -105,21 +105,17 @@
                 </div>
 
                 <x-ui.button :href="route('themepark.index')" variant="secondary">
-                    Expand Map
+                    Explore Grounds
                 </x-ui.button>
             </div>
 
             <x-map.island-map
-                :center="[4.22700104517645, 73.42662978621766]"
-                :zoom="16"
-                :interactive="false"
-                height="h-[500px]"
-                :markers="[
-                    ...$hotels->map(fn ($h) => ['lat' => $h->latitude, 'lng' => $h->longitude, 'info' => $h->name, 'icon' => 'images/hotel.png'])->toArray(),
-                    ...$rides->map(fn ($ride) => ['lat' => $ride->latitude, 'lng' => $ride->longitude, 'info' => $ride->name, 'icon' => 'images/ride.png'])->toArray(),
-                    ...$games->map(fn ($game) => ['lat' => $game->latitude, 'lng' => $game->longitude, 'info' => $game->name, 'icon' => 'images/game.png'])->toArray(),
-                    ...$beachEvents->map(fn ($event) => ['lat' => $event->latitude, 'lng' => $event->longitude, 'info' => $event->name, 'icon' => 'images/beach.png'])->toArray(),
-                ]"
+                :zones="$atlasData['zones']"
+                :locations="$atlasData['locations']"
+                :featured="$atlasData['featured']"
+                compact
+                height="min-h-[34rem]"
+                subtitle="A fictional chart of Horror-Bark Isle, with live destinations surfaced directly from tonight’s catalog."
             />
         </div>
     </section>

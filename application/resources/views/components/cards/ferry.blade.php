@@ -6,10 +6,11 @@
 <x-ui.entity-card
     :title="$ferry->name"
     :meta="[
-        ['label' => 'Island', 'value' => $ferry->island->name ?? 'Horror Island', 'tone' => 'muted'],
+        ['label' => 'Destination', 'value' => $ferry->island->name ?? 'Horror Island', 'tone' => 'muted'],
         ['label' => 'Price', 'value' => 'MVR ' . number_format($ferry->price, 2), 'tone' => 'muted'],
         ['label' => 'Max Capacity', 'value' => $ferry->max_capacity, 'tone' => 'muted'],
     ]"
+    :description="$ferry->description"
 >
     <x-slot:footer>
         @auth

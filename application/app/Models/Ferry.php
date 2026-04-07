@@ -11,10 +11,13 @@ class Ferry extends Model
     protected $fillable = [
         'user_id',           // Owner of the ferry
         'name',
+        'description',
         'price',
         'max_capacity',
         'max_booking_quantity',
         'island_id',         // Foreign key to the Island model
+        'map_x',
+        'map_y',
     ];
 
     public function owner(): BelongsTo

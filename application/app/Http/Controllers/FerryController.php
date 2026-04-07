@@ -24,7 +24,10 @@ class FerryController extends Controller
 
         if (!empty($filters['search'])) {
             $search = trim($filters['search']);
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where(function ($builder) use ($search) {
+                $builder->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
+            });
         }
 
         if (!empty($filters['island_id'])) {

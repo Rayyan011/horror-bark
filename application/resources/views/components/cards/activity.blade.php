@@ -22,11 +22,11 @@
     :title="$item->name"
     :media="[
         'images' => $item->images ?? [],
-        'fallback' => 'https://picsum.photos/seed/' . $item->id . '/400/300',
+        'fallback' => \App\Support\HorrorGeneratedMediaCatalog::path('fallbacks', $isGame ? 'game' : 'ride'),
         'alt' => $item->name,
     ]"
     :meta="[
-        ['label' => 'Island', 'value' => $item->island->name ?? 'Horror Island', 'tone' => 'muted'],
+        ['label' => 'District', 'value' => $item->island->name ?? 'Horror Island', 'tone' => 'muted'],
         ['label' => 'Price', 'value' => 'MVR ' . number_format($item->price, 2), 'tone' => 'muted'],
         ['label' => $isGame ? 'Max Players per Booking' : 'Max Capacity', 'value' => $isGame ? ($item->max_booking_quantity ?? 'N/A') : ($item->max_capacity ?? 'N/A'), 'tone' => 'muted'],
     ]"

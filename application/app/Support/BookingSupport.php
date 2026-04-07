@@ -43,7 +43,9 @@ class BookingSupport
     {
         return match (true) {
             $booking instanceof HotelBooking => Carbon::parse($booking->start_date),
-            $booking instanceof BeachEventBooking => Carbon::parse($booking->booking_date.' '.$booking->booking_time?->format('H:i:s')),
+            $booking instanceof BeachEventBooking => Carbon::parse(
+                Carbon::parse($booking->booking_date)->toDateString().' '.$booking->booking_time?->format('H:i:s')
+            ),
             default => Carbon::parse($booking->booking_time),
         };
     }

@@ -16,6 +16,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FerryController;
 use App\Http\Controllers\FerryOperatorReportController;
 use App\Http\Controllers\FerryPassController;
+use App\Http\Controllers\GeneratedMediaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\InvoiceController;
@@ -36,6 +37,7 @@ Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index'); 
 Route::get('/hotels/{hotel}', [HotelController::class, 'show'])->name('hotels.show');
 Route::get('/ferrytickets', [FerryController::class, 'index'])->name('ferries.index');
 Route::get('/themepark', [ThemeParkController::class, 'index'])->name('themepark.index');
+Route::get('/generated-media/{collection}/{slug}.svg', GeneratedMediaController::class)->name('generated-media.show');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');

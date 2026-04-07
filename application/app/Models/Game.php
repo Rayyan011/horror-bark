@@ -12,9 +12,12 @@ class Game extends Model
         'user_id',            // Owner of the game
         'island_id',
         'name',
+        'description',
         'price',
         'latitude',
         'longitude',
+        'map_x',
+        'map_y',
         'images',
         'max_capacity',
         'max_booking_quantity'

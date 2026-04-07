@@ -12,10 +12,13 @@ class BeachEvent extends Model
         'user_id',    // Organizer of the event
         'island_id',
         'name',
+        'description',
         'event_date', // Date of the event (YYYY-MM-DD)
         'price',
         'latitude',
         'longitude',
+        'map_x',
+        'map_y',
         'images',
         'max_capacity',
         'max_booking_quantity',

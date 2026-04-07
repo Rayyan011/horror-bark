@@ -32,6 +32,9 @@ class BeachEventResource extends Resource
                 ->required(),
             Forms\Components\TextInput::make('name')
                 ->required(),
+            Forms\Components\Textarea::make('description')
+                ->rows(4)
+                ->columnSpanFull(),
             Forms\Components\DatePicker::make('event_date')
                 ->required(),
             Forms\Components\TextInput::make('price')
@@ -49,8 +52,30 @@ class BeachEventResource extends Resource
                 ->required()
                 ->searchable()
                 ->helperText('Beach events are available on Picnic Island only.'),
+            Forms\Components\Section::make('Public Map Placement')
+                ->schema([
+                    Forms\Components\Placeholder::make('horror_map_picker')
+                        ->hiddenLabel()
+                        ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
+                    Forms\Components\Grid::make(2)
+                        ->schema([
+                            Forms\Components\TextInput::make('map_x')
+                                ->label('Map X')
+                                ->numeric()
+                                ->default(50)
+                                ->readOnly()
+                                ->extraInputAttributes(['data-horror-map-x' => '1']),
+                            Forms\Components\TextInput::make('map_y')
+                                ->label('Map Y')
+                                ->numeric()
+                                ->default(50)
+                                ->readOnly()
+                                ->extraInputAttributes(['data-horror-map-y' => '1']),
+                        ]),
+                ])
+                ->columnSpanFull(),
             Map::make('location_data')
-                ->label('Select Location on Map')
+                ->label('Legacy Real-World Position')
                 ->columnSpanFull()
                 ->defaultLocation(latitude: 4.22700104517645, longitude: 73.42662978621766)
                 ->draggable(true)
@@ -80,14 +105,12 @@ class BeachEventResource extends Resource
                 })
                 ->showZoomControl(true),
 
-                Forms\Components\TextInput::make('latitude')
+            Forms\Components\TextInput::make('latitude')
                 ->label('Latitude')
-                ->numeric()
-                ->required(),
+                ->numeric(),
             Forms\Components\TextInput::make('longitude')
                 ->label('Longitude')
-                ->numeric()
-                ->required(),
+                ->numeric(),
 
             // File Upload for Images
             Forms\Components\FileUpload::make('images')

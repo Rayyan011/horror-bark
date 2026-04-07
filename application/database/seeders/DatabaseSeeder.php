@@ -22,6 +22,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
         $this->call(RolesAndPanelAccessSeeder::class);
         $this->call(PagesTableSeeder::class);
-        $this->call(HotelsTableSeeder::class);
+        $this->call(HorrorBarkWorldSeeder::class);
     }
 }

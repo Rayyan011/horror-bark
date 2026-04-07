@@ -37,6 +37,33 @@ class FerryResource extends Resource
                     ->required()
                     ->maxLength(255),
 
+                \Filament\Forms\Components\Textarea::make('description')
+                    ->rows(4)
+                    ->columnSpanFull(),
+
+                \Filament\Forms\Components\Section::make('Public Map Placement')
+                    ->schema([
+                        \Filament\Forms\Components\Placeholder::make('horror_map_picker')
+                            ->hiddenLabel()
+                            ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
+                        \Filament\Forms\Components\Grid::make(2)
+                            ->schema([
+                                TextInput::make('map_x')
+                                    ->label('Map X')
+                                    ->numeric()
+                                    ->default(50)
+                                    ->readOnly()
+                                    ->extraInputAttributes(['data-horror-map-x' => '1']),
+                                TextInput::make('map_y')
+                                    ->label('Map Y')
+                                    ->numeric()
+                                    ->default(50)
+                                    ->readOnly()
+                                    ->extraInputAttributes(['data-horror-map-y' => '1']),
+                            ]),
+                    ])
+                    ->columnSpanFull(),
+
                 Select::make('island_id')
                     ->relationship('island', 'name')
                     ->required()

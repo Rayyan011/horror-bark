@@ -7,17 +7,18 @@
     :title="$event->name"
     :media="[
         'images' => $event->images ?? [],
-        'fallback' => 'https://picsum.photos/seed/' . $event->id . '/400/300',
+        'fallback' => \App\Support\HorrorGeneratedMediaCatalog::path('fallbacks', 'beach-event'),
         'alt' => $event->name,
     ]"
     :meta="[
         ['label' => 'Organizer', 'value' => $event->owner->name ?? 'N/A', 'tone' => 'muted'],
-        ['label' => 'Island', 'value' => $event->island->name ?? 'Picnic Island', 'tone' => 'muted'],
+        ['label' => 'Shore', 'value' => $event->island->name ?? 'Picnic Island', 'tone' => 'muted'],
         ['label' => 'Date', 'value' => optional($event->event_date)->format('F d, Y'), 'tone' => 'muted'],
         ['label' => 'Price', 'value' => 'MVR ' . number_format($event->price, 2), 'tone' => 'muted'],
         ['label' => 'Max Capacity', 'value' => $event->max_capacity, 'tone' => 'muted'],
         ['label' => 'Max Booking Qty', 'value' => $event->max_booking_quantity, 'tone' => 'muted'],
     ]"
+    :description="$event->description"
 >
     <x-slot:footer>
         @auth

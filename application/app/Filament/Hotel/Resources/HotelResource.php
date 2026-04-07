@@ -32,17 +32,41 @@ class HotelResource extends Resource
                 ->required(),
             Forms\Components\TextInput::make('name')
                 ->required(),
+            Forms\Components\Textarea::make('description')
+                ->rows(4)
+                ->columnSpanFull(),
 
             Forms\Components\TextInput::make('location')
                 ->required(),
 
+            Forms\Components\Section::make('Public Map Placement')
+                ->schema([
+                    Forms\Components\Placeholder::make('horror_map_picker')
+                        ->hiddenLabel()
+                        ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
+                    Forms\Components\Grid::make(2)
+                        ->schema([
+                            Forms\Components\TextInput::make('map_x')
+                                ->label('Map X')
+                                ->numeric()
+                                ->default(50)
+                                ->readOnly()
+                                ->extraInputAttributes(['data-horror-map-x' => '1']),
+                            Forms\Components\TextInput::make('map_y')
+                                ->label('Map Y')
+                                ->numeric()
+                                ->default(50)
+                                ->readOnly()
+                                ->extraInputAttributes(['data-horror-map-y' => '1']),
+                        ]),
+                ])
+                ->columnSpanFull(),
+
             Forms\Components\TextInput::make('latitude')
-                ->numeric()
-                ->required(),
+                ->numeric(),
 
             Forms\Components\TextInput::make('longitude')
-                ->numeric()
-                ->required(),
+                ->numeric(),
 
             Forms\Components\FileUpload::make('images')
                 ->label('Gallery Images')

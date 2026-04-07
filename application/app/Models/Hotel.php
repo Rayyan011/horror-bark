@@ -12,8 +12,11 @@ class Hotel extends Model
         'user_id',
         'name',
         'location',
+        'description',
         'latitude',
         'longitude',
+        'map_x',
+        'map_y',
         'images',
     ];
 

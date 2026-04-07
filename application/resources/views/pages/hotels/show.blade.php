@@ -10,11 +10,14 @@
 
     <x-ui.media-gallery
         :images="$hotel->images ?? []"
-        :fallback-src="'https://picsum.photos/seed/' . $hotel->id . '/400/300'"
+        :fallback-src="\App\Support\HorrorGeneratedMediaCatalog::path('fallbacks', 'hotel')"
         :alt="$hotel->name"
     />
 
     <p class="text-gray-300">{{ $hotel->location }}</p>
+    @if (filled($hotel->description))
+        <p class="font-serif leading-relaxed text-primary-light">{{ $hotel->description }}</p>
+    @endif
 
     <x-ui.section-heading title="Available Rooms" size="md" />
 
@@ -24,7 +27,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @foreach ($hotel->rooms as $room)
-            <x-cards.room :room="$room" :open-details-action="\"openUiModal('room-modal-{$room->id}')\"" />
+            <x-cards.room :room="$room" />
 
             <x-ui.modal :id="'room-modal-' . $room->id" :title="$room->room_number" size="md">
                 <x-slot:body>
@@ -49,7 +52,7 @@
                     <div class="mt-4">
                         <x-ui.media-gallery
                             :images="$room->images ?? []"
-                            :fallback-src="'https://picsum.photos/seed/' . $room->id . '/400/300'"
+                            :fallback-src="\App\Support\HorrorGeneratedMediaCatalog::path('fallbacks', 'room')"
                             :alt="$room->room_number"
                         />
                     </div>

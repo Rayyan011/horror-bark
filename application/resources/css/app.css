@@ -110,6 +110,243 @@
         filter: grayscale(62%) contrast(110%) brightness(0.65);
     }
 
+    .atlas-shell {
+        @apply relative;
+    }
+
+    .atlas-kicker {
+        @apply text-xs uppercase tracking-[0.32em] text-primary-light/55;
+    }
+
+    .atlas-title {
+        @apply font-display text-4xl text-moonlight md:text-5xl;
+        letter-spacing: -0.02em;
+    }
+
+    .atlas-filter {
+        @apply border border-primary-light/15 bg-primary-dark/70 px-4 py-2 text-[0.68rem] uppercase tracking-[0.22em] text-primary-light/65 transition duration-300;
+    }
+
+    .atlas-filter.is-active {
+        @apply border-primary-light/40 bg-primary-dark text-moonlight shadow-cold-shadow;
+    }
+
+    .atlas-rail {
+        @apply space-y-6;
+    }
+
+    .atlas-rail-card,
+    .atlas-detail-card {
+        @apply overflow-hidden border border-primary-light/15 bg-primary-dark/90 shadow-cold-shadow;
+        backdrop-filter: blur(8px);
+    }
+
+    .atlas-rail-card {
+        @apply p-5;
+    }
+
+    .atlas-rail-item {
+        @apply flex w-full flex-col items-start gap-1 border-b border-primary-light/10 pb-4 text-left transition duration-300 last:border-b-0 last:pb-0 hover:border-primary-light/30;
+    }
+
+    .atlas-rail-name {
+        @apply font-display text-2xl italic leading-tight text-moonlight transition duration-300;
+    }
+
+    .atlas-rail-item:hover .atlas-rail-name {
+        @apply text-primary-light;
+    }
+
+    .atlas-rail-meta {
+        @apply text-[0.68rem] uppercase tracking-[0.24em] text-primary-light/45;
+    }
+
+    .atlas-stage-wrapper {
+        @apply overflow-hidden border border-primary-light/15 bg-[#070708] shadow-cold-shadow;
+    }
+
+    .atlas-stage {
+        @apply relative isolate h-full overflow-hidden bg-[#050507];
+        background-image:
+            radial-gradient(circle at 20% 18%, rgba(137, 92, 246, 0.16), transparent 25%),
+            radial-gradient(circle at 82% 76%, rgba(96, 92, 98, 0.18), transparent 22%),
+            linear-gradient(180deg, rgba(8, 8, 9, 0.95), rgba(2, 2, 3, 1));
+    }
+
+    .atlas-grid {
+        @apply pointer-events-none absolute inset-0 opacity-35;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+        background-size: 44px 44px;
+    }
+
+    .atlas-water-glow,
+    .atlas-fog {
+        @apply pointer-events-none absolute rounded-full blur-3xl;
+    }
+
+    .atlas-water-glow-left {
+        @apply -left-16 top-20 h-64 w-64 bg-primary-light/10;
+    }
+
+    .atlas-water-glow-right {
+        @apply bottom-12 right-0 h-72 w-72 bg-primary/10;
+    }
+
+    .atlas-isle {
+        @apply absolute border border-primary-light/10 bg-[#0f1012]/85;
+        box-shadow:
+            0 0 0 1px rgba(96, 92, 98, 0.08),
+            inset 0 0 40px rgba(0, 0, 0, 0.9),
+            0 22px 80px rgba(0, 0, 0, 0.55);
+    }
+
+    .atlas-isle-main {
+        inset: 12% 14% 14% 16%;
+        clip-path: polygon(9% 10%, 27% 4%, 46% 10%, 66% 3%, 88% 16%, 94% 31%, 92% 48%, 99% 63%, 85% 82%, 63% 93%, 44% 86%, 24% 94%, 7% 82%, 3% 63%, 11% 45%, 4% 26%);
+    }
+
+    .atlas-isle-north {
+        inset: 7% 48% 63% 34%;
+        clip-path: polygon(8% 28%, 33% 8%, 63% 3%, 92% 24%, 97% 50%, 74% 86%, 37% 94%, 5% 69%);
+    }
+
+    .atlas-isle-shore {
+        inset: 58% 62% 11% 73%;
+        clip-path: polygon(16% 16%, 58% 5%, 89% 31%, 94% 66%, 63% 93%, 21% 88%, 5% 53%);
+    }
+
+    .atlas-fog-top {
+        @apply left-[8%] top-[10%] h-32 w-64 bg-primary-light/10;
+    }
+
+    .atlas-fog-bottom {
+        @apply bottom-[8%] right-[20%] h-36 w-80 bg-primary-light/10;
+    }
+
+    .atlas-compass {
+        @apply absolute right-6 top-6 flex h-14 w-14 items-center justify-center rounded-full border border-primary-light/15 bg-background-dark/80 font-display text-sm uppercase tracking-[0.35em] text-primary-light/80;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .atlas-zone {
+        @apply absolute pointer-events-none -translate-x-1/2 -translate-y-1/2;
+    }
+
+    .atlas-zone-halo {
+        @apply absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl;
+    }
+
+    .atlas-zone--ward .atlas-zone-halo {
+        background: radial-gradient(circle, rgba(96, 92, 98, 0.2) 0%, rgba(96, 92, 98, 0) 68%);
+    }
+
+    .atlas-zone--shore .atlas-zone-halo {
+        background: radial-gradient(circle, rgba(137, 92, 246, 0.18) 0%, rgba(137, 92, 246, 0) 68%);
+    }
+
+    .atlas-zone-label {
+        @apply relative block font-display text-xl italic tracking-[0.16em] text-primary-light/45 md:text-2xl;
+        text-shadow: 0 0 18px rgba(0, 0, 0, 0.85);
+    }
+
+    .atlas-marker-button {
+        @apply absolute z-10 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border text-white transition duration-300;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 14px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    .atlas-marker-button .material-symbols-outlined {
+        font-size: 1.1rem;
+    }
+
+    .atlas-marker-button.is-selected {
+        @apply scale-110;
+    }
+
+    .atlas-marker-ping {
+        @apply absolute inset-0 rounded-full opacity-50;
+        animation: atlas-pulse 2.8s ease-out infinite;
+    }
+
+    .atlas-marker-tooltip {
+        @apply pointer-events-none absolute left-1/2 top-full mt-3 hidden -translate-x-1/2 whitespace-nowrap border border-primary-light/20 bg-primary-dark/95 px-3 py-1 text-[0.68rem] uppercase tracking-[0.16em] text-moonlight shadow-cold-shadow md:block;
+    }
+
+    .atlas-marker-button:hover .atlas-marker-tooltip {
+        @apply block;
+    }
+
+    .atlas-marker-hotel {
+        @apply border-primary-light/30 bg-[#1e1b22] text-primary-light;
+    }
+
+    .atlas-marker-hotel .atlas-marker-ping {
+        background: rgba(209, 209, 212, 0.22);
+    }
+
+    .atlas-marker-ride {
+        @apply border-[#8b5cf6]/45 bg-[#1d1328] text-[#d3c3ff];
+    }
+
+    .atlas-marker-ride .atlas-marker-ping {
+        background: rgba(139, 92, 246, 0.24);
+    }
+
+    .atlas-marker-game {
+        @apply border-[#9a7db2]/40 bg-[#211826] text-[#dbc9ea];
+    }
+
+    .atlas-marker-game .atlas-marker-ping {
+        background: rgba(154, 125, 178, 0.22);
+    }
+
+    .atlas-marker-event {
+        @apply border-[#a27154]/40 bg-[#241612] text-[#f3c8a8];
+    }
+
+    .atlas-marker-event .atlas-marker-ping {
+        background: rgba(199, 121, 66, 0.22);
+    }
+
+    .atlas-marker-ferry {
+        @apply border-[#6e7f93]/40 bg-[#111820] text-[#d1dfec];
+    }
+
+    .atlas-marker-ferry .atlas-marker-ping {
+        background: rgba(110, 127, 147, 0.22);
+    }
+
+    .atlas-legend-panel {
+        @apply absolute bottom-5 left-5 right-5 border border-primary-light/15 bg-primary-dark/80 p-5 shadow-cold-shadow md:right-auto md:w-[26rem];
+        backdrop-filter: blur(8px);
+    }
+
+    .atlas-legend-icon {
+        @apply inline-flex h-8 w-8 items-center justify-center rounded-full border;
+    }
+
+    .atlas-detail-media {
+        @apply h-56 overflow-hidden border-b border-primary-light/10 bg-black;
+    }
+
+    @keyframes atlas-pulse {
+        0% {
+            transform: scale(0.88);
+            opacity: 0.65;
+        }
+
+        70% {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+
+        100% {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+    }
+
     .haunts-carousel {
         @apply mx-auto w-full max-w-7xl;
     }

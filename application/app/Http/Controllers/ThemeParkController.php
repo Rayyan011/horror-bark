@@ -42,14 +42,21 @@ class ThemeParkController extends Controller
             ? $this->emptyPaginator('game_page')
             : $gamesQuery->paginate(9, ['*'], 'game_page')->withQueryString();
 
-        return view('pages.themepark.index', compact('rides', 'games', 'filters'));
+        return view('pages.themepark.index', compact(
+            'rides',
+            'games',
+            'filters',
+        ));
     }
 
     private function applyActivityFilters($query, array $filters): void
     {
         if (!empty($filters['search'])) {
             $search = trim($filters['search']);
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where(function ($builder) use ($search) {
+                $builder->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
+            });
         }
 
         if (!empty($filters['min_price'])) {

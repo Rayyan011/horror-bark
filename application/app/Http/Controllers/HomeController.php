@@ -6,33 +6,44 @@ use App\Models\BeachEvent;
 use App\Models\Game;
 use App\Models\Hotel;
 use App\Models\Island;
+use App\Models\Ferry;
 use App\Models\Promotion;
 use App\Models\Ride;
+use App\Services\HorrorAtlasService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(HorrorAtlasService $atlas)
     {
-        $hotels = Hotel::whereNotNull('latitude')
-            ->whereNotNull('longitude')
+        $hotels = Hotel::query()
+            ->with('rooms')
+            ->orderBy('name')
             ->get();
 
-        $islands = Island::whereNotNull('latitude')
-            ->whereNotNull('longitude')
+        $islands = Island::query()
+            ->orderBy('name')
             ->get();
 
-        $rides = Ride::whereNotNull('latitude')
-            ->whereNotNull('longitude')
+        $rides = Ride::query()
+            ->with('island')
+            ->orderBy('name')
             ->get();
 
-        $games = Game::whereNotNull('latitude')
-            ->whereNotNull('longitude')
+        $games = Game::query()
+            ->with('island')
+            ->orderBy('name')
             ->get();
 
-        $beachEvents = BeachEvent::whereNotNull('latitude')
-            ->whereNotNull('longitude')
+        $beachEvents = BeachEvent::query()
+            ->with('island', 'owner')
+            ->orderBy('event_date')
+            ->get();
+
+        $ferries = Ferry::query()
+            ->with('island')
+            ->orderBy('name')
             ->get();
 
         $promotions = Promotion::query()
@@ -59,8 +70,19 @@ class HomeController extends Controller
             ->get();
 
         $otherHaunts = $this->buildOtherHaunts($hauntRides, $hauntGames, $hauntBeachEvents);
+        $atlasData = $atlas->build($islands, $hotels, $rides, $games, $beachEvents, $ferries);
 
-        return view('pages.home', compact('hotels', 'islands', 'rides', 'games', 'beachEvents', 'promotions', 'otherHaunts'));
+        return view('pages.home', compact(
+            'hotels',
+            'islands',
+            'rides',
+            'games',
+            'beachEvents',
+            'ferries',
+            'promotions',
+            'otherHaunts',
+            'atlasData',
+        ));
     }
 
     private function buildOtherHaunts(Collection $rides, Collection $games, Collection $beachEvents): Collection

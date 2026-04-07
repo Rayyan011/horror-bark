@@ -11,7 +11,7 @@
     <x-filters.panel
         :fields="[
             ['label' => 'Search', 'name' => 'search', 'type' => 'text', 'value' => $filters['search'] ?? '', 'placeholder' => 'Ferry name', 'class' => 'lg:col-span-2'],
-            ['label' => 'Island', 'name' => 'island_id', 'type' => 'select', 'options' => collect($islands)->map(fn($island) => ['label' => $island->name, 'value' => $island->id])->prepend(['label' => 'All', 'value' => ''])->values()->all(), 'value' => $filters['island_id'] ?? ''],
+            ['label' => 'Destination', 'name' => 'island_id', 'type' => 'select', 'options' => collect($islands)->map(fn($island) => ['label' => $island->name, 'value' => $island->id])->prepend(['label' => 'All', 'value' => ''])->values()->all(), 'value' => $filters['island_id'] ?? ''],
             ['label' => 'Min Price', 'name' => 'min_price', 'type' => 'number', 'min' => 0, 'step' => '0.01', 'value' => $filters['min_price'] ?? ''],
             ['label' => 'Max Price', 'name' => 'max_price', 'type' => 'number', 'min' => 0, 'step' => '0.01', 'value' => $filters['max_price'] ?? ''],
             ['label' => 'Min Capacity', 'name' => 'min_capacity', 'type' => 'number', 'min' => 1, 'value' => $filters['min_capacity'] ?? ''],
