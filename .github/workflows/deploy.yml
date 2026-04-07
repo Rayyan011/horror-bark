@@ -58,9 +58,9 @@ jobs:
             docker exec horrorbark-php chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
             docker exec horrorbark-php php artisan optimize
 
-            # Reload app workers so every request picks up the same Vite manifest and built assets.
-            docker compose restart php nginx
-            sleep 3
+            # Gracefully reload PHP-FPM workers so every request picks up the same Vite manifest and built assets.
+            docker exec horrorbark-php sh -lc 'kill -USR2 1'
+            sleep 2
 
             # Restart Traefik only after the new release is ready.
             docker restart coolify-proxy
