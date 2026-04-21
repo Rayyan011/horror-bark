@@ -1,4 +1,7 @@
 *
 !private/
 !public/
+!public/*/
+!public/*/gallery/
+!public/*/gallery/*.png
 !.gitignore

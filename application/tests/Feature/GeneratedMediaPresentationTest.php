@@ -21,7 +21,7 @@ class GeneratedMediaPresentationTest extends TestCase
         $response->assertSee('The Shining Manor');
     }
 
-    public function test_hotel_detail_page_shows_generated_hotel_and_room_images(): void
+    public function test_hotel_detail_page_prefers_storage_backed_hotel_and_room_images(): void
     {
         $this->seed(DatabaseSeeder::class);
         $hotel = Hotel::query()->where('name', 'The Shining Manor')->firstOrFail();
@@ -29,7 +29,22 @@ class GeneratedMediaPresentationTest extends TestCase
         $response = $this->get(route('hotels.show', $hotel));
 
         $response->assertOk()
-            ->assertSee('/generated-media/hotels/the-shining-manor.svg')
-            ->assertSee('/generated-media/rooms/shining-north-tower-suite.svg');
+            ->assertSee('storage/hotels/gallery/the-shining-manor-01.png')
+            ->assertSee('storage/rooms/gallery/shining-north-tower-suite-01.png');
+    }
+
+    public function test_generated_media_route_supports_new_stitch_room_variants(): void
+    {
+        foreach ([
+            '/generated-media/rooms/shining-midnight-conservatory.svg',
+            '/generated-media/rooms/wake-tidecaller-suite.svg',
+            '/generated-media/rooms/coldstone-chapel-eaves.svg',
+        ] as $path) {
+            $response = $this->get($path);
+
+            $response->assertOk();
+            $response->assertHeader('Content-Type', 'image/svg+xml');
+            $response->assertSee('<svg', false);
+        }
     }
 }

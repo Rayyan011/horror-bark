@@ -636,6 +636,12 @@ class HorrorBarkWorldSeeder extends Seeder
 
     private function generatedImage(string $collection, string $slug): string
     {
+        $candidate = "{$collection}/gallery/{$slug}-01.png";
+
+        if (file_exists(storage_path("app/public/{$candidate}"))) {
+            return $candidate;
+        }
+
         return HorrorGeneratedMediaCatalog::path($collection, $slug);
     }
 }

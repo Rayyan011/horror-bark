@@ -18,9 +18,12 @@ use App\Models\User;
 use App\Support\BookingSupport;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class BookingLifecycleService
 {
@@ -55,7 +58,12 @@ class BookingLifecycleService
             return $booking;
         });
 
-        Mail::to($actor->email)->queue(new BookingConfirmationMail($booking->fresh($this->relationsFor($booking))));
+        $this->queueMailSafely(
+            $actor->email,
+            new BookingConfirmationMail($booking->fresh($this->relationsFor($booking))),
+            'booking.confirmed',
+            $booking
+        );
 
         return $booking;
     }
@@ -86,7 +94,12 @@ class BookingLifecycleService
             return [$booking->fresh($this->relationsFor($booking)), $before];
         });
 
-        Mail::to($actor->email)->queue(new BookingChangedMail($booking[0], 'canceled', $booking[1]));
+        $this->queueMailSafely(
+            $actor->email,
+            new BookingChangedMail($booking[0], 'canceled', $booking[1]),
+            'booking.canceled',
+            $booking[0]
+        );
     }
 
     public function rescheduleBooking(Model $booking, array $changes, User $actor): Model
@@ -119,7 +132,12 @@ class BookingLifecycleService
             return [$booking->fresh($this->relationsFor($booking)), $before];
         });
 
-        Mail::to($actor->email)->queue(new BookingChangedMail($booking, 'rescheduled', $before));
+        $this->queueMailSafely(
+            $actor->email,
+            new BookingChangedMail($booking, 'rescheduled', $before),
+            'booking.rescheduled',
+            $booking
+        );
 
         return $booking;
     }
@@ -132,7 +150,12 @@ class BookingLifecycleService
 
         $booking->loadMissing($this->relationsFor($booking));
 
-        Mail::to($booking->user->email)->queue(new BookingReminderMail($booking));
+        $this->queueMailSafely(
+            $booking->user->email,
+            new BookingReminderMail($booking),
+            'booking.reminder_sent',
+            $booking
+        );
         $booking->update(['reminder_sent_at' => now()]);
 
         $this->auditLogger->log($booking->user, 'booking.reminder_sent', $booking, null, [
@@ -390,5 +413,22 @@ class BookingLifecycleService
             $booking instanceof BeachEventBooking => ['beachEvent.island', 'invoice', 'user'],
             default => ['invoice', 'user'],
         };
+    }
+
+    private function queueMailSafely(string $recipient, Mailable $mailable, string $context, Model $booking): void
+    {
+        try {
+            Mail::to($recipient)->queue($mailable);
+        } catch (Throwable $exception) {
+            Log::warning('Booking mail queue failed.', [
+                'context' => $context,
+                'recipient' => $recipient,
+                'booking_type' => $booking::class,
+                'booking_id' => $booking->getKey(),
+                'error' => $exception->getMessage(),
+            ]);
+
+            report($exception);
+        }
     }
 }

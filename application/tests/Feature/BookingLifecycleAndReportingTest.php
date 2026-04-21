@@ -80,6 +80,47 @@ class BookingLifecycleAndReportingTest extends TestCase
         ]);
     }
 
+    public function test_booking_confirmation_failure_does_not_abort_booking_creation(): void
+    {
+        Mail::swap(app('mail.manager'));
+        config([
+            'mail.default' => 'array',
+            'mail.from.address' => '[email protected]',
+        ]);
+
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $hotel = $this->createHotel($owner);
+        $room = Room::create([
+            'hotel_id' => $hotel->id,
+            'room_number' => 'A-404',
+            'price' => 160,
+            'status' => 'available',
+            'max_occupancy' => 2,
+            'amenities' => [],
+            'images' => [],
+            'description' => 'Mail failure room',
+        ]);
+
+        $response = $this->actingAs($user)->post(route('bookings.hotels.store', $room), [
+            'start_date' => now()->addDays(4)->toDateString(),
+            'end_date' => now()->addDays(5)->toDateString(),
+            'quantity' => 1,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
+        $this->assertDatabaseHas('hotel_bookings', [
+            'user_id' => $user->id,
+            'room_id' => $room->id,
+            'status' => 'confirmed',
+        ]);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'booking.confirmed',
+            'auditable_type' => HotelBooking::class,
+        ]);
+    }
+
     public function test_customer_can_reschedule_ferry_and_receives_change_email(): void
     {
         $user = User::factory()->create();
