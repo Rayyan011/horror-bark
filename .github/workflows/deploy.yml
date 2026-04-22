@@ -74,5 +74,10 @@ jobs:
             docker compose restart php
             sleep 5
 
+            # Refresh the edge proxy after old app containers have been purged
+            # so it only routes traffic to the current Horror Bark backend.
+            docker restart coolify-proxy || true
+            sleep 5
+
             deploy_succeeded=1
             echo "Deploy complete!"
