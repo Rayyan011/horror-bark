@@ -27,14 +27,34 @@
     <x-filters.panel
         :fields="[
             ['label' => 'Search', 'name' => 'search', 'type' => 'text', 'value' => $filters['search'] ?? '', 'placeholder' => 'Ride or game', 'class' => 'lg:col-span-2'],
-            ['label' => 'Section', 'name' => 'section', 'type' => 'select', 'options' => [
-                ['label' => 'All', 'value' => 'all'],
-                ['label' => 'Rides', 'value' => 'rides'],
-                ['label' => 'Games', 'value' => 'games'],
+            ['label' => 'Attraction Type', 'name' => 'section', 'type' => 'select', 'options' => [
+                ['label' => 'All Attractions', 'value' => 'all'],
+                ['label' => 'Rides Only', 'value' => 'rides'],
+                ['label' => 'Games Only', 'value' => 'games'],
             ], 'value' => $filters['section'] ?? 'all'],
-            ['label' => 'Min Price', 'name' => 'min_price', 'type' => 'number', 'min' => 0, 'step' => '0.01', 'value' => $filters['min_price'] ?? ''],
-            ['label' => 'Max Price', 'name' => 'max_price', 'type' => 'number', 'min' => 0, 'step' => '0.01', 'value' => $filters['max_price'] ?? ''],
-            ['label' => 'Min Capacity', 'name' => 'min_capacity', 'type' => 'number', 'min' => 1, 'value' => $filters['min_capacity'] ?? ''],
+            [
+                'label' => 'Ticket Range',
+                'type' => 'range_pair',
+                'min_name' => 'min_price',
+                'max_name' => 'max_price',
+                'min_value' => $filters['min_price'] ?? $filterBounds['price']['min'],
+                'max_value' => $filters['max_price'] ?? $filterBounds['price']['max'],
+                'min' => $filterBounds['price']['min'],
+                'max' => $filterBounds['price']['max'],
+                'step' => $filterBounds['price']['step'],
+                'prefix' => 'MVR ',
+                'class' => 'lg:col-span-2',
+            ],
+            [
+                'label' => 'Minimum Capacity',
+                'name' => 'min_capacity',
+                'type' => 'range',
+                'value' => $filters['min_capacity'] ?? $filterBounds['capacity']['min'],
+                'min' => $filterBounds['capacity']['min'],
+                'max' => $filterBounds['capacity']['max'],
+                'step' => $filterBounds['capacity']['step'],
+                'suffix' => ' guests',
+            ],
             ['label' => 'Sort', 'name' => 'sort', 'type' => 'select', 'options' => [
                 ['label' => 'Name (A-Z)', 'value' => 'name_asc'],
                 ['label' => 'Name (Z-A)', 'value' => 'name_desc'],
@@ -43,60 +63,32 @@
             ], 'value' => $filters['sort'] ?? 'name_asc'],
         ]"
         :reset-href="route('themepark.index')"
-        apply-label="Apply"
-        grid="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4"
+        apply-label="Filter Attractions"
+        grid="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
     />
 
-    @if(($filters['section'] ?? 'all') !== 'games')
-        <section class="space-y-4">
-            <x-ui.section-heading title="Rides" size="lg" />
+    <section class="space-y-4">
+        <x-ui.section-heading title="Active Attractions" subtitle="Rides and games now live in one registry. Use the filter bar to narrow the set instead of switching sections." size="lg" />
 
-            @if($rides->isEmpty())
-                <x-ui.empty-state title="No rides match your filters" />
-            @else
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach ($rides as $ride)
-                        <x-cards.activity
-                            :item="$ride"
-                            type="ride"
-                            :booking-config="[
-                                'mode' => 'datetime',
-                                'rulesHint' => 'Only 9:00 or 17:00.',
-                                'submitLabel' => 'Book ride',
-                            ]"
-                        />
-                    @endforeach
-                </div>
+        @if($activities->count() === 0)
+            <x-ui.empty-state title="No attractions match your filters" />
+        @else
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach ($activities as $activity)
+                    <x-cards.activity
+                        :item="$activity"
+                        :type="$activity->catalog_type"
+                        :booking-config="[
+                            'mode' => 'datetime',
+                            'rulesHint' => 'Only 9:00 or 17:00.',
+                            'submitLabel' => $activity->catalog_type === 'game' ? 'Book game' : 'Book ride',
+                        ]"
+                    />
+                @endforeach
+            </div>
 
-                <x-ui.pagination :paginator="$rides" />
-            @endif
-        </section>
-    @endif
-
-    @if(($filters['section'] ?? 'all') !== 'rides')
-        <section class="space-y-4">
-            <x-ui.section-heading title="Games" size="lg" />
-
-            @if($games->isEmpty())
-                <x-ui.empty-state title="No games match your filters" />
-            @else
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach ($games as $game)
-                        <x-cards.activity
-                            :item="$game"
-                            type="game"
-                            :booking-config="[
-                                'mode' => 'datetime',
-                                'rulesHint' => 'Only 9:00 or 17:00.',
-                                'submitLabel' => 'Book game',
-                            ]"
-                        />
-                    @endforeach
-                </div>
-
-                <x-ui.pagination :paginator="$games" />
-            @endif
-        </section>
-    @endif
+            <x-ui.pagination :paginator="$activities" />
+        @endif
+    </section>
 </main>
 @endsection

@@ -12,8 +12,8 @@
     $formAction = $action ?: url()->current();
 @endphp
 
-<x-ui.surface variant="default" padding="p-4" class="mb-8">
-    <x-ui.form :method="$method" :action="$formAction" :csrf="strtoupper($method) !== 'GET'" class="space-y-4">
+<x-ui.surface variant="default" padding="p-0" class="mb-8 overflow-hidden">
+    <x-ui.form :method="$method" :action="$formAction" :csrf="strtoupper($method) !== 'GET'" class="catalog-filter-shell space-y-5">
         @foreach ($hidden as $name => $value)
             @if (!is_null($value) && $value !== '')
                 <input type="hidden" name="{{ $name }}" value="{{ $value }}" />
@@ -34,6 +34,34 @@
                         :options="$field['options'] ?? []"
                         :value="$field['value'] ?? null"
                         :placeholder="$field['placeholder'] ?? null"
+                        :class="$fieldClass"
+                    />
+                @elseif ($type === 'range')
+                    <x-ui.range-slider
+                        :label="$field['label']"
+                        :name="$field['name']"
+                        :value="$field['value'] ?? null"
+                        :min="$field['min'] ?? 0"
+                        :max="$field['max'] ?? 100"
+                        :step="$field['step'] ?? 1"
+                        :prefix="$field['prefix'] ?? ''"
+                        :suffix="$field['suffix'] ?? ''"
+                        :hint="$field['hint'] ?? null"
+                        :class="$fieldClass"
+                    />
+                @elseif ($type === 'range_pair')
+                    <x-ui.range-pair
+                        :label="$field['label']"
+                        :min-name="$field['min_name']"
+                        :max-name="$field['max_name']"
+                        :min-value="$field['min_value'] ?? null"
+                        :max-value="$field['max_value'] ?? null"
+                        :min="$field['min'] ?? 0"
+                        :max="$field['max'] ?? 100"
+                        :step="$field['step'] ?? 1"
+                        :prefix="$field['prefix'] ?? ''"
+                        :suffix="$field['suffix'] ?? ''"
+                        :hint="$field['hint'] ?? null"
                         :class="$fieldClass"
                     />
                 @elseif ($type === 'textarea')
@@ -63,6 +91,6 @@
             @endforeach
         </div>
 
-        <x-ui.form-actions :submit-label="$applyLabel" :reset-href="$resetHref" />
+        <x-ui.form-actions :submit-label="$applyLabel" :reset-href="$resetHref" class="pt-2" />
     </x-ui.form>
 </x-ui.surface>

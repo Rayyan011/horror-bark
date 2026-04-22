@@ -9,9 +9,29 @@
     <x-filters.panel
         :fields="[
             ['label' => 'Search', 'name' => 'search', 'type' => 'text', 'value' => $filters['search'] ?? '', 'placeholder' => 'Hotel or location', 'class' => 'lg:col-span-2'],
-            ['label' => 'Min Price', 'name' => 'min_price', 'type' => 'number', 'min' => 0, 'step' => '0.01', 'value' => $filters['min_price'] ?? ''],
-            ['label' => 'Max Price', 'name' => 'max_price', 'type' => 'number', 'min' => 0, 'step' => '0.01', 'value' => $filters['max_price'] ?? ''],
-            ['label' => 'Min Occupancy', 'name' => 'min_occupancy', 'type' => 'number', 'min' => 1, 'value' => $filters['min_occupancy'] ?? ''],
+            [
+                'label' => 'Nightly Price',
+                'type' => 'range_pair',
+                'min_name' => 'min_price',
+                'max_name' => 'max_price',
+                'min_value' => $filters['min_price'] ?? $filterBounds['price']['min'],
+                'max_value' => $filters['max_price'] ?? $filterBounds['price']['max'],
+                'min' => $filterBounds['price']['min'],
+                'max' => $filterBounds['price']['max'],
+                'step' => $filterBounds['price']['step'],
+                'prefix' => 'MVR ',
+                'class' => 'lg:col-span-2',
+            ],
+            [
+                'label' => 'Minimum Occupancy',
+                'name' => 'min_occupancy',
+                'type' => 'range',
+                'value' => $filters['min_occupancy'] ?? $filterBounds['occupancy']['min'],
+                'min' => $filterBounds['occupancy']['min'],
+                'max' => $filterBounds['occupancy']['max'],
+                'step' => $filterBounds['occupancy']['step'],
+                'suffix' => ' guests',
+            ],
             ['label' => 'Sort', 'name' => 'sort', 'type' => 'select', 'options' => [
                 ['label' => 'Name (A-Z)', 'value' => 'name_asc'],
                 ['label' => 'Name (Z-A)', 'value' => 'name_desc'],
@@ -20,7 +40,7 @@
             ], 'value' => $filters['sort'] ?? 'name_asc'],
         ]"
         :reset-href="route('hotels.index')"
-        apply-label="Apply"
+        apply-label="Filter Hotels"
         grid="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
     />
 

@@ -44,18 +44,18 @@
         $inputAttributes[] = 'placeholder="' . e($placeholder) . '"';
     }
 
-    $inputAttributes[] = 'class="w-full border bg-background-dark/90 px-3 py-2 text-moonlight placeholder:text-primary-light/60 focus:border-primary-light focus:outline-none ' . e($resolvedError ? 'border-rose-500' : 'border-primary-light/30') . '"';
+    $inputAttributes[] = 'class="catalog-filter-control w-full border px-3 py-2 ' . e($resolvedError ? 'border-rose-500' : 'border-primary-light/30') . '"';
 @endphp
 
-<div {{ $attributes->except(['class']) }} class="{{ $attributes->get('class') }}">
-    <label class="mb-1 block font-serif text-sm text-primary-light" for="{{ $fieldId }}">{{ $label }}</label>
+<div {{ $attributes->except(['class']) }} class="catalog-filter-field {{ $attributes->get('class') }}">
+    <label class="catalog-filter-label" for="{{ $fieldId }}">{{ $label }}</label>
     <input {!! implode(' ', $inputAttributes) !!} />
 
     @if ($hint)
-        <p class="mt-1 text-xs text-primary-light/80">{{ $hint }}</p>
+        <p class="catalog-filter-hint">{{ $hint }}</p>
     @endif
 
     @if ($resolvedError)
-        <p class="mt-1 text-xs text-rose-300">{{ $resolvedError }}</p>
+        <p class="mt-2 text-xs text-rose-300">{{ $resolvedError }}</p>
     @endif
 </div>

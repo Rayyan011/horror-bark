@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ferry;
 use App\Models\Island;
+use App\Support\CatalogFilterBounds;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -20,29 +21,50 @@ class FerryController extends Controller
             'sort' => ['nullable', Rule::in(['name_asc', 'name_desc', 'price_asc', 'price_desc'])],
         ]);
 
+        $priceBounds = CatalogFilterBounds::price(
+            Ferry::query()->min('price'),
+            Ferry::query()->max('price'),
+        );
+        $capacityBounds = CatalogFilterBounds::quantity(
+            Ferry::query()->min('max_capacity'),
+            Ferry::query()->max('max_capacity'),
+        );
+        $priceRange = CatalogFilterBounds::normalizeRange(
+            $priceBounds,
+            $filters['min_price'] ?? null,
+            $filters['max_price'] ?? null,
+        );
+
+        $filters['min_price'] = $priceRange['min'];
+        $filters['max_price'] = $priceRange['max'];
+        $filters['min_capacity'] = CatalogFilterBounds::normalizeSingle(
+            $capacityBounds,
+            $filters['min_capacity'] ?? null,
+        );
+
         $query = Ferry::query()->with('island');
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $search = trim($filters['search']);
             $query->where(function ($builder) use ($search) {
-                $builder->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%');
+                $builder->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%');
             });
         }
 
-        if (!empty($filters['island_id'])) {
+        if (! empty($filters['island_id'])) {
             $query->where('island_id', $filters['island_id']);
         }
 
-        if (!empty($filters['min_price'])) {
+        if ($filters['min_price'] > $priceBounds['min']) {
             $query->where('price', '>=', $filters['min_price']);
         }
 
-        if (!empty($filters['max_price'])) {
+        if ($filters['max_price'] < $priceBounds['max']) {
             $query->where('price', '<=', $filters['max_price']);
         }
 
-        if (!empty($filters['min_capacity'])) {
+        if ($filters['min_capacity'] > $capacityBounds['min']) {
             $query->where('max_capacity', '>=', $filters['min_capacity']);
         }
 
@@ -56,6 +78,11 @@ class FerryController extends Controller
         $ferries = $query->paginate(12)->withQueryString();
         $islands = Island::query()->orderBy('name')->get(['id', 'name', 'type']);
 
-        return view('pages.ferries.index', compact('ferries', 'filters', 'islands'));
+        $filterBounds = [
+            'price' => $priceBounds,
+            'capacity' => $capacityBounds,
+        ];
+
+        return view('pages.ferries.index', compact('ferries', 'filters', 'islands', 'filterBounds'));
     }
 }

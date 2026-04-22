@@ -13,8 +13,29 @@
             ['label' => 'Search', 'name' => 'search', 'type' => 'text', 'value' => $filters['search'] ?? '', 'placeholder' => 'Event or organizer', 'class' => 'lg:col-span-2'],
             ['label' => 'Date From', 'name' => 'date_from', 'type' => 'date', 'value' => $filters['date_from'] ?? ''],
             ['label' => 'Date To', 'name' => 'date_to', 'type' => 'date', 'value' => $filters['date_to'] ?? ''],
-            ['label' => 'Min Price', 'name' => 'min_price', 'type' => 'number', 'min' => 0, 'step' => '0.01', 'value' => $filters['min_price'] ?? ''],
-            ['label' => 'Max Price', 'name' => 'max_price', 'type' => 'number', 'min' => 0, 'step' => '0.01', 'value' => $filters['max_price'] ?? ''],
+            [
+                'label' => 'Ticket Range',
+                'type' => 'range_pair',
+                'min_name' => 'min_price',
+                'max_name' => 'max_price',
+                'min_value' => $filters['min_price'] ?? $filterBounds['price']['min'],
+                'max_value' => $filters['max_price'] ?? $filterBounds['price']['max'],
+                'min' => $filterBounds['price']['min'],
+                'max' => $filterBounds['price']['max'],
+                'step' => $filterBounds['price']['step'],
+                'prefix' => 'MVR ',
+                'class' => 'lg:col-span-2',
+            ],
+            [
+                'label' => 'Minimum Capacity',
+                'name' => 'min_capacity',
+                'type' => 'range',
+                'value' => $filters['min_capacity'] ?? $filterBounds['capacity']['min'],
+                'min' => $filterBounds['capacity']['min'],
+                'max' => $filterBounds['capacity']['max'],
+                'step' => $filterBounds['capacity']['step'],
+                'suffix' => ' guests',
+            ],
             ['label' => 'Sort', 'name' => 'sort', 'type' => 'select', 'options' => [
                 ['label' => 'Date (Soonest)', 'value' => 'date_asc'],
                 ['label' => 'Date (Latest)', 'value' => 'date_desc'],
@@ -25,7 +46,7 @@
             ], 'value' => $filters['sort'] ?? 'date_asc'],
         ]"
         :reset-href="route('beach-events.index')"
-        apply-label="Apply"
+        apply-label="Filter Events"
         grid="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4"
     />
 

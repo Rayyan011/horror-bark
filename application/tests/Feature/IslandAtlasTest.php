@@ -31,6 +31,7 @@ class IslandAtlasTest extends TestCase
 
         $response->assertOk()
             ->assertSee('Shadow Park Registry')
+            ->assertSee('Active Attractions')
             ->assertSee('Velvet Spiral')
             ->assertSee('The Silent Wheel')
             ->assertDontSee('Horror-Bark Isle');

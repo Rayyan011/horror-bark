@@ -19,16 +19,17 @@
 
     <div class="flex flex-1 flex-col p-5">
         <div class="space-y-2">
-            <h4 class="font-display text-2xl tracking-wide text-moonlight">{{ $title }}</h4>
+            <h4 class="catalog-card-title">{{ $title }}</h4>
 
             @foreach ($meta as $item)
-                <p class="text-sm font-serif {{ ($item['tone'] ?? 'default') === 'muted' ? 'text-primary-light/80' : 'text-primary-light' }}">
-                    <span class="font-semibold text-moonlight">{{ $item['label'] }}:</span> {{ $item['value'] }}
-                </p>
+                <div class="catalog-card-meta-row">
+                    <span class="catalog-card-meta-label">{{ $item['label'] }}</span>
+                    <span class="catalog-card-meta-value {{ ($item['tone'] ?? 'default') === 'muted' ? 'text-primary-light/80' : 'text-primary-light' }}">{{ $item['value'] }}</span>
+                </div>
             @endforeach
 
             @if ($description)
-                <p class="font-serif text-sm leading-relaxed text-primary-light">{{ $description }}</p>
+                <p class="catalog-card-description">{{ $description }}</p>
             @endif
 
             @isset($details)

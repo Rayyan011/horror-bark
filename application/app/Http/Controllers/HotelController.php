@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Hotel;
 use App\Models\HotelBooking;
+use App\Models\Room;
+use App\Support\CatalogFilterBounds;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -20,32 +22,52 @@ class HotelController extends Controller
             'sort' => ['nullable', Rule::in(['name_asc', 'name_desc', 'price_asc', 'price_desc'])],
         ]);
 
+        $priceBounds = CatalogFilterBounds::price(
+            Room::query()->min('price'),
+            Room::query()->max('price'),
+        );
+        $occupancyBounds = CatalogFilterBounds::quantity(
+            Room::query()->min('max_occupancy'),
+            Room::query()->max('max_occupancy'),
+        );
+        $priceRange = CatalogFilterBounds::normalizeRange(
+            $priceBounds,
+            $filters['min_price'] ?? null,
+            $filters['max_price'] ?? null,
+        );
+
+        $filters['min_price'] = $priceRange['min'];
+        $filters['max_price'] = $priceRange['max'];
+        $filters['min_occupancy'] = CatalogFilterBounds::normalizeSingle(
+            $occupancyBounds,
+            $filters['min_occupancy'] ?? null,
+        );
+
         $query = Hotel::query()->with('rooms');
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $search = trim($filters['search']);
             $query->where(function ($builder) use ($search) {
-                $builder->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('location', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%');
+                $builder->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('location', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%');
             });
         }
 
         if (
-            !empty($filters['min_price'])
-            || !empty($filters['max_price'])
-            || !empty($filters['min_occupancy'])
+            ! CatalogFilterBounds::isDefaultRange($priceBounds, $filters['min_price'], $filters['max_price'])
+            || $filters['min_occupancy'] > $occupancyBounds['min']
         ) {
-            $query->whereHas('rooms', function ($builder) use ($filters) {
-                if (!empty($filters['min_price'])) {
+            $query->whereHas('rooms', function ($builder) use ($filters, $priceBounds, $occupancyBounds) {
+                if ($filters['min_price'] > $priceBounds['min']) {
                     $builder->where('price', '>=', $filters['min_price']);
                 }
 
-                if (!empty($filters['max_price'])) {
+                if ($filters['max_price'] < $priceBounds['max']) {
                     $builder->where('price', '<=', $filters['max_price']);
                 }
 
-                if (!empty($filters['min_occupancy'])) {
+                if ($filters['min_occupancy'] > $occupancyBounds['min']) {
                     $builder->where('max_occupancy', '>=', $filters['min_occupancy']);
                 }
             });
@@ -61,7 +83,12 @@ class HotelController extends Controller
 
         $hotels = $query->paginate(12)->withQueryString();
 
-        return view('pages.hotels.index', compact('hotels', 'filters'));
+        $filterBounds = [
+            'price' => $priceBounds,
+            'occupancy' => $occupancyBounds,
+        ];
+
+        return view('pages.hotels.index', compact('hotels', 'filters', 'filterBounds'));
     }
 
     public function show(Hotel $hotel)
