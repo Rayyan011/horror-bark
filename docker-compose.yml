@@ -10,7 +10,7 @@ services:
     volumes:
       - ./application/:/var/www/html/
       - ./logs/nginx:/var/log/nginx/
-    container_name: nginx
+    container_name: horrorbark-nginx
   php:
     build:
       context: .
@@ -20,11 +20,11 @@ services:
     volumes:
       - ./application/:/var/www/html/
       - ./logs/php.log:/var/log/fpm-php.www.log
-    container_name: php
+    container_name: horrorbark-php
     expose:
       - "9000"
   mysql:
-    container_name: db
+    container_name: horrorbark-db
     restart: always
     image: mysql:latest
     platform: linux/x86_64
