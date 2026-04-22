@@ -61,8 +61,9 @@ jobs:
             # Clear Laravel caches after the new asset manifest is written.
             docker exec horrorbark-php php artisan optimize:clear
 
-            # Run migrations and optimize
+            # Run migrations, refresh the seeded world catalog, and optimize
             docker exec horrorbark-php php artisan migrate --force
+            docker exec horrorbark-php php artisan db:seed --class=Database\\Seeders\\HorrorBarkWorldSeeder --force
             docker exec horrorbark-php chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
             docker exec horrorbark-php php artisan optimize
 
