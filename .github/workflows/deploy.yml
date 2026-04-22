@@ -49,6 +49,12 @@ jobs:
             # proxy cannot keep routing traffic to an outdated runtime.
             docker compose down --remove-orphans || true
             docker ps -aq --format '{{.ID}} {{.Names}}' | awk '$2 ~ /^horror-?bark-(nginx|php)(-[0-9]+)?$/ { print $1 }' | xargs -r docker rm -f
+            docker ps -q | while read -r container_id; do
+              labels="$(docker inspect -f '{{ json .Config.Labels }}' "$container_id" 2>/dev/null || true)"
+              if printf '%s' "$labels" | grep -qi 'horrorbark\.rayyanameez\.com'; then
+                docker rm -f "$container_id" || true
+              fi
+            done
 
             # Build and restart containers while the app is in maintenance mode.
             docker compose build
