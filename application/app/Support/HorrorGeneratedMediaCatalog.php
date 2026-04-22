@@ -44,10 +44,13 @@ class HorrorGeneratedMediaCatalog
             'rooms' => [
                 'shining-north-tower-suite' => static::entryData('North Tower Suite', 'Moonlit bath and private supper service', 'suite', 'violet'),
                 'shining-velvet-gallery-room' => static::entryData('Velvet Gallery Room', 'Silver service above the gallery hall', 'gallery', 'violet'),
+                'shining-midnight-conservatory' => static::entryData('Midnight Conservatory Suite', 'A glass-roof sitting room under the moon', 'suite', 'violet'),
                 'wake-harbor-view-chamber' => static::entryData('Harbor View Chamber', 'Dockside breakfast above the quay', 'harbor-room', 'teal'),
                 'wake-bell-tower-room' => static::entryData('Bell Tower Room', 'Sea-facing balcony beneath the bells', 'tower-room', 'teal'),
+                'wake-tidecaller-suite' => static::entryData('Tidecaller Suite', 'A harbor corner suite with panoramic tide views', 'harbor-room', 'teal'),
                 'coldstone-lantern-cellar' => static::entryData('Lantern Cellar', 'Stone arches warmed by cedar stoves', 'cellar', 'ember'),
                 'coldstone-moonfall-loft' => static::entryData('Moonfall Loft', 'A lofted family chamber by the rites', 'loft', 'amber'),
+                'coldstone-chapel-eaves' => static::entryData('Chapel Eaves Room', 'A quiet chamber beneath the chapel roofline', 'loft', 'ember'),
             ],
             'rides' => [
                 'widows-descent' => static::entryData("Widow's Descent", 'A plunge through torn velvet and bells', 'drop-tower', 'violet'),
