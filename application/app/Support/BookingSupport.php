@@ -107,4 +107,16 @@ class BookingSupport
     {
         return $booking instanceof FerryBooking ? route('bookings.ferries.pass', $booking) : null;
     }
+
+    public static function detailRoute(Model $booking): string
+    {
+        return match (true) {
+            $booking instanceof HotelBooking => route('bookings.hotels.show', $booking),
+            $booking instanceof FerryBooking => route('bookings.ferries.show', $booking),
+            $booking instanceof RideBooking => route('bookings.rides.show', $booking),
+            $booking instanceof GameBooking => route('bookings.games.show', $booking),
+            $booking instanceof BeachEventBooking => route('bookings.beach-events.show', $booking),
+            default => route('bookings.index'),
+        };
+    }
 }

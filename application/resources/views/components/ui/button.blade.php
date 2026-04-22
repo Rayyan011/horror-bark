@@ -22,7 +22,7 @@
         default => 'px-4 py-2 text-sm uppercase tracking-[0.16em]',
     };
 
-    $classes = trim('inline-flex items-center justify-center gap-2 font-serif transition duration-300 ' . $variantClass . ' ' . $sizeClass . ($block ? ' w-full text-center' : ''));
+    $classes = trim('inline-flex items-center justify-center gap-2 font-display transition duration-300 ' . $variantClass . ' ' . $sizeClass . ($block ? ' w-full text-center' : ''));
 @endphp
 
 @if ($href && strtoupper($method) === 'GET')

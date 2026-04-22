@@ -21,8 +21,8 @@
     @endif
 
     <div class="mt-4 space-y-1">
-    <p class="text-gray-400">Max Occupancy: {{ $room->max_occupancy }}</p>
-    <p class="text-gray-400">Price: MVR {{ $room->price }}</p>
+    <p class="readable-muted">Max Occupancy: {{ $room->max_occupancy }}</p>
+    <p class="readable-muted">Price: MVR {{ $room->price }}</p>
     @if (($room->available_spots ?? $room->max_occupancy) > 0)
         <p class="text-green-400 text-sm mt-1">{{ $room->available_spots ?? $room->max_occupancy }} / {{ $room->max_occupancy }} spots available</p>
     @else

@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BeachEventController;
+use App\Http\Controllers\BookingCheckoutController;
 use App\Http\Controllers\Bookings\BeachEventBookingController;
 use App\Http\Controllers\Bookings\CustomerBookingController;
 use App\Http\Controllers\Bookings\FerryBookingController;
@@ -62,6 +63,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/bookings/games/{gameBooking}', [CustomerBookingController::class, 'showGame'])->name('bookings.games.show');
     Route::get('/bookings/beach-events/{beachEventBooking}', [CustomerBookingController::class, 'showBeachEvent'])->name('bookings.beach-events.show');
     Route::get('/bookings/ferries/{ferryBooking}/pass', [FerryPassController::class, 'download'])->name('bookings.ferries.pass');
+
+    Route::post('/checkout/hotels/rooms/{room}', [BookingCheckoutController::class, 'prepareHotel'])->name('checkout.hotels.prepare');
+    Route::post('/checkout/ferries/{ferry}', [BookingCheckoutController::class, 'prepareFerry'])->name('checkout.ferries.prepare');
+    Route::post('/checkout/rides/{ride}', [BookingCheckoutController::class, 'prepareRide'])->name('checkout.rides.prepare');
+    Route::post('/checkout/games/{game}', [BookingCheckoutController::class, 'prepareGame'])->name('checkout.games.prepare');
+    Route::post('/checkout/beach-events/{beachEvent}', [BookingCheckoutController::class, 'prepareBeachEvent'])->name('checkout.beach-events.prepare');
+    Route::get('/checkout/{token}', [BookingCheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('/checkout/{token}/confirm', [BookingCheckoutController::class, 'confirm'])->name('checkout.confirm');
 
     Route::post('/bookings/hotels/rooms/{room}', [HotelBookingController::class, 'store'])->name('bookings.hotels.store');
     Route::post('/bookings/ferries/{ferry}', [FerryBookingController::class, 'store'])->name('bookings.ferries.store');

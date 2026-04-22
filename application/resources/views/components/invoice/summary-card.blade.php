@@ -6,7 +6,7 @@
     'downloadHref' => null,
 ])
 
-<x-ui.surface class="space-y-2">
+<x-ui.surface class="space-y-4">
     <div class="flex items-center justify-between gap-3">
         <h2 class="text-xl font-semibold">Invoice {{ $invoiceNumber }}</h2>
 
@@ -15,7 +15,18 @@
         @endif
     </div>
 
-    <p><span class="text-gray-400">Issued:</span> {{ $issuedAt }}</p>
-    <p><span class="text-gray-400">Amount:</span> MVR {{ number_format($amount, 2) }}</p>
-    <p><span class="text-gray-400">Status:</span> {{ ucfirst($status) }}</p>
+    <div class="grid gap-3 sm:grid-cols-3">
+        <div class="theme-detail-card">
+            <p class="theme-label">Issued</p>
+            <p class="theme-detail-value">{{ $issuedAt }}</p>
+        </div>
+        <div class="theme-detail-card">
+            <p class="theme-label">Amount</p>
+            <p class="theme-detail-value">MVR {{ number_format($amount, 2) }}</p>
+        </div>
+        <div class="theme-detail-card">
+            <p class="theme-label">Status</p>
+            <p class="theme-detail-value">{{ ucfirst($status) }}</p>
+        </div>
+    </div>
 </x-ui.surface>

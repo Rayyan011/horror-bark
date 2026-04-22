@@ -23,9 +23,10 @@
     <x-slot:footer>
         @auth
             <x-booking.form
-                :action="route('bookings.beach-events.store', $event)"
+                :action="route('checkout.beach-events.prepare', $event)"
                 mode="date-time"
-                :submit-label="$bookingConfig['submitLabel'] ?? 'Book event'"
+                :submit-label="$bookingConfig['submitLabel'] ?? 'Review & pay'"
+                rules-hint="You will confirm this event booking on the demo payment screen."
                 :quantity-config="[
                     'label' => 'Tickets',
                     'min' => 1,

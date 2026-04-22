@@ -12,11 +12,11 @@
                 : ($item['open'] ?? false);
         @endphp
 
-        <details class="bg-gray-800 rounded border border-gray-700" @if($isOpen) open @endif>
-            <summary class="cursor-pointer list-none p-4 flex items-center justify-between">
-                <span class="text-xl font-semibold">{{ $item['label'] ?? 'Section' }}</span>
+        <details class="theme-status-shell" @if($isOpen) open @endif>
+            <summary class="theme-status-summary cursor-pointer list-none">
+                <span class="text-xl font-semibold text-moonlight">{{ $item['label'] ?? 'Section' }}</span>
                 @if ($countBadge)
-                    <span class="text-sm text-gray-400">{{ $item['count'] ?? 0 }}</span>
+                    <span class="theme-kicker">{{ $item['count'] ?? 0 }}</span>
                 @endif
             </summary>
 

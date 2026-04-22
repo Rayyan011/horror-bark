@@ -10,7 +10,7 @@
         'default' => 1,
     ],
     'rulesHint' => null,
-    'submitLabel' => 'Book now',
+    'submitLabel' => 'Review & pay',
     'submitVariant' => 'primary',
     'idPrefix' => 'booking',
     'hidden' => [],
@@ -72,7 +72,7 @@
     @endif
 
     @if ($rulesHint)
-        <p class="text-xs text-gray-400">{{ $rulesHint }}</p>
+        <p class="catalog-filter-hint">{{ $rulesHint }}</p>
     @endif
 
     <x-ui.field

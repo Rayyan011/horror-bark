@@ -13,7 +13,7 @@
         <h1 class="text-3xl font-bold mb-6 horror-font text-center">{{ $title }}</h1>
 
         @if ($subtitle)
-            <p class="text-sm text-gray-300 text-center mb-6">{{ $subtitle }}</p>
+            <p class="readable-copy text-center mb-6">{{ $subtitle }}</p>
         @endif
 
         @if ($action)
@@ -47,12 +47,12 @@
                             :required="$field['required'] ?? false"
                         />
                     @elseif ($fieldType === 'checkbox')
-                        <label class="inline-flex items-center text-sm">
+                        <label class="theme-checkbox-row">
                             <input
                                 type="checkbox"
                                 name="{{ $field['name'] }}"
                                 value="{{ $field['checkbox_value'] ?? '1' }}"
-                                class="mr-2 rounded bg-gray-900 border-gray-700"
+                                class="h-4 w-4 rounded border-primary-light/30 bg-background-dark/80 text-primary-light focus:ring-primary-light/40"
                                 @if (!empty($field['checked'])) checked @endif
                             />
                             {{ $field['label'] }}
@@ -78,13 +78,13 @@
         @endif
 
         @if (!empty($links))
-            <div class="mt-4 text-sm text-center text-gray-300 space-y-2">
+            <div class="mt-4 text-sm text-center space-y-2">
                 @foreach ($links as $link)
                     <p>
                         @if (!empty($link['prefix']))
-                            <span>{{ $link['prefix'] }} </span>
+                            <span class="readable-muted">{{ $link['prefix'] }} </span>
                         @endif
-                        <a href="{{ $link['href'] }}" class="text-red-400 hover:text-red-300">{{ $link['label'] }}</a>
+                        <a href="{{ $link['href'] }}" class="theme-inline-link">{{ $link['label'] }}</a>
                     </p>
                 @endforeach
             </div>

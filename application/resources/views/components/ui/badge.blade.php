@@ -5,14 +5,14 @@
 
 @php
     $classes = match ($variant) {
-        'success' => 'bg-green-700 text-white',
-        'danger' => 'bg-red-700 text-white',
-        'warning' => 'bg-yellow-700 text-white',
-        'muted' => 'bg-gray-700 text-gray-200',
-        default => 'bg-gray-600 text-white',
+        'success' => 'border border-emerald-400/30 bg-emerald-950/70 text-emerald-50',
+        'danger' => 'border border-rose-400/30 bg-rose-950/75 text-rose-50',
+        'warning' => 'border border-amber-400/30 bg-amber-950/70 text-amber-50',
+        'muted' => 'border border-primary-light/15 bg-primary-dark/85 text-primary-light/85',
+        default => 'border border-primary-light/20 bg-primary-dark text-moonlight',
     };
 @endphp
 
-<span {{ $attributes->class([$classes, 'inline-flex items-center px-2 py-1 rounded text-xs uppercase tracking-wide']) }}>
+<span {{ $attributes->class([$classes, 'inline-flex items-center rounded px-2 py-1 font-display text-xs uppercase tracking-[0.16em]']) }}>
     {{ $label ?? $slot }}
 </span>

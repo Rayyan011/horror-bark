@@ -5,11 +5,12 @@
     'actionHref' => null,
 ])
 
-<div class="text-center py-10 text-gray-300">
-    <h3 class="text-xl font-semibold">{{ $title }}</h3>
+<div class="py-10 text-center">
+    <p class="theme-kicker">No Current Match</p>
+    <h3 class="mt-2 text-2xl font-semibold text-moonlight">{{ $title }}</h3>
 
     @if ($description)
-        <p class="mt-2">{{ $description }}</p>
+        <p class="readable-copy mx-auto mt-3 max-w-2xl">{{ $description }}</p>
     @endif
 
     @if ($actionLabel && $actionHref)

@@ -8,11 +8,11 @@
     $isGame = $type === 'game';
 
     $route = $isGame
-        ? route('bookings.games.store', $item)
-        : route('bookings.rides.store', $item);
+        ? route('checkout.games.prepare', $item)
+        : route('checkout.rides.prepare', $item);
 
     $submitLabel = $bookingConfig['submitLabel']
-        ?? ($isGame ? 'Book game' : 'Book ride');
+        ?? 'Review & pay';
 
     $buttonVariant = $isGame ? 'secondary' : 'primary';
     $quantityLabel = $isGame ? 'Players' : 'Tickets';
@@ -39,7 +39,7 @@
             <x-booking.form
                 :action="$route"
                 :mode="$bookingConfig['mode'] ?? 'datetime'"
-                :rules-hint="$bookingConfig['rulesHint'] ?? 'Only 9:00 or 17:00.'"
+                :rules-hint="$bookingConfig['rulesHint'] ?? 'Only 9:00 or 17:00. Payment is confirmed on the next screen.'"
                 :submit-label="$submitLabel"
                 :submit-variant="$buttonVariant"
                 :quantity-config="[

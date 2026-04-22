@@ -15,7 +15,7 @@
 @endphp
 
 <div id="{{ $id }}" class="{{ $open ? '' : 'hidden' }} fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 px-4" role="dialog" aria-modal="true" aria-labelledby="{{ $id }}-title">
-    <div class="bg-gray-900 p-6 rounded-lg w-full {{ $sizeClass }} relative">
+    <div class="gothic-panel rounded-lg p-6 w-full {{ $sizeClass }} relative">
         <button type="button" onclick="closeUiModal('{{ $id }}')" class="absolute top-2 right-2 text-white text-xl" aria-label="Close">&times;</button>
 
         @if ($title)
@@ -31,7 +31,7 @@
         </div>
 
         @isset($footer)
-            <div class="mt-4 border-t border-gray-700 pt-4">
+            <div class="mt-4 border-t border-primary-light/15 pt-4">
                 {{ $footer }}
             </div>
         @endisset

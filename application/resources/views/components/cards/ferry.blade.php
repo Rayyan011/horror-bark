@@ -15,10 +15,10 @@
     <x-slot:footer>
         @auth
             <x-booking.form
-                :action="route('bookings.ferries.store', $ferry)"
+                :action="route('checkout.ferries.prepare', $ferry)"
                 :mode="$bookingConfig['mode'] ?? 'datetime'"
-                :rules-hint="$bookingConfig['rulesHint'] ?? 'Whole hour between 9:00 and 16:00.'"
-                :submit-label="$bookingConfig['submitLabel'] ?? 'Book ferry'"
+                :rules-hint="$bookingConfig['rulesHint'] ?? 'Whole hour between 9:00 and 16:00. Payment is confirmed on the next screen.'"
+                :submit-label="$bookingConfig['submitLabel'] ?? 'Review & pay'"
                 :quantity-config="[
                     'label' => 'Tickets',
                     'min' => 1,

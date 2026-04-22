@@ -14,15 +14,15 @@
         :alt="$hotel->name"
     />
 
-    <p class="text-gray-300">{{ $hotel->location }}</p>
+    <p class="readable-copy">{{ $hotel->location }}</p>
     @if (filled($hotel->description))
-        <p class="font-serif leading-relaxed text-primary-light">{{ $hotel->description }}</p>
+        <p class="readable-copy">{{ $hotel->description }}</p>
     @endif
 
     <x-ui.section-heading title="Available Rooms" size="md" />
 
     @if ($hotel->rooms->isEmpty())
-        <p class="text-gray-400">No rooms are currently available at this hotel.</p>
+        <p class="readable-muted">No rooms are currently available at this hotel.</p>
     @endif
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -31,9 +31,9 @@
 
             <x-ui.modal :id="'room-modal-' . $room->id" :title="$room->room_number" size="md">
                 <x-slot:body>
-                    <p class="text-gray-400 mb-2">Max Occupancy: {{ $room->max_occupancy }}</p>
-                    <p class="text-gray-400 mb-2">Price: MVR {{ $room->price }}</p>
-                    <p class="text-gray-400 mb-2">Status: {{ ucfirst($room->status) }}</p>
+                    <p class="readable-muted mb-2">Max Occupancy: {{ $room->max_occupancy }}</p>
+                    <p class="readable-muted mb-2">Price: MVR {{ $room->price }}</p>
+                    <p class="readable-muted mb-2">Status: {{ ucfirst($room->status) }}</p>
                     @if (($room->available_spots ?? $room->max_occupancy) > 0)
                         <p class="text-green-400 text-sm mb-2">{{ $room->available_spots ?? $room->max_occupancy }} / {{ $room->max_occupancy }} spots available</p>
                     @else
@@ -42,7 +42,7 @@
 
                     @if (!empty($room->amenities))
                         <h5 class="text-white font-semibold mt-4 mb-2">Amenities:</h5>
-                        <ul class="list-disc list-inside text-gray-400">
+                        <ul class="list-disc list-inside readable-muted">
                             @foreach ($room->amenities as $amenity)
                                 <li>{{ $amenity }}</li>
                             @endforeach
@@ -62,9 +62,10 @@
                     @if (($room->available_spots ?? $room->max_occupancy) > 0)
                         @auth
                             <x-booking.form
-                                :action="route('bookings.hotels.store', $room)"
+                                :action="route('checkout.hotels.prepare', $room)"
                                 mode="date-range"
-                                submit-label="Book this room"
+                                submit-label="Review & pay"
+                                rules-hint="You will confirm this room booking on the demo payment screen."
                                 :quantity-config="[
                                     'label' => 'Guests',
                                     'min' => 1,

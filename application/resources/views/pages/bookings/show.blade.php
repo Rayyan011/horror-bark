@@ -11,14 +11,32 @@
     <x-ui.section-heading title="Booking Details" size="lg" />
     <x-ui.alert-stack />
 
-    <x-ui.surface class="space-y-2">
-        <p class="text-gray-300"><span class="text-gray-400">Type:</span> {{ $type }}</p>
-        <p class="text-gray-300"><span class="text-gray-400">Status:</span> {{ ucfirst($booking->status) }}</p>
-        <p class="text-gray-300"><span class="text-gray-400">Quantity:</span> {{ $booking->quantity }}</p>
+    <x-ui.surface class="space-y-4">
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="theme-detail-card">
+                <p class="theme-label">Type</p>
+                <p class="theme-detail-value">{{ $type }}</p>
+            </div>
+            <div class="theme-detail-card">
+                <p class="theme-label">Status</p>
+                <p class="theme-detail-value">{{ ucfirst($booking->status) }}</p>
+            </div>
+            <div class="theme-detail-card">
+                <p class="theme-label">Quantity</p>
+                <p class="theme-detail-value">{{ $booking->quantity }}</p>
+            </div>
+            <div class="theme-detail-card">
+                <p class="theme-label">Self-service cutoff</p>
+                <p class="theme-detail-value">{{ $changeCutoffAt->format('Y-m-d H:i') }}</p>
+            </div>
+        </div>
+
         @if (!is_null($booking->total_price))
-            <p class="text-gray-300"><span class="text-gray-400">Total:</span> MVR {{ number_format($booking->total_price, 2) }}</p>
+            <div class="theme-total-card">
+                <p class="theme-label">Total</p>
+                <p class="theme-total-value">MVR {{ number_format($booking->total_price, 2) }}</p>
+            </div>
         @endif
-        <p class="text-gray-300"><span class="text-gray-400">Self-service cutoff:</span> {{ $changeCutoffAt->format('Y-m-d H:i') }}</p>
     </x-ui.surface>
 
     @if ($invoice)
@@ -34,7 +52,7 @@
     @if (!empty($passDownloadUrl))
         <x-ui.surface class="space-y-3">
             <h2 class="text-xl font-semibold">Ferry Pass</h2>
-            <p class="text-gray-300">Download the issued ferry pass for boarding and manifest checks.</p>
+            <p class="readable-copy">Download the issued ferry pass for boarding and manifest checks.</p>
             <x-ui.button :href="$passDownloadUrl" variant="secondary">Download ferry pass</x-ui.button>
         </x-ui.surface>
     @endif
@@ -47,13 +65,13 @@
                 @method('PATCH')
                 @foreach ($rescheduleFields as $field)
                     <div class="space-y-1">
-                        <label class="block text-sm text-gray-300" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
+                        <label class="catalog-filter-label !text-primary-light/75" for="{{ $field['name'] }}">{{ $field['label'] }}</label>
                         <input
                             id="{{ $field['name'] }}"
                             name="{{ $field['name'] }}"
                             type="{{ $field['type'] }}"
                             value="{{ old($field['name'], $field['value']) }}"
-                            class="w-full rounded border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white"
+                            class="catalog-filter-control w-full rounded border border-primary-light/20 px-3 py-2"
                         >
                         @error($field['name'])
                             <p class="text-sm text-rose-300">{{ $message }}</p>
@@ -68,7 +86,7 @@
         <x-ui.button :href="$cancelRoute" method="PATCH" variant="danger">Cancel booking</x-ui.button>
     @elseif ($booking->status !== 'canceled')
         <x-ui.surface>
-            <p class="text-sm text-amber-200">This booking is outside the 24-hour self-service change window.</p>
+            <p class="readable-copy text-amber-200">This booking is outside the 24-hour self-service change window.</p>
         </x-ui.surface>
     @endif
 </main>

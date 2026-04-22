@@ -15,19 +15,19 @@
 @endphp
 
 @if ($successMessage)
-    <div class="mb-4 bg-green-700 text-white p-4 rounded {{ $dismissible ? 'relative' : '' }}">
+    <div class="theme-success-alert {{ $dismissible ? 'relative' : '' }}">
         {{ $successMessage }}
     </div>
 @endif
 
 @if ($errorMessage)
-    <div class="mb-4 bg-red-700 text-white p-4 rounded {{ $dismissible ? 'relative' : '' }}">
+    <div class="theme-error-alert {{ $dismissible ? 'relative' : '' }}">
         {{ $errorMessage }}
     </div>
 @endif
 
 @foreach ($warnings as $warning)
-    <div class="mb-4 bg-yellow-700 text-white p-4 rounded {{ $dismissible ? 'relative' : '' }}">
+    <div class="theme-warning-alert {{ $dismissible ? 'relative' : '' }}">
         {{ $warning }}
     </div>
 @endforeach
