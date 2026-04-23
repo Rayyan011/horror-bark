@@ -5,6 +5,11 @@
 
 <x-ui.entity-card
     :title="$ferry->name"
+    :media="[
+        'images' => $ferry->images ?? [],
+        'fallback' => \App\Support\HorrorGeneratedMediaCatalog::path('fallbacks', 'ferry'),
+        'alt' => $ferry->name,
+    ]"
     :meta="[
         ['label' => 'Destination', 'value' => $ferry->island->name ?? 'Horror Island', 'tone' => 'muted'],
         ['label' => 'Price', 'value' => 'MVR ' . number_format($ferry->price, 2), 'tone' => 'muted'],

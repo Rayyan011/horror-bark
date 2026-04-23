@@ -4,12 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\FerryResource\Pages;
 use App\Models\Ferry;
-use App\Models\User;
-use App\Models\Island;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,8 +15,8 @@ use Filament\Tables\Table;
 class FerryResource extends Resource
 {
     protected static ?string $model = Ferry::class;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
@@ -77,6 +75,14 @@ class FerryResource extends Resource
                     ->relationship('island', 'name')
                     ->required()
                     ->label('Home Island'),
+
+                Forms\Components\FileUpload::make('images')
+                    ->label('Additional Images')
+                    ->directory('ferries/gallery')
+                    ->multiple()
+                    ->maxFiles(5)
+                    ->image()
+                    ->maxSize(1024),
             ]);
     }
 
@@ -90,6 +96,11 @@ class FerryResource extends Resource
                 Tables\Columns\TextColumn::make('price')->money('MVR')->sortable(),
                 Tables\Columns\TextColumn::make('max_capacity')->sortable(),
                 Tables\Columns\TextColumn::make('max_booking_quantity')->sortable(),
+                Tables\Columns\ImageColumn::make('images')
+                    ->disk('public')
+                    ->getStateUsing(fn ($record) => $record->images[0] ?? null)
+                    ->size(50)
+                    ->label('Gallery'),
             ])
             ->filters([
                 //

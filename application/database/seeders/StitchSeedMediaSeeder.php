@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\BeachEvent;
+use App\Models\Ferry;
 use App\Models\Game;
 use App\Models\Hotel;
 use App\Models\Island;
@@ -13,6 +14,7 @@ use App\Services\IslandAccessService;
 use App\Support\HorrorGeneratedMediaCatalog;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class StitchSeedMediaSeeder extends Seeder
@@ -29,6 +31,7 @@ class StitchSeedMediaSeeder extends Seeder
         $this->seedRides($owners, $islands);
         $this->seedGames($owners, $islands);
         $this->seedBeachEvents($owners, $islands);
+        $this->seedFerries($owners, $islands);
     }
 
     private function seedOwners(\Illuminate\Support\Carbon $now): array
@@ -433,6 +436,70 @@ class StitchSeedMediaSeeder extends Seeder
                 ['name' => $record['name']],
                 $record,
             );
+        }
+    }
+
+    private function seedFerries(array $owners, array $islands): void
+    {
+        $records = [
+            [
+                'user_id' => $owners['ophelia.vale@horrorbark.test'],
+                'island_id' => $islands['Manor Ward'],
+                'name' => "Keeper's Passage",
+                'description' => 'A formal harbor approach for manor guests, shaped around velvet seating, quiet service, and torchlit arrivals.',
+                'price' => 75.00,
+                'max_capacity' => 36,
+                'max_booking_quantity' => 6,
+                'map_x' => 19.00,
+                'map_y' => 63.00,
+                'images' => [$this->generatedImage('ferries', 'keepers-passage')],
+            ],
+            [
+                'user_id' => $owners['ophelia.vale@horrorbark.test'],
+                'island_id' => $islands['Saltveil Beach'],
+                'name' => 'Night Tide Passage',
+                'description' => 'A black-water crossing that reaches the outer shore under low lantern light and a heavier band of sea mist.',
+                'price' => 55.00,
+                'max_capacity' => 42,
+                'max_booking_quantity' => 6,
+                'map_x' => 58.00,
+                'map_y' => 18.00,
+                'images' => [$this->generatedImage('ferries', 'night-tide-passage')],
+            ],
+            [
+                'user_id' => $owners['ophelia.vale@horrorbark.test'],
+                'island_id' => $islands['Pale Moon Strand'],
+                'name' => 'Moonwake Line',
+                'description' => 'The late ferry for shoreline gatherings, arriving beside pale surf, ceremonial fires, and moonlit seating.',
+                'price' => 60.00,
+                'max_capacity' => 40,
+                'max_booking_quantity' => 6,
+                'map_x' => 80.00,
+                'map_y' => 67.00,
+                'images' => [$this->generatedImage('ferries', 'moonwake-line')],
+            ],
+        ];
+
+        foreach ($records as $record) {
+            $ferry = Ferry::query()->updateOrCreate(
+                ['name' => $record['name']],
+                $record,
+            );
+
+            DB::table('ferry_slots')->where('ferry_id', $ferry->id)->delete();
+
+            foreach ([9, 12, 15] as $hour) {
+                DB::table('ferry_slots')->insert([
+                    'ferry_id' => $ferry->id,
+                    'slot_date' => now()->addDay()->toDateString(),
+                    'start_time' => sprintf('%02d:00:00', $hour),
+                    'end_time' => sprintf('%02d:00:00', $hour + 1),
+                    'capacity' => $record['max_capacity'],
+                    'status' => 'active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
     }
 

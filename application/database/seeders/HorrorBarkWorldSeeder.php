@@ -536,6 +536,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'max_booking_quantity' => 6,
                 'map_x' => 18.00,
                 'map_y' => 62.00,
+                'images' => $this->json([$this->generatedImage('ferries', 'keepers-passage')]),
             ],
             [
                 'name' => 'Night Tide Passage',
@@ -546,6 +547,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'max_booking_quantity' => 6,
                 'map_x' => 65.00,
                 'map_y' => 53.00,
+                'images' => $this->json([$this->generatedImage('ferries', 'night-tide-passage')]),
             ],
             [
                 'name' => 'Moonwake Line',
@@ -556,6 +558,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'max_booking_quantity' => 6,
                 'map_x' => 79.00,
                 'map_y' => 62.00,
+                'images' => $this->json([$this->generatedImage('ferries', 'moonwake-line')]),
             ],
         ];
 

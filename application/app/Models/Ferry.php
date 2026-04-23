@@ -18,6 +18,11 @@ class Ferry extends Model
         'island_id',         // Foreign key to the Island model
         'map_x',
         'map_y',
+        'images',
+    ];
+
+    protected $casts = [
+        'images' => 'array',
     ];
 
     public function owner(): BelongsTo

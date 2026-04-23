@@ -22,7 +22,7 @@
         rows="{{ $rows }}"
         @if ($required) required @endif
         @if (!is_null($placeholder)) placeholder="{{ $placeholder }}" @endif
-        class="w-full border bg-background-dark/90 px-3 py-2 text-moonlight placeholder:text-primary-light/60 focus:border-primary-light focus:outline-none {{ $resolvedError ? 'border-rose-500' : 'border-primary-light/30' }}"
+        class="w-full border bg-background-dark/90 px-3 py-2 text-moonlight placeholder:text-primary-light/70 focus:border-primary-light focus:outline-none {{ $resolvedError ? 'border-rose-500' : 'border-primary-light/30' }}"
     >{{ old($name, $value) }}</textarea>
 
     @if ($resolvedError)

@@ -187,7 +187,7 @@ class HorrorAtlasService
             'x' => $x,
             'y' => $y,
             'icon' => 'directions_boat',
-            'image' => $this->imageFor(data_get($ferry, 'island.images'), HorrorGeneratedMediaCatalog::path('fallbacks', 'ferry')),
+            'image' => $this->imageFor($ferry->images ?: data_get($ferry, 'island.images'), HorrorGeneratedMediaCatalog::path('fallbacks', 'ferry')),
             'eyebrow' => 'Ferry',
             'stat' => 'MVR '.number_format($ferry->price, 2),
             'secondary' => 'Capacity '.$ferry->max_capacity,

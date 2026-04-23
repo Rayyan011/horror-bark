@@ -134,7 +134,7 @@
 
                 <div class="atlas-rail-card">
                     <p class="atlas-kicker text-[0.68rem]">Legend</p>
-                    <div class="mt-5 space-y-3 text-sm text-primary-light/70">
+                    <div class="mt-5 space-y-3 text-sm text-primary-light/80">
                         @foreach ($filters as $filter)
                             @continue($filter['value'] === 'all')
                             <div class="flex items-center gap-3">
@@ -194,7 +194,7 @@
                     <div class="mt-4 grid gap-3 sm:grid-cols-2">
                         @foreach ($filters as $filter)
                             @continue($filter['value'] === 'all')
-                            <div class="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-primary-light/70">
+                            <div class="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-primary-light/80">
                                 <span class="atlas-legend-icon {{ $categoryMeta[$filter['value']]['marker'] }}">
                                     <span class="material-symbols-outlined">{{ $categoryMeta[$filter['value']]['icon'] }}</span>
                                 </span>
@@ -228,7 +228,7 @@
 
                         <div class="space-y-3 text-sm leading-relaxed text-primary-light/80">
                             <p x-text="currentSelection().description"></p>
-                            <div class="grid gap-2 text-xs uppercase tracking-[0.18em] text-primary-light/60">
+                            <div class="grid gap-2 text-xs uppercase tracking-[0.18em] text-primary-light/70">
                                 <p>
                                     <span x-text="currentSelection().zoneLabel"></span>
                                     <span class="mx-2 text-primary-light/30">•</span>

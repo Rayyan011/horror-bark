@@ -6,7 +6,7 @@
 <main class="space-y-10">
     <section class="rounded-[2rem] border border-primary-light/15 bg-[radial-gradient(circle_at_top,_rgba(156,107,255,0.18),_transparent_55%),linear-gradient(135deg,_rgba(12,11,22,0.98),_rgba(24,18,34,0.92))] px-6 py-10 shadow-[0_30px_80px_rgba(0,0,0,0.35)] sm:px-10">
         <div class="max-w-4xl space-y-4">
-            <p class="text-xs uppercase tracking-[0.32em] text-primary-light/60">Shadow Park Registry</p>
+            <p class="text-xs uppercase tracking-[0.32em] text-primary-light/70">Shadow Park Registry</p>
             <h1 class="font-display text-4xl italic leading-none text-moonlight sm:text-5xl">Rides, games, and midnight attractions.</h1>
             <p class="max-w-3xl font-serif text-base leading-relaxed text-primary-light/80">
                 The atlas now lives on the home page. Use this registry to sort the active attractions, compare prices and capacities,

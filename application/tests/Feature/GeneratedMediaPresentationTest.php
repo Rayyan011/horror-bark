@@ -33,6 +33,18 @@ class GeneratedMediaPresentationTest extends TestCase
             ->assertSee('storage/rooms/gallery/shining-north-tower-suite-01.png');
     }
 
+    public function test_ferry_listing_prefers_storage_backed_ferry_images(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $response = $this->get(route('ferries.index'));
+
+        $response->assertOk()
+            ->assertSee('storage/ferries/gallery/keepers-passage-01.png')
+            ->assertSee('storage/ferries/gallery/night-tide-passage-01.png')
+            ->assertSee('storage/ferries/gallery/moonwake-line-01.png');
+    }
+
     public function test_generated_media_route_supports_new_stitch_room_variants(): void
     {
         foreach ([

@@ -19,7 +19,7 @@
                 <a href="{{ route('home') }}" class="text-metallic mb-6 block font-display text-2xl font-bold uppercase tracking-[0.2em]">
                     Horror-Bark
                 </a>
-                <p class="font-serif text-base leading-relaxed opacity-80">
+                <p class="font-serif text-base leading-relaxed text-primary-light/90">
                     The destination for gothic luxury and island thrills. Enter with a reservation and leave with a story.
                 </p>
             </div>
@@ -50,7 +50,7 @@
                     <input
                         type="email"
                         placeholder="Enter your email"
-                        class="w-full border border-primary-light/30 bg-background-dark px-4 py-3 font-serif text-base text-moonlight placeholder:text-primary-light/60 focus:border-primary-light focus:outline-none"
+                        class="w-full border border-primary-light/30 bg-background-dark px-4 py-3 font-serif text-base text-moonlight placeholder:text-primary-light/70 focus:border-primary-light focus:outline-none"
                     />
                     <button type="button" class="border border-primary-light/40 bg-primary-dark px-4 py-3 font-display text-sm uppercase tracking-[0.2em] text-moonlight transition duration-300 hover:bg-primary">
                         Summon Us
@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col items-center justify-between border-t border-primary-light/20 pt-8 font-serif text-sm opacity-75 md:flex-row">
+        <div class="flex flex-col items-center justify-between border-t border-primary-light/20 pt-8 font-serif text-sm text-primary-light/80 md:flex-row">
             <p>{{ $copyright ?: '© ' . date('Y') . ' Horror-Bark. All rights reserved.' }}</p>
 
             <div class="mt-4 flex space-x-8 md:mt-0">

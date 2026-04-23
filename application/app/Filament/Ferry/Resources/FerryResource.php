@@ -4,6 +4,7 @@ namespace App\Filament\Ferry\Resources;
 
 use App\Filament\Ferry\Resources\FerryResource\Pages;
 use App\Models\Ferry;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -81,6 +82,14 @@ class FerryResource extends Resource
                 TextInput::make('max_booking_quantity')
                     ->numeric()
                     ->required(),
+
+                FileUpload::make('images')
+                    ->label('Additional Images')
+                    ->directory('ferries/gallery')
+                    ->multiple()
+                    ->maxFiles(5)
+                    ->image()
+                    ->maxSize(1024),
             ]);
     }
 
@@ -93,6 +102,11 @@ class FerryResource extends Resource
                 Tables\Columns\TextColumn::make('price')->money('MVR')->sortable(),
                 Tables\Columns\TextColumn::make('max_capacity')->sortable(),
                 Tables\Columns\TextColumn::make('max_booking_quantity')->sortable(),
+                Tables\Columns\ImageColumn::make('images')
+                    ->disk('public')
+                    ->getStateUsing(fn ($record) => $record->images[0] ?? null)
+                    ->size(50)
+                    ->label('Gallery'),
             ])
             ->filters([
                 //
