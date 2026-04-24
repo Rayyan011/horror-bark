@@ -577,4 +577,173 @@
     .haunts-carousel-dot.is-active {
         @apply scale-110 border-primary-light bg-moonlight;
     }
+
+    .home-hero-shell {
+        @apply relative isolate overflow-hidden;
+        min-height: 86vh;
+        background:
+            radial-gradient(circle at 18% 20%, rgba(180, 150, 214, 0.18), transparent 26%),
+            radial-gradient(circle at 84% 76%, rgba(107, 83, 56, 0.22), transparent 18%),
+            linear-gradient(180deg, rgba(5, 5, 6, 0.62), rgba(6, 5, 9, 0.92));
+    }
+
+    .home-hero-media,
+    .home-hero-overlay,
+    .home-hero-noise {
+        @apply absolute inset-0;
+    }
+
+    .home-hero-media img {
+        filter: grayscale(26%) brightness(0.48) contrast(1.12);
+    }
+
+    .home-hero-overlay {
+        background:
+            linear-gradient(180deg, rgba(3, 3, 4, 0.2), rgba(4, 3, 6, 0.72) 56%, rgba(4, 3, 6, 0.95)),
+            linear-gradient(120deg, rgba(16, 11, 22, 0.85), rgba(10, 8, 13, 0.2) 45%, rgba(31, 21, 16, 0.52));
+    }
+
+    .home-hero-noise {
+        background-image:
+            url('https://www.transparenttextures.com/patterns/black-linen.png'),
+            radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.05), transparent 34%);
+        opacity: 0.22;
+        mix-blend-mode: screen;
+    }
+
+    .home-hero-kicker {
+        @apply font-serif text-xs uppercase tracking-[0.42em] text-primary-light/85;
+    }
+
+    .home-hero-title {
+        @apply font-display text-5xl italic leading-[0.94] text-moonlight sm:text-6xl lg:text-7xl;
+        text-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    }
+
+    .home-hero-stat {
+        @apply rounded-sm border p-5 shadow-cold-shadow;
+        border-color: rgba(209, 209, 212, 0.15);
+        background-color: rgba(24, 20, 30, 0.58);
+        backdrop-filter: blur(10px);
+    }
+
+    .home-hero-stat-value {
+        @apply mt-3 font-display text-3xl uppercase tracking-[0.08em] text-moonlight;
+    }
+
+    .home-chart-shell {
+        @apply space-y-6 rounded-[2rem] border px-6 py-8 shadow-[0_30px_90px_rgba(0,0,0,0.42)] sm:px-8 lg:px-10 lg:py-10;
+        border-color: rgba(209, 209, 212, 0.1);
+        background: linear-gradient(180deg, rgba(10, 9, 14, 0.98), rgba(17, 12, 23, 0.94));
+    }
+
+    .home-chart-stage {
+        @apply relative min-h-[28rem] overflow-hidden rounded-[1.65rem] border border-primary-light/15 bg-[#07070a] shadow-cold-shadow;
+        background:
+            radial-gradient(circle at 18% 18%, rgba(163, 144, 197, 0.12), transparent 20%),
+            radial-gradient(circle at 82% 72%, rgba(164, 111, 61, 0.14), transparent 22%),
+            linear-gradient(180deg, rgba(7, 7, 10, 0.96), rgba(3, 3, 5, 1));
+    }
+
+    .home-chart-stage::before {
+        content: '';
+        @apply absolute inset-[8%] rounded-[2rem] border border-dashed border-primary-light/10;
+    }
+
+    .home-chart-stage::after {
+        content: '';
+        @apply absolute inset-0;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+        background-size: 56px 56px;
+        opacity: 0.35;
+    }
+
+    .home-chart-route {
+        @apply absolute rounded-full border;
+        border-color: rgba(209, 209, 212, 0.15);
+    }
+
+    .home-chart-route-a {
+        inset: 20% 44% 44% 12%;
+        border-right: none;
+        border-bottom: none;
+    }
+
+    .home-chart-route-b {
+        inset: 31% 18% 18% 34%;
+        border-left: none;
+        border-bottom: none;
+    }
+
+    .home-chart-route-c {
+        inset: 50% 8% 10% 56%;
+        border-left: none;
+        border-top: none;
+    }
+
+    .home-chart-glow {
+        @apply absolute rounded-full blur-3xl;
+    }
+
+    .home-chart-glow-a {
+        @apply left-[8%] top-[56%] h-40 w-40;
+        background-color: rgba(115, 137, 165, 0.18);
+    }
+
+    .home-chart-glow-b {
+        @apply right-[10%] top-[18%] h-44 w-44;
+        background-color: rgba(139, 99, 85, 0.18);
+    }
+
+    .home-chart-node {
+        @apply absolute z-10 flex min-w-[10rem] -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-1 rounded-2xl border px-4 py-3 text-left shadow-[0_16px_38px_rgba(0,0,0,0.44)] transition duration-300 hover:scale-[1.03];
+        backdrop-filter: blur(10px);
+    }
+
+    .home-chart-node--harbor {
+        border-color: rgba(125, 144, 165, 0.32);
+        background-color: rgba(16, 23, 34, 0.82);
+        color: #d9e5ef;
+    }
+
+    .home-chart-node--manor {
+        border-color: rgba(209, 209, 212, 0.24);
+        background-color: rgba(26, 22, 28, 0.84);
+        color: #d1d1d4;
+    }
+
+    .home-chart-node--midway {
+        border-color: rgba(156, 125, 182, 0.28);
+        background-color: rgba(29, 21, 36, 0.84);
+        color: #ece2f8;
+    }
+
+    .home-chart-node--shore {
+        border-color: rgba(180, 124, 86, 0.28);
+        background-color: rgba(34, 22, 19, 0.82);
+        color: #f4d8c1;
+    }
+
+    .home-chart-node-ring {
+        @apply absolute -left-3 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border bg-background-dark/95;
+        border-color: rgba(209, 209, 212, 0.25);
+        box-shadow: 0 0 0 6px rgba(6, 5, 8, 0.72);
+    }
+
+    .home-chart-node-title {
+        @apply font-display text-xl italic leading-tight;
+    }
+
+    .home-chart-node-meta {
+        @apply font-serif text-xs uppercase tracking-[0.18em] opacity-70;
+    }
+
+    .home-district-card {
+        @apply flex h-full flex-col justify-between gap-5 rounded-[1.4rem] border p-6 shadow-cold-shadow;
+        border-color: rgba(209, 209, 212, 0.15);
+        background-color: rgba(24, 20, 30, 0.74);
+        backdrop-filter: blur(10px);
+    }
 }

@@ -1,6 +1,6 @@
 @props([
-    'title' => 'Silver Experiences',
-    'subtitle' => 'Curated specifically for the creatures of the night.',
+    'title' => 'Featured Discounts',
+    'subtitle' => 'Selected discounted experiences from the current Horror-Bark registry.',
 ])
 
 <section class="py-12">

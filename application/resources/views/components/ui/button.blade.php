@@ -11,7 +11,7 @@
 @php
     $variantClass = match ($variant) {
         'secondary' => 'border border-primary-light/35 bg-transparent text-primary-light hover:border-primary-light hover:bg-primary-dark/70 hover:text-white',
-        'danger' => 'border border-rose-700/60 bg-rose-900/70 text-rose-100 hover:bg-rose-800',
+        'danger' => 'border border-[#8b6355]/45 bg-[#24130f]/80 text-[#f0d6c9] hover:border-[#ad8172] hover:bg-[#2d1712]',
         'ghost' => 'border border-primary-light/30 bg-background-dark/60 text-primary-light hover:border-primary-light hover:bg-white/5 hover:text-white',
         default => 'border border-primary-light/30 bg-primary-dark text-moonlight hover:border-primary-light hover:bg-primary',
     };

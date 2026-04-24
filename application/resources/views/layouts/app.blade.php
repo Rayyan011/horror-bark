@@ -41,7 +41,7 @@
                 @yield('hero')
             @else
                 <x-ui.hero-banner
-                    :image="asset('images/banner.webp')"
+                    :image="\App\Support\HorrorBarkThemeAssets::homeHero()"
                     title="Welcome to Horror-Bark"
                     subtitle="Reserve your stay, cross the channel, and explore every corner of the island."
                     height="h-[62vh]"

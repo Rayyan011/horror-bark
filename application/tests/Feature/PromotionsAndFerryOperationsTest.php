@@ -37,7 +37,7 @@ class PromotionsAndFerryOperationsTest extends TestCase
 
     public function test_homepage_only_renders_active_promotions(): void
     {
-        Promotion::create([
+        $livePromotion = Promotion::create([
             'title' => 'Moonlit Escape',
             'description' => 'A limited offer for haunted harbor stays.',
             'discount_percentage' => 15,
@@ -68,6 +68,7 @@ class PromotionsAndFerryOperationsTest extends TestCase
         $response->assertSeeText('Moonlit Escape');
         $response->assertDontSeeText('Expired Offer');
         $response->assertDontSeeText('Draft Offer');
+        $response->assertSee(route('promotions.show', $livePromotion), false);
     }
 
     public function test_ferry_booking_generates_a_separate_ferry_pass_and_download_endpoint(): void

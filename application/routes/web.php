@@ -24,6 +24,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OperatorReportController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PromotionOfferController;
 use App\Http\Controllers\ThemeParkController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,7 @@ Route::get('/contact', [ContactController::class, 'create'])->name('contacts.cre
 Route::post('/contact', [ContactController::class, 'store'])->name('contacts.store');
 Route::view('/about', 'pages.about')->name('about');
 Route::get('/beach-events', [BeachEventController::class, 'index'])->name('beach-events.index');
+Route::get('/offers/{promotion}', [PromotionOfferController::class, 'show'])->name('promotions.show');
 
 Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index'); // Specific /hotels route first
 Route::get('/hotels/{hotel}', [HotelController::class, 'show'])->name('hotels.show');

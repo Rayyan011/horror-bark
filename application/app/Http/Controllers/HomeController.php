@@ -6,23 +6,17 @@ use App\Models\BeachEvent;
 use App\Models\Ferry;
 use App\Models\Game;
 use App\Models\Hotel;
-use App\Models\Island;
 use App\Models\Promotion;
 use App\Models\Ride;
-use App\Services\HorrorAtlasService;
 use App\Support\HorrorGeneratedMediaCatalog;
 use Illuminate\Support\Collection;
 
 class HomeController extends Controller
 {
-    public function index(HorrorAtlasService $atlas)
+    public function index()
     {
         $hotels = Hotel::query()
             ->with('rooms')
-            ->orderBy('name')
-            ->get();
-
-        $islands = Island::query()
             ->orderBy('name')
             ->get();
 
@@ -70,18 +64,15 @@ class HomeController extends Controller
             ->get();
 
         $otherHaunts = $this->buildOtherHaunts($hauntRides, $hauntGames, $hauntBeachEvents);
-        $atlasData = $atlas->build($islands, $hotels, $rides, $games, $beachEvents, $ferries);
 
         return view('pages.home', compact(
             'hotels',
-            'islands',
             'rides',
             'games',
             'beachEvents',
             'ferries',
             'promotions',
             'otherHaunts',
-            'atlasData',
         ));
     }
 

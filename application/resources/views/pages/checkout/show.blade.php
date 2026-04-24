@@ -26,6 +26,21 @@
                 <p class="readable-muted">Scheduled for {{ $checkout['summary']['schedule_label'] }}</p>
             </div>
 
+            @if (!empty($checkout['summary']['promotion']))
+                <div class="rounded-sm border border-primary-light/20 bg-primary-dark/65 px-4 py-4 shadow-cold-shadow">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div class="space-y-1">
+                            <p class="theme-kicker">Offer Applied</p>
+                            <h3 class="text-xl font-display uppercase tracking-[0.12em] text-moonlight">{{ $checkout['summary']['promotion']['title'] }}</h3>
+                        </div>
+                        <span class="catalog-range-pill">{{ $checkout['summary']['promotion']['label'] }}</span>
+                    </div>
+                    <p class="mt-3 readable-muted">
+                        Savings on this booking: MVR {{ number_format($checkout['summary']['discount_amount'] ?? 0, 2) }}
+                    </p>
+                </div>
+            @endif
+
             <div class="grid gap-3 sm:grid-cols-2">
                 @foreach ($checkout['summary']['line_items'] as $line)
                     <div class="theme-detail-card">
@@ -42,10 +57,20 @@
                 </div>
                 <div class="theme-detail-card">
                     <p class="theme-label">{{ $checkout['summary']['unit_label'] }}</p>
-                    <p class="theme-detail-value">MVR {{ number_format($checkout['summary']['unit_price'], 2) }}</p>
+                    @if (($checkout['summary']['base_unit_price'] ?? $checkout['summary']['unit_price']) > $checkout['summary']['unit_price'])
+                        <p class="theme-detail-value">
+                            <span class="line-through decoration-primary-light/40">MVR {{ number_format($checkout['summary']['base_unit_price'], 2) }}</span>
+                        </p>
+                        <p class="readable-copy !text-base">MVR {{ number_format($checkout['summary']['unit_price'], 2) }}</p>
+                    @else
+                        <p class="theme-detail-value">MVR {{ number_format($checkout['summary']['unit_price'], 2) }}</p>
+                    @endif
                 </div>
                 <div class="theme-total-card">
                     <p class="theme-label">Total Due</p>
+                    @if (($checkout['summary']['base_total_price'] ?? $checkout['summary']['total_price']) > $checkout['summary']['total_price'])
+                        <p class="readable-muted line-through decoration-primary-light/40">MVR {{ number_format($checkout['summary']['base_total_price'], 2) }}</p>
+                    @endif
                     <p class="theme-total-value">MVR {{ number_format($checkout['summary']['total_price'], 2) }}</p>
                 </div>
             </div>

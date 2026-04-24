@@ -23,6 +23,7 @@ class BookingCheckoutService
     public function __construct(
         private readonly BookingLifecycleService $bookingLifecycleService,
         private readonly IslandAccessService $islandAccessService,
+        private readonly PromotionOfferService $promotionOfferService,
     ) {}
 
     public function prepareHotel(User $user, Room $room, array $input): array
@@ -31,6 +32,7 @@ class BookingCheckoutService
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after:start_date'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$room->max_occupancy],
+            'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
         ])->validate();
 
         $startDate = Carbon::parse($data['start_date'])->startOfDay();
@@ -54,6 +56,33 @@ class BookingCheckoutService
 
         $room->loadMissing('hotel');
 
+        $promotion = $this->promotionOfferService->resolveAppliedPromotion(
+            $data['promotion_id'] ?? null,
+            'hotel',
+            $room,
+        );
+        $baseUnitPrice = (float) $room->price;
+        $baseTotalPrice = (float) ($room->price * $data['quantity'] * $nights);
+        $summary = [
+            'type_label' => 'Hotel Stay',
+            'title' => $room->hotel?->name ?? 'Hotel stay',
+            'subtitle' => 'Room '.$room->room_number,
+            'schedule_label' => $startDate->format('M d, Y').' to '.$endDate->format('M d, Y'),
+            'quantity_label' => 'Guests',
+            'quantity' => (int) $data['quantity'],
+            'unit_label' => 'Nightly rate',
+            'unit_price' => $baseUnitPrice,
+            'total_price' => $baseTotalPrice,
+            'line_items' => [
+                ['label' => 'Guests', 'value' => (string) $data['quantity']],
+                ['label' => 'Stay', 'value' => $nights.' night'.($nights === 1 ? '' : 's')],
+                ['label' => 'Check-in', 'value' => $startDate->format('M d, Y')],
+                ['label' => 'Check-out', 'value' => $endDate->format('M d, Y')],
+            ],
+        ];
+
+        $summary = $this->applyPromotionToSummary($summary, $promotion);
+
         return [
             'type' => 'hotel',
             'resource_id' => $room->id,
@@ -61,24 +90,9 @@ class BookingCheckoutService
                 'start_date' => $startDate->toDateString(),
                 'end_date' => $endDate->toDateString(),
                 'quantity' => (int) $data['quantity'],
+                'promotion_id' => $promotion['id'] ?? null,
             ],
-            'summary' => [
-                'type_label' => 'Hotel Stay',
-                'title' => $room->hotel?->name ?? 'Hotel stay',
-                'subtitle' => 'Room '.$room->room_number,
-                'schedule_label' => $startDate->format('M d, Y').' to '.$endDate->format('M d, Y'),
-                'quantity_label' => 'Guests',
-                'quantity' => (int) $data['quantity'],
-                'unit_label' => 'Nightly rate',
-                'unit_price' => (float) $room->price,
-                'total_price' => (float) ($room->price * $data['quantity'] * $nights),
-                'line_items' => [
-                    ['label' => 'Guests', 'value' => (string) $data['quantity']],
-                    ['label' => 'Stay', 'value' => $nights.' night'.($nights === 1 ? '' : 's')],
-                    ['label' => 'Check-in', 'value' => $startDate->format('M d, Y')],
-                    ['label' => 'Check-out', 'value' => $endDate->format('M d, Y')],
-                ],
-            ],
+            'summary' => $summary,
         ];
     }
 
@@ -87,6 +101,7 @@ class BookingCheckoutService
         $data = Validator::make($input, [
             'booking_time' => ['required', 'date'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$ferry->max_booking_quantity],
+            'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
         ])->validate();
 
         $bookingTime = Carbon::parse($data['booking_time'])->setSecond(0);
@@ -121,30 +136,40 @@ class BookingCheckoutService
             ]);
         }
 
+        $promotion = $this->promotionOfferService->resolveAppliedPromotion(
+            $data['promotion_id'] ?? null,
+            'ferry',
+            $ferry,
+        );
+        $summary = [
+            'type_label' => 'Ferry Transfer',
+            'title' => $ferry->name,
+            'subtitle' => $ferry->island?->name ?? 'Island transfer',
+            'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
+            'quantity_label' => 'Tickets',
+            'quantity' => (int) $data['quantity'],
+            'unit_label' => 'Fare',
+            'unit_price' => (float) $ferry->price,
+            'total_price' => (float) ($ferry->price * $data['quantity']),
+            'line_items' => [
+                ['label' => 'Destination', 'value' => $ferry->island?->name ?? 'Island route'],
+                ['label' => 'Departure', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
+                ['label' => 'Tickets', 'value' => (string) $data['quantity']],
+                ['label' => 'Capacity', 'value' => (string) $ferry->max_capacity],
+            ],
+        ];
+
+        $summary = $this->applyPromotionToSummary($summary, $promotion);
+
         return [
             'type' => 'ferry',
             'resource_id' => $ferry->id,
             'booking_data' => [
                 'booking_time' => $bookingTime->format('Y-m-d H:i:s'),
                 'quantity' => (int) $data['quantity'],
+                'promotion_id' => $promotion['id'] ?? null,
             ],
-            'summary' => [
-                'type_label' => 'Ferry Transfer',
-                'title' => $ferry->name,
-                'subtitle' => $ferry->island?->name ?? 'Island transfer',
-                'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
-                'quantity_label' => 'Tickets',
-                'quantity' => (int) $data['quantity'],
-                'unit_label' => 'Fare',
-                'unit_price' => (float) $ferry->price,
-                'total_price' => (float) ($ferry->price * $data['quantity']),
-                'line_items' => [
-                    ['label' => 'Destination', 'value' => $ferry->island?->name ?? 'Island route'],
-                    ['label' => 'Departure', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
-                    ['label' => 'Tickets', 'value' => (string) $data['quantity']],
-                    ['label' => 'Capacity', 'value' => (string) $ferry->max_capacity],
-                ],
-            ],
+            'summary' => $summary,
         ];
     }
 
@@ -153,6 +178,7 @@ class BookingCheckoutService
         $data = Validator::make($input, [
             'booking_time' => ['required', 'date'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$ride->max_booking_quantity],
+            'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
         ])->validate();
 
         $bookingTime = Carbon::parse($data['booking_time'])->setSecond(0);
@@ -187,30 +213,40 @@ class BookingCheckoutService
             ]);
         }
 
+        $promotion = $this->promotionOfferService->resolveAppliedPromotion(
+            $data['promotion_id'] ?? null,
+            'ride',
+            $ride,
+        );
+        $summary = [
+            'type_label' => 'Ride Booking',
+            'title' => $ride->name,
+            'subtitle' => $ride->island?->name ?? 'Theme park ride',
+            'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
+            'quantity_label' => 'Tickets',
+            'quantity' => (int) $data['quantity'],
+            'unit_label' => 'Ticket',
+            'unit_price' => (float) $ride->price,
+            'total_price' => (float) ($ride->price * $data['quantity']),
+            'line_items' => [
+                ['label' => 'District', 'value' => $ride->island?->name ?? 'Horror Island'],
+                ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
+                ['label' => 'Tickets', 'value' => (string) $data['quantity']],
+                ['label' => 'Capacity', 'value' => (string) $ride->max_capacity],
+            ],
+        ];
+
+        $summary = $this->applyPromotionToSummary($summary, $promotion);
+
         return [
             'type' => 'ride',
             'resource_id' => $ride->id,
             'booking_data' => [
                 'booking_time' => $bookingTime->format('Y-m-d H:i:s'),
                 'quantity' => (int) $data['quantity'],
+                'promotion_id' => $promotion['id'] ?? null,
             ],
-            'summary' => [
-                'type_label' => 'Ride Booking',
-                'title' => $ride->name,
-                'subtitle' => $ride->island?->name ?? 'Theme park ride',
-                'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
-                'quantity_label' => 'Tickets',
-                'quantity' => (int) $data['quantity'],
-                'unit_label' => 'Ticket',
-                'unit_price' => (float) $ride->price,
-                'total_price' => (float) ($ride->price * $data['quantity']),
-                'line_items' => [
-                    ['label' => 'District', 'value' => $ride->island?->name ?? 'Horror Island'],
-                    ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
-                    ['label' => 'Tickets', 'value' => (string) $data['quantity']],
-                    ['label' => 'Capacity', 'value' => (string) $ride->max_capacity],
-                ],
-            ],
+            'summary' => $summary,
         ];
     }
 
@@ -219,6 +255,7 @@ class BookingCheckoutService
         $data = Validator::make($input, [
             'booking_time' => ['required', 'date'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$game->max_booking_quantity],
+            'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
         ])->validate();
 
         $bookingTime = Carbon::parse($data['booking_time'])->setSecond(0);
@@ -253,30 +290,40 @@ class BookingCheckoutService
             ]);
         }
 
+        $promotion = $this->promotionOfferService->resolveAppliedPromotion(
+            $data['promotion_id'] ?? null,
+            'game',
+            $game,
+        );
+        $summary = [
+            'type_label' => 'Game Booking',
+            'title' => $game->name,
+            'subtitle' => $game->island?->name ?? 'Theme park game',
+            'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
+            'quantity_label' => 'Players',
+            'quantity' => (int) $data['quantity'],
+            'unit_label' => 'Player ticket',
+            'unit_price' => (float) $game->price,
+            'total_price' => (float) ($game->price * $data['quantity']),
+            'line_items' => [
+                ['label' => 'District', 'value' => $game->island?->name ?? 'Horror Island'],
+                ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
+                ['label' => 'Players', 'value' => (string) $data['quantity']],
+                ['label' => 'Capacity', 'value' => (string) $game->max_capacity],
+            ],
+        ];
+
+        $summary = $this->applyPromotionToSummary($summary, $promotion);
+
         return [
             'type' => 'game',
             'resource_id' => $game->id,
             'booking_data' => [
                 'booking_time' => $bookingTime->format('Y-m-d H:i:s'),
                 'quantity' => (int) $data['quantity'],
+                'promotion_id' => $promotion['id'] ?? null,
             ],
-            'summary' => [
-                'type_label' => 'Game Booking',
-                'title' => $game->name,
-                'subtitle' => $game->island?->name ?? 'Theme park game',
-                'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
-                'quantity_label' => 'Players',
-                'quantity' => (int) $data['quantity'],
-                'unit_label' => 'Player ticket',
-                'unit_price' => (float) $game->price,
-                'total_price' => (float) ($game->price * $data['quantity']),
-                'line_items' => [
-                    ['label' => 'District', 'value' => $game->island?->name ?? 'Horror Island'],
-                    ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
-                    ['label' => 'Players', 'value' => (string) $data['quantity']],
-                    ['label' => 'Capacity', 'value' => (string) $game->max_capacity],
-                ],
-            ],
+            'summary' => $summary,
         ];
     }
 
@@ -286,6 +333,7 @@ class BookingCheckoutService
             'booking_date' => ['required', 'date'],
             'booking_time' => ['required', 'date_format:H:i'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$beachEvent->max_booking_quantity],
+            'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
         ])->validate();
 
         $bookingDate = Carbon::parse($data['booking_date'])->toDateString();
@@ -323,6 +371,31 @@ class BookingCheckoutService
             ]);
         }
 
+        $promotion = $this->promotionOfferService->resolveAppliedPromotion(
+            $data['promotion_id'] ?? null,
+            'beach-event',
+            $beachEvent,
+        );
+        $summary = [
+            'type_label' => 'Beach Event',
+            'title' => $beachEvent->name,
+            'subtitle' => $beachEvent->island?->name ?? 'Beach event',
+            'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
+            'quantity_label' => 'Tickets',
+            'quantity' => (int) $data['quantity'],
+            'unit_label' => 'Entry ticket',
+            'unit_price' => (float) $beachEvent->price,
+            'total_price' => (float) ($beachEvent->price * $data['quantity']),
+            'line_items' => [
+                ['label' => 'Organizer', 'value' => $beachEvent->owner?->name ?? 'Event host'],
+                ['label' => 'Shore', 'value' => $beachEvent->island?->name ?? 'Picnic Island'],
+                ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
+                ['label' => 'Tickets', 'value' => (string) $data['quantity']],
+            ],
+        ];
+
+        $summary = $this->applyPromotionToSummary($summary, $promotion);
+
         return [
             'type' => 'beach-event',
             'resource_id' => $beachEvent->id,
@@ -330,24 +403,9 @@ class BookingCheckoutService
                 'booking_date' => $bookingDate,
                 'booking_time' => $bookingTime->format('H:i'),
                 'quantity' => (int) $data['quantity'],
+                'promotion_id' => $promotion['id'] ?? null,
             ],
-            'summary' => [
-                'type_label' => 'Beach Event',
-                'title' => $beachEvent->name,
-                'subtitle' => $beachEvent->island?->name ?? 'Beach event',
-                'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
-                'quantity_label' => 'Tickets',
-                'quantity' => (int) $data['quantity'],
-                'unit_label' => 'Entry ticket',
-                'unit_price' => (float) $beachEvent->price,
-                'total_price' => (float) ($beachEvent->price * $data['quantity']),
-                'line_items' => [
-                    ['label' => 'Organizer', 'value' => $beachEvent->owner?->name ?? 'Event host'],
-                    ['label' => 'Shore', 'value' => $beachEvent->island?->name ?? 'Picnic Island'],
-                    ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
-                    ['label' => 'Tickets', 'value' => (string) $data['quantity']],
-                ],
-            ],
+            'summary' => $summary,
         ];
     }
 
@@ -463,5 +521,49 @@ class BookingCheckoutService
                 'checkout' => 'Unsupported booking checkout type.',
             ]),
         };
+    }
+
+    private function applyPromotionToSummary(array $summary, ?array $promotion): array
+    {
+        if (! $promotion || ($promotion['discount_percentage'] ?? 0) <= 0) {
+            $summary['base_unit_price'] = (float) $summary['unit_price'];
+            $summary['base_total_price'] = (float) $summary['total_price'];
+            $summary['discount_amount'] = 0.0;
+            $summary['promotion'] = null;
+
+            return $summary;
+        }
+
+        $discountPercentage = (float) $promotion['discount_percentage'];
+        $baseUnitPrice = (float) $summary['unit_price'];
+        $baseTotalPrice = (float) $summary['total_price'];
+        $discountedUnitPrice = $this->discountPrice($baseUnitPrice, $discountPercentage);
+        $discountedTotalPrice = $this->discountPrice($baseTotalPrice, $discountPercentage);
+
+        $summary['base_unit_price'] = $baseUnitPrice;
+        $summary['base_total_price'] = $baseTotalPrice;
+        $summary['unit_price'] = $discountedUnitPrice;
+        $summary['total_price'] = $discountedTotalPrice;
+        $summary['discount_amount'] = round($baseTotalPrice - $discountedTotalPrice, 2);
+        $summary['promotion'] = [
+            'id' => $promotion['id'],
+            'title' => $promotion['title'],
+            'label' => $promotion['label'],
+        ];
+        $summary['line_items'][] = [
+            'label' => 'Offer',
+            'value' => $promotion['title'].' · '.$promotion['label'],
+        ];
+
+        return $summary;
+    }
+
+    private function discountPrice(float $price, float $discountPercentage): float
+    {
+        if ($discountPercentage <= 0) {
+            return round($price, 2);
+        }
+
+        return round($price * (1 - ($discountPercentage / 100)), 2);
     }
 }

@@ -71,9 +71,9 @@ class HorrorGeneratedMediaCatalog
                 'lantern-wake' => static::entryData('Lantern Wake', 'Floating lanterns and blackwater reflections', 'vigil', 'gold'),
             ],
             'promotions' => [
-                'manor-midway-arrangement' => static::entryData('Manor & Midway', 'Lodging and ride privileges under one reservation', 'poster', 'violet'),
-                'passage-under-the-pale-moon' => static::entryData('Passage Under The Pale Moon', 'Preferred ferry passage to the midnight shore', 'poster', 'teal'),
-                'moonlit-shore-invitation' => static::entryData('Moonlit Shore Invitation', 'Preferred access to gatherings by the surf', 'poster', 'ember'),
+                'manor-midway-arrangement' => static::entryData('Moonlit Chamber Rates', 'Discounted chamber stays in the manor quarter', 'poster', 'violet'),
+                'passage-under-the-pale-moon' => static::entryData('Moonwake Ferry Discount', 'Reduced ferry fares for selected black-water crossings', 'poster', 'teal'),
+                'moonlit-shore-invitation' => static::entryData('Moonlit Shore Event Discount', 'Reduced admission for selected shoreline gatherings', 'poster', 'ember'),
             ],
         ];
     }

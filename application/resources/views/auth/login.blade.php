@@ -25,7 +25,7 @@
                 <input type="checkbox" name="remember" value="1" class="mr-2 rounded bg-gray-900 border-gray-700" @checked(old('remember')) />
                 Remember me
             </label>
-            <a href="{{ route('password.request') }}" class="text-sm text-red-400 hover:text-red-300">Forgot password?</a>
+            <a href="{{ route('password.request') }}" class="theme-inline-link !text-[0.72rem]">Forgot password?</a>
         </div>
     </x-auth.form-card>
 @endsection
