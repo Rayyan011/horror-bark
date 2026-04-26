@@ -19,9 +19,14 @@
 
 @php
     $quantityName = $quantityConfig['name'] ?? 'quantity';
+    $formId = $values['form_id'] ?? $idPrefix;
+    $formIdName = '_booking_form_id';
+    $showFieldErrors = old($formIdName) === $formId;
 @endphp
 
 <x-ui.form :action="$action" :method="$method" class="space-y-3">
+    <input type="hidden" name="{{ $formIdName }}" value="{{ $formId }}" />
+
     @foreach ($hidden as $name => $value)
         <input type="hidden" name="{{ $name }}" value="{{ $value }}" />
     @endforeach
@@ -32,16 +37,24 @@
             :name="$values['start_name'] ?? 'start_date'"
             type="date"
             :value="$values['start_value'] ?? null"
+            :min="$values['start_min'] ?? null"
+            :max="$values['start_max'] ?? null"
             required
             :id="$idPrefix . '_start'"
+            :show-error="$showFieldErrors"
+            :use-old-value="$showFieldErrors"
         />
         <x-ui.field
             :label="$values['end_label'] ?? 'Check-out'"
             :name="$values['end_name'] ?? 'end_date'"
             type="date"
             :value="$values['end_value'] ?? null"
+            :min="$values['end_min'] ?? null"
+            :max="$values['end_max'] ?? null"
             required
             :id="$idPrefix . '_end'"
+            :show-error="$showFieldErrors"
+            :use-old-value="$showFieldErrors"
         />
     @elseif ($mode === 'date-time')
         <x-ui.field
@@ -49,16 +62,25 @@
             :name="$values['date_name'] ?? 'booking_date'"
             type="date"
             :value="$values['date_value'] ?? null"
+            :min="$values['date_min'] ?? null"
+            :max="$values['date_max'] ?? null"
             required
             :id="$idPrefix . '_date'"
+            :show-error="$showFieldErrors"
+            :use-old-value="$showFieldErrors"
         />
         <x-ui.field
             :label="$values['time_label'] ?? 'Booking time'"
             :name="$values['time_name'] ?? 'booking_time'"
             type="time"
             :value="$values['time_value'] ?? null"
+            :min="$values['time_min'] ?? null"
+            :max="$values['time_max'] ?? null"
+            :step="$values['time_step'] ?? null"
             required
             :id="$idPrefix . '_time'"
+            :show-error="$showFieldErrors"
+            :use-old-value="$showFieldErrors"
         />
     @else
         <x-ui.field
@@ -66,8 +88,13 @@
             :name="$values['datetime_name'] ?? 'booking_time'"
             type="datetime-local"
             :value="$values['datetime_value'] ?? null"
+            :min="$values['datetime_min'] ?? null"
+            :max="$values['datetime_max'] ?? null"
+            :step="$values['datetime_step'] ?? null"
             required
             :id="$idPrefix . '_datetime'"
+            :show-error="$showFieldErrors"
+            :use-old-value="$showFieldErrors"
         />
     @endif
 
@@ -84,6 +111,8 @@
         :value="$quantityConfig['default'] ?? 1"
         required
         :id="$idPrefix . '_quantity'"
+        :show-error="$showFieldErrors"
+        :use-old-value="$showFieldErrors"
     />
 
     <x-ui.button type="submit" :variant="$submitVariant" block>

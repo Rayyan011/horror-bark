@@ -30,6 +30,9 @@
                     'max' => $ferry->max_booking_quantity,
                     'default' => 1,
                 ]"
+                :values="[
+                    'datetime_step' => 3600,
+                ]"
                 :id-prefix="'ferry_' . $ferry->id"
             />
         @else

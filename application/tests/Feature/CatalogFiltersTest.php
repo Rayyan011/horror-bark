@@ -132,6 +132,73 @@ class CatalogFiltersTest extends TestCase
         $typeFiltered->assertSee('value="'.IslandAccessService::PICNIC_ISLAND.'" selected', false);
     }
 
+    public function test_ferry_booking_form_uses_whole_hour_steps_and_scoped_validation_errors(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $horrorIsland = Island::create([
+            'name' => 'Horror Island',
+            'type' => IslandAccessService::HORROR_ISLAND,
+            'description' => 'Horror',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+        $picnicIsland = Island::create([
+            'name' => 'Picnic Island',
+            'type' => IslandAccessService::PICNIC_ISLAND,
+            'description' => 'Picnic',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+
+        $horrorFerry = Ferry::create([
+            'user_id' => $owner->id,
+            'name' => 'Keeper Passage',
+            'price' => 75,
+            'max_capacity' => 80,
+            'max_booking_quantity' => 5,
+            'island_id' => $horrorIsland->id,
+        ]);
+
+        $picnicFerry = Ferry::create([
+            'user_id' => $owner->id,
+            'name' => 'Moonwake Line',
+            'price' => 60,
+            'max_capacity' => 80,
+            'max_booking_quantity' => 5,
+            'island_id' => $picnicIsland->id,
+        ]);
+
+        $listing = $this->actingAs($user)->get(route('ferries.index'));
+
+        $listing->assertOk();
+        $listing->assertSee('step="3600"', false);
+        $listing->assertSee('name="_booking_form_id" value="ferry_'.$picnicFerry->id.'"', false);
+
+        $invalidTime = now()->addDay()->setTime(9, 15)->format('Y-m-d\TH:i');
+
+        $this->actingAs($user)
+            ->from(route('ferries.index'))
+            ->post(route('checkout.ferries.prepare', $picnicFerry), [
+                '_booking_form_id' => 'ferry_'.$picnicFerry->id,
+                'booking_time' => $invalidTime,
+                'quantity' => 1,
+            ])
+            ->assertRedirect(route('ferries.index'));
+
+        $response = $this->actingAs($user)->get(route('ferries.index'));
+        $content = $response->getContent();
+
+        $response->assertOk();
+        $this->assertSame(1, substr_count($content, 'border-rose-500'));
+        $this->assertStringContainsString('id="ferry_'.$picnicFerry->id.'_datetime"', $content);
+        $this->assertStringContainsString('value="'.$invalidTime.'"', $content);
+        $this->assertStringContainsString('id="ferry_'.$horrorFerry->id.'_datetime"', $content);
+        $this->assertStringNotContainsString('id="ferry_'.$horrorFerry->id.'_datetime" name="booking_time" type="datetime-local" step="3600" value="'.$invalidTime.'"', $content);
+    }
+
     public function test_themepark_combines_rides_and_games_and_uses_section_filter(): void
     {
         $owner = User::factory()->create();

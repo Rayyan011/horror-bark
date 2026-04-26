@@ -221,6 +221,9 @@ class PromotionOfferService
                     'submitLabel' => 'Book discounted passage',
                     'idPrefix' => 'promotion_ferry_'.$ferry->id,
                     'hidden' => ['promotion_id' => $promotion->id],
+                    'values' => [
+                        'datetime_step' => 3600,
+                    ],
                     'quantityConfig' => [
                         'label' => 'Tickets',
                         'min' => 1,

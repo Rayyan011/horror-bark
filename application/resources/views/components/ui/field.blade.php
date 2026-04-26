@@ -6,16 +6,20 @@
     'required' => false,
     'hint' => null,
     'error' => null,
+    'showError' => true,
     'id' => null,
     'min' => null,
     'max' => null,
     'step' => null,
     'placeholder' => null,
+    'oldName' => null,
+    'useOldValue' => true,
 ])
 
 @php
     $fieldId = $id ?: $name;
-    $resolvedError = $error ?: ($errors->first($name) ?: null);
+    $resolvedError = $showError ? ($error ?: ($errors->first($name) ?: null)) : null;
+    $fieldValue = $useOldValue ? old($oldName ?: $name, $value) : $value;
     $inputAttributes = [
         'id="' . e($fieldId) . '"',
         'name="' . e($name) . '"',
@@ -34,7 +38,7 @@
         $inputAttributes[] = 'step="' . e($step) . '"';
     }
 
-    $inputAttributes[] = 'value="' . e(old($name, $value)) . '"';
+    $inputAttributes[] = 'value="' . e($fieldValue) . '"';
 
     if ($required) {
         $inputAttributes[] = 'required';
