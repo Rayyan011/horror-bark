@@ -27,6 +27,8 @@ class HorrorGeneratedMediaCatalog
                 'promotion' => static::entryData('Special Invitation', 'Preferred rates under the pale moon', 'poster', 'violet'),
             ],
             'islands' => [
+                'horror-island' => static::entryData('Horror Island', 'The manor, harbor, ride districts, and guest hotels', 'manor', 'violet'),
+                'picnic-island' => static::entryData('Picnic Island', 'Moonlit beaches, late crossings, and shore gatherings', 'shoreline', 'teal'),
                 'manor-ward' => static::entryData('Manor Ward', 'Cold stone promenades and watchful gates', 'manor', 'violet'),
                 'shadow-park' => static::entryData('Shadow Park', 'Twisted iron rides beneath carnival lamps', 'coaster', 'violet'),
                 'lantern-hollow' => static::entryData('Lantern Hollow', 'Ash paths, cedar smoke, and chapel bells', 'chapel', 'ember'),

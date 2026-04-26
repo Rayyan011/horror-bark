@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\FerryResource\Pages;
 use App\Models\Ferry;
+use App\Models\Island;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -24,6 +25,9 @@ class FerryResource extends Resource
             ->schema([
                 Select::make('user_id')
                     ->relationship('owner', 'name')
+                    ->searchable(['name', 'email'])
+                    ->preload()
+                    ->native(false)
                     ->required()
                     ->label('Owner'),
 
@@ -33,29 +37,6 @@ class FerryResource extends Resource
 
                 Forms\Components\Textarea::make('description')
                     ->rows(4)
-                    ->columnSpanFull(),
-
-                Forms\Components\Section::make('Public Map Placement')
-                    ->schema([
-                        Forms\Components\Placeholder::make('horror_map_picker')
-                            ->hiddenLabel()
-                            ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
-                        Forms\Components\Grid::make(2)
-                            ->schema([
-                                Forms\Components\TextInput::make('map_x')
-                                    ->label('Map X')
-                                    ->numeric()
-                                    ->default(50)
-                                    ->readOnly()
-                                    ->extraInputAttributes(['data-horror-map-x' => '1']),
-                                Forms\Components\TextInput::make('map_y')
-                                    ->label('Map Y')
-                                    ->numeric()
-                                    ->default(50)
-                                    ->readOnly()
-                                    ->extraInputAttributes(['data-horror-map-y' => '1']),
-                            ]),
-                    ])
                     ->columnSpanFull(),
 
                 TextInput::make('price')
@@ -73,6 +54,10 @@ class FerryResource extends Resource
 
                 Select::make('island_id')
                     ->relationship('island', 'name')
+                    ->getOptionLabelFromRecordUsing(fn (Island $record): string => self::islandOptionLabel($record))
+                    ->searchable(['name', 'type'])
+                    ->preload()
+                    ->native(false)
                     ->required()
                     ->label('Home Island'),
 
@@ -130,5 +115,10 @@ class FerryResource extends Resource
             'create' => Pages\CreateFerry::route('/create'),
             'edit' => Pages\EditFerry::route('/{record}/edit'),
         ];
+    }
+
+    private static function islandOptionLabel(Island $island): string
+    {
+        return $island->name;
     }
 }

@@ -229,7 +229,7 @@ class BookingCheckoutService
             'unit_price' => (float) $ride->price,
             'total_price' => (float) ($ride->price * $data['quantity']),
             'line_items' => [
-                ['label' => 'District', 'value' => $ride->island?->name ?? 'Horror Island'],
+                ['label' => 'Island', 'value' => $ride->island?->name ?? 'Horror Island'],
                 ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
                 ['label' => 'Tickets', 'value' => (string) $data['quantity']],
                 ['label' => 'Capacity', 'value' => (string) $ride->max_capacity],
@@ -306,7 +306,7 @@ class BookingCheckoutService
             'unit_price' => (float) $game->price,
             'total_price' => (float) ($game->price * $data['quantity']),
             'line_items' => [
-                ['label' => 'District', 'value' => $game->island?->name ?? 'Horror Island'],
+                ['label' => 'Island', 'value' => $game->island?->name ?? 'Horror Island'],
                 ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
                 ['label' => 'Players', 'value' => (string) $data['quantity']],
                 ['label' => 'Capacity', 'value' => (string) $game->max_capacity],
@@ -388,7 +388,7 @@ class BookingCheckoutService
             'total_price' => (float) ($beachEvent->price * $data['quantity']),
             'line_items' => [
                 ['label' => 'Organizer', 'value' => $beachEvent->owner?->name ?? 'Event host'],
-                ['label' => 'Shore', 'value' => $beachEvent->island?->name ?? 'Picnic Island'],
+                ['label' => 'Island', 'value' => $beachEvent->island?->name ?? 'Picnic Island'],
                 ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
                 ['label' => 'Tickets', 'value' => (string) $data['quantity']],
             ],

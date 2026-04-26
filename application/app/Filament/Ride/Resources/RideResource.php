@@ -42,30 +42,6 @@ class RideResource extends Resource
                 ->required()
                 ->searchable()
                 ->helperText('Rides are available on Horror Island only.'),
-            Forms\Components\Section::make('Public Map Placement')
-                ->schema([
-                    Forms\Components\Placeholder::make('horror_map_picker')
-                        ->hiddenLabel()
-                        ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
-                    Forms\Components\Grid::make(2)
-                        ->schema([
-                            TextInput::make('map_x')
-                                ->label('Map X')
-                                ->numeric()
-                                ->default(50)
-                                ->readOnly()
-                                ->extraInputAttributes(['data-horror-map-x' => '1']),
-                            TextInput::make('map_y')
-                                ->label('Map Y')
-                                ->numeric()
-                                ->default(50)
-                                ->readOnly()
-                                ->extraInputAttributes(['data-horror-map-y' => '1']),
-                        ]),
-                ])
-                ->columnSpanFull(),
-            TextInput::make('latitude')->numeric(),
-            TextInput::make('longitude')->numeric(),
             TextInput::make('max_capacity')->numeric()->required(),
             TextInput::make('max_booking_quantity')->numeric()->required(),
             FileUpload::make('images')

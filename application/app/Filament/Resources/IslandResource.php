@@ -6,7 +6,6 @@ use App\Filament\Resources\IslandResource\Pages;
 use App\Filament\Resources\IslandResource\RelationManagers;
 use App\Models\Island;
 use Filament\Forms;
-use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -16,7 +15,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
-use Dotswan\MapPicker\Fields\Map;
 
 
 class IslandResource extends Resource
@@ -36,64 +34,6 @@ class IslandResource extends Resource
                         'Picnic-Island' => 'Picnic Island'
                     ]),
                 MarkdownEditor::make('description'),
-                Forms\Components\Section::make('Public Map Placement')
-                    ->schema([
-                        Forms\Components\Placeholder::make('horror_map_picker')
-                            ->hiddenLabel()
-                            ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
-                        Forms\Components\Grid::make(2)
-                            ->schema([
-                                Forms\Components\TextInput::make('map_x')
-                                    ->label('Map X')
-                                    ->numeric()
-                                    ->default(50)
-                                    ->readOnly()
-                                    ->extraInputAttributes(['data-horror-map-x' => '1']),
-                                Forms\Components\TextInput::make('map_y')
-                                    ->label('Map Y')
-                                    ->numeric()
-                                    ->default(50)
-                                    ->readOnly()
-                                    ->extraInputAttributes(['data-horror-map-y' => '1']),
-                            ]),
-                    ])
-                    ->columnSpanFull(),
-                Map::make('location_data')
-                    ->label('Legacy Real-World Position')
-                    ->columnSpanFull()
-                    ->defaultLocation(latitude: 4.22700104517645, longitude: 73.42662978621766)
-                    ->draggable(true)
-                    ->clickable(true)
-                    ->zoom(16)
-                    ->minZoom(0)
-                    ->maxZoom(28)
-                    ->tilesUrl("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}")
-                    ->detectRetina(true)
-                    ->showMarker(true)
-                    ->markerColor("#3b82f6")
-                    ->showFullscreenControl(true)
-                    ->afterStateHydrated(function ($state, $record, Set $set): void {
-                        if ($record && $record->latitude && $record->longitude) {
-                            $set('location_data', [
-                                'lat' => $record->latitude,
-                                'lng' => $record->longitude,
-                            ]);
-                        }
-                    })
-                    ->afterStateUpdated(function ($state, Set $set): void {
-                        if (is_array($state)) {
-                            $set('latitude', $state['lat'] ?? null);
-                            $set('longitude', $state['lng'] ?? null);
-                        }
-                    })
-                    ->showZoomControl(true),
-
-                Forms\Components\TextInput::make('latitude')
-                    ->label('Latitude')
-                    ->numeric(),
-                Forms\Components\TextInput::make('longitude')
-                    ->label('Longitude')
-                    ->numeric(),
 
                 Forms\Components\FileUpload::make('images')
                     ->label('Additional Images')
@@ -113,12 +53,6 @@ class IslandResource extends Resource
                 Tables\Columns\TextColumn::make('type')->label('Type')->sortable(),
                 Tables\Columns\TextColumn::make('name')->label('Name')->sortable(),
                 Tables\Columns\TextColumn::make('description')->label('Description')->sortable(),
-                Tables\Columns\TextColumn::make('latitude')
-                    ->label('Latitude')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('longitude')
-                    ->label('Longitude')
-                    ->sortable(),
                 Tables\Columns\ImageColumn::make('images')
                     ->disk('public')
                     ->getStateUsing(fn ($record) => $record->images[0] ?? null)

@@ -39,35 +39,6 @@ class HotelResource extends Resource
             Forms\Components\TextInput::make('location')
                 ->required(),
 
-            Forms\Components\Section::make('Public Map Placement')
-                ->schema([
-                    Forms\Components\Placeholder::make('horror_map_picker')
-                        ->hiddenLabel()
-                        ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
-                    Forms\Components\Grid::make(2)
-                        ->schema([
-                            Forms\Components\TextInput::make('map_x')
-                                ->label('Map X')
-                                ->numeric()
-                                ->default(50)
-                                ->readOnly()
-                                ->extraInputAttributes(['data-horror-map-x' => '1']),
-                            Forms\Components\TextInput::make('map_y')
-                                ->label('Map Y')
-                                ->numeric()
-                                ->default(50)
-                                ->readOnly()
-                                ->extraInputAttributes(['data-horror-map-y' => '1']),
-                        ]),
-                ])
-                ->columnSpanFull(),
-
-            Forms\Components\TextInput::make('latitude')
-                ->numeric(),
-
-            Forms\Components\TextInput::make('longitude')
-                ->numeric(),
-
             Forms\Components\FileUpload::make('images')
                 ->label('Gallery Images')
                 ->directory('hotels/gallery')
@@ -83,8 +54,6 @@ class HotelResource extends Resource
         return $table->columns([
             Tables\Columns\TextColumn::make('name')->sortable(),
             Tables\Columns\TextColumn::make('location')->sortable(),
-            Tables\Columns\TextColumn::make('latitude')->sortable(),
-            Tables\Columns\TextColumn::make('longitude')->sortable(),
             Tables\Columns\ImageColumn::make('images')
                 ->disk('public')
                 ->getStateUsing(fn ($record) => $record->images[0] ?? null)

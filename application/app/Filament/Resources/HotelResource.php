@@ -7,11 +7,9 @@ use App\Models\Hotel;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Dotswan\MapPicker\Fields\Map;
 
 class HotelResource extends Resource
 {
@@ -26,6 +24,8 @@ class HotelResource extends Resource
                 ->label('Owner')
                 ->options(User::query()->pluck('name', 'id'))
                 ->searchable()
+                ->preload()
+                ->native(false)
                 ->required(),
             Forms\Components\TextInput::make('name')
                 ->required()
@@ -36,64 +36,6 @@ class HotelResource extends Resource
             Forms\Components\Textarea::make('description')
                 ->rows(4)
                 ->columnSpanFull(),
-            Forms\Components\Section::make('Public Map Placement')
-                ->schema([
-                    Forms\Components\Placeholder::make('horror_map_picker')
-                        ->hiddenLabel()
-                        ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
-                    Forms\Components\Grid::make(2)
-                        ->schema([
-                            Forms\Components\TextInput::make('map_x')
-                                ->label('Map X')
-                                ->numeric()
-                                ->default(50)
-                                ->readOnly()
-                                ->extraInputAttributes(['data-horror-map-x' => '1']),
-                            Forms\Components\TextInput::make('map_y')
-                                ->label('Map Y')
-                                ->numeric()
-                                ->default(50)
-                                ->readOnly()
-                                ->extraInputAttributes(['data-horror-map-y' => '1']),
-                        ]),
-                ])
-                ->columnSpanFull(),
-            Map::make('location_data')
-                ->label('Legacy Real-World Position')
-                ->columnSpanFull()
-                ->defaultLocation(latitude: 4.22700104517645, longitude: 73.42662978621766)
-                ->draggable(true)
-                ->clickable(true)
-                ->zoom(16)
-                ->minZoom(0)
-                ->maxZoom(28)
-                ->tilesUrl("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}")
-                ->detectRetina(true)
-                ->showMarker(true)
-                ->markerColor("#3b82f6")
-                ->showFullscreenControl(true)
-                ->afterStateHydrated(function ($state, $record, Set $set): void {
-                    if ($record && $record->latitude && $record->longitude) {
-                        $set('location_data', [
-                            'lat' => $record->latitude,
-                            'lng' => $record->longitude,
-                        ]);
-                    }
-                })
-                ->afterStateUpdated(function ($state, Set $set): void {
-                    if (is_array($state)) {
-                        $set('latitude', $state['lat'] ?? null);
-                        $set('longitude', $state['lng'] ?? null);
-                    }
-                })
-                ->showZoomControl(true),
-
-            Forms\Components\TextInput::make('latitude')
-                ->label('Latitude')
-                ->numeric(),
-            Forms\Components\TextInput::make('longitude')
-                ->label('Longitude')
-                ->numeric(),
 
             Forms\Components\FileUpload::make('images')
                 ->label('Additional Images')
@@ -116,12 +58,6 @@ class HotelResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('location')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('latitude')
-                    ->label('Latitude')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('longitude')
-                    ->label('Longitude')
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('images')
                     ->disk('public')

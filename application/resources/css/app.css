@@ -746,4 +746,58 @@
         background-color: rgba(24, 20, 30, 0.74);
         backdrop-filter: blur(10px);
     }
+
+    .promotion-offer-card {
+        @apply flex h-full flex-col overflow-hidden rounded-[1.35rem] border shadow-cold-shadow;
+        border-color: rgba(209, 209, 212, 0.14);
+        background: linear-gradient(180deg, rgba(24, 20, 30, 0.88), rgba(12, 10, 16, 0.98));
+    }
+
+    .promotion-offer-card-media {
+        @apply aspect-[16/10] overflow-hidden border-b bg-black;
+        border-color: rgba(209, 209, 212, 0.12);
+    }
+
+    .promotion-offer-card-body {
+        @apply flex flex-1 flex-col gap-5 p-6;
+    }
+
+    .promotion-offer-card-heading {
+        @apply flex flex-wrap items-center justify-between gap-3;
+    }
+
+    .promotion-offer-card-title {
+        @apply font-display text-3xl italic leading-tight text-moonlight;
+    }
+
+    .promotion-offer-meta {
+        @apply grid gap-2;
+    }
+
+    .promotion-offer-meta-row {
+        @apply flex items-start justify-between gap-4 border-b pb-2 last:border-b-0 last:pb-0;
+        border-color: rgba(209, 209, 212, 0.1);
+    }
+
+    .promotion-offer-meta-row dt {
+        @apply font-serif text-xs uppercase tracking-[0.22em] text-primary-light/55;
+    }
+
+    .promotion-offer-meta-row dd {
+        @apply max-w-[62%] text-right font-serif text-base leading-6 text-moonlight;
+    }
+
+    .promotion-offer-price {
+        @apply mt-auto flex flex-wrap items-end justify-between gap-4 rounded-sm border p-4;
+        border-color: rgba(209, 209, 212, 0.12);
+        background-color: rgba(6, 5, 8, 0.68);
+    }
+
+    .promotion-offer-price-value {
+        @apply font-display text-2xl text-moonlight;
+    }
+
+    .promotion-offer-savings {
+        @apply text-right font-serif text-lg text-moonlight;
+    }
 }

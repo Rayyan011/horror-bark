@@ -246,7 +246,7 @@ class PromotionOfferService
                 'description' => filled($event->description) ? $event->description : 'A shoreline gathering arranged under silver surf and ceremonial firelight.',
                 'image' => $this->resolveImage($event->images, HorrorGeneratedMediaCatalog::path('fallbacks', 'beach-event')),
                 'meta' => [
-                    ['label' => 'Shore', 'value' => $event->island?->name ?? 'Pale Moon Strand'],
+                    ['label' => 'Island', 'value' => $event->island?->name ?? 'Picnic Island'],
                     ['label' => 'Organizer', 'value' => $event->owner?->name ?? 'Event host'],
                     ['label' => 'Capacity', 'value' => (string) $event->max_capacity],
                 ],

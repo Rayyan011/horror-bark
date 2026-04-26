@@ -77,6 +77,15 @@ body.fi-body {
     background-color: rgba(10, 9, 11, 0.86) !important;
 }
 
+.fi .fi-select-input,
+.fi select.fi-select-input,
+.fi .fi-input-wrp select {
+    background-position: right 0.75rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1rem 1rem !important;
+    padding-inline-end: 2.5rem !important;
+}
+
 .fi .fi-simple-main .fi-btn,
 .fi .fi-simple-main button[type='submit'] {
     border: 1px solid rgba(96, 92, 98, 0.45) !important;

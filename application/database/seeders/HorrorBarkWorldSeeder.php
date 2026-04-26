@@ -91,84 +91,24 @@ class HorrorBarkWorldSeeder extends Seeder
     {
         $records = [
             [
-                'name' => 'Manor Ward',
+                'name' => 'Horror Island',
                 'type' => IslandAccessService::HORROR_ISLAND,
-                'description' => 'The velvet-lit heart of Horror-Bark, where stone promenades, watchful gates, and the grand manor set the tone for every arrival.',
-                'latitude' => 4.2288,
-                'longitude' => 73.4258,
-                'map_x' => 31.00,
-                'map_y' => 22.00,
-                'images' => $this->json([$this->generatedImage('islands', 'manor-ward')]),
-            ],
-            [
-                'name' => 'Shadow Park',
-                'type' => IslandAccessService::HORROR_ISLAND,
-                'description' => 'A grand amusement district of twisted iron rides, carnival lamps, and polished dread beneath the pale moon.',
+                'description' => 'The main Horror-Bark island, containing the manor, harbor, ride districts, game grounds, and guest hotels.',
                 'latitude' => 4.2276,
-                'longitude' => 73.4274,
-                'map_x' => 33.00,
-                'map_y' => 58.00,
-                'images' => $this->json([$this->generatedImage('islands', 'shadow-park')]),
+                'longitude' => 73.4264,
+                'map_x' => 43.00,
+                'map_y' => 44.00,
+                'images' => $this->json([$this->generatedImage('islands', 'horror-island')]),
             ],
             [
-                'name' => 'Lantern Hollow',
-                'type' => IslandAccessService::HORROR_ISLAND,
-                'description' => 'A cedar-dark hollow of chapel bells, ash paths, and warding lanterns that never fully warm the fog.',
-                'latitude' => 4.2259,
-                'longitude' => 73.4280,
-                'map_x' => 69.00,
-                'map_y' => 29.00,
-                'images' => $this->json([$this->generatedImage('islands', 'lantern-hollow')]),
-            ],
-            [
-                'name' => 'Blackwater Approach',
-                'type' => IslandAccessService::HORROR_ISLAND,
-                'description' => 'The harbor edge of Horror-Bark, where ferries arrive through black tide and the first bells carry over the water.',
-                'latitude' => 4.2267,
-                'longitude' => 73.4249,
-                'map_x' => 18.00,
-                'map_y' => 74.00,
-                'images' => $this->json([$this->generatedImage('islands', 'blackwater-approach')]),
-            ],
-            [
-                'name' => 'Pale Moon Strand',
+                'name' => 'Picnic Island',
                 'type' => IslandAccessService::PICNIC_ISLAND,
-                'description' => 'A moon-washed shore of velvet seating, ceremonial fires, and midnight gatherings shaped around the surf.',
-                'latitude' => 4.2249,
-                'longitude' => 73.4267,
-                'map_x' => 78.00,
-                'map_y' => 72.00,
-                'images' => $this->json([$this->generatedImage('islands', 'pale-moon-strand')]),
-            ],
-            [
-                'name' => 'Saltveil Beach',
-                'type' => IslandAccessService::PICNIC_ISLAND,
-                'description' => 'Ash-gray sand and salt-heavy mist frame the island’s most elegant beach rituals and late-night performances.',
-                'latitude' => 4.2243,
-                'longitude' => 73.4286,
-                'map_x' => 56.00,
-                'map_y' => 20.00,
-                'images' => $this->json([$this->generatedImage('islands', 'saltveil-beach')]),
-            ],
-            [
-                'name' => 'Coven Quay',
-                'type' => IslandAccessService::PICNIC_ISLAND,
-                'description' => 'A lantern-lined quay for arrivals, departures, and shoreline vigils where ferrymen whisper the night’s schedule.',
-                'latitude' => 4.2256,
-                'longitude' => 73.4252,
-                'map_x' => 67.00,
-                'map_y' => 50.00,
-                'images' => $this->json([$this->generatedImage('islands', 'coven-quay')]),
-            ],
-            [
-                'name' => 'Blackwater Shore',
-                'type' => IslandAccessService::PICNIC_ISLAND,
-                'description' => 'The deepest curve of the outer shore, known for tide ceremonies, black surf, and music carried in from the quay.',
+                'description' => 'The separate shore island for beach events, late crossings, fireside ceremonies, and quieter sea-facing gatherings.',
                 'latitude' => 4.2248,
-                'longitude' => 73.4242,
-                'map_x' => 83.00,
-                'map_y' => 45.00,
-                'images' => $this->json([$this->generatedImage('islands', 'blackwater-shore')]),
+                'longitude' => 73.4268,
+                'map_x' => 73.00,
+                'map_y' => 58.00,
+                'images' => $this->json([$this->generatedImage('islands', 'picnic-island')]),
             ],
         ];
 
@@ -315,7 +255,7 @@ class HorrorBarkWorldSeeder extends Seeder
         $rides = [
             [
                 'user_id' => $owners['silas.blackwood@horrorbark.test'],
-                'island_id' => $islands['Shadow Park'],
+                'island_id' => $islands['Horror Island'],
                 'name' => "Widow's Descent",
                 'description' => 'A towering plunge through torn velvet, cathedral ironwork, and bells that answer only the fall.',
                 'price' => 190,
@@ -329,7 +269,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['silas.blackwood@horrorbark.test'],
-                'island_id' => $islands['Manor Ward'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'Velvet Spiral',
                 'description' => 'A manor-side corkscrew of polished steel and violet lamps, built to turn anticipation into ceremony.',
                 'price' => 165,
@@ -343,7 +283,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['silas.blackwood@horrorbark.test'],
-                'island_id' => $islands['Lantern Hollow'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'The Ash Procession',
                 'description' => 'A solemn track ride threading chapel smoke, cedar embers, and the slow procession of lantern-bearing figures.',
                 'price' => 150,
@@ -357,7 +297,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['silas.blackwood@horrorbark.test'],
-                'island_id' => $islands['Blackwater Approach'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'Nocturne Drop',
                 'description' => 'A harbor-wall freefall that flashes the black sea beneath your feet before lifting you back into the fog.',
                 'price' => 210,
@@ -385,7 +325,7 @@ class HorrorBarkWorldSeeder extends Seeder
         $games = [
             [
                 'user_id' => $owners['jasper.crowe@horrorbark.test'],
-                'island_id' => $islands['Shadow Park'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'Lantern Guess',
                 'description' => 'Read the warding sigils, choose the proper lantern, and finish before the flame goes cold.',
                 'price' => 45,
@@ -399,7 +339,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['jasper.crowe@horrorbark.test'],
-                'island_id' => $islands['Manor Ward'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'The Silent Wheel',
                 'description' => 'A velvet wheel of fortune that turns without music and stops with unnerving precision.',
                 'price' => 60,
@@ -413,7 +353,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['jasper.crowe@horrorbark.test'],
-                'island_id' => $islands['Lantern Hollow'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'Coven Toss',
                 'description' => 'Bone-white rings, ashwood posts, and prizes awarded under the watch of the hollow lanterns.',
                 'price' => 40,
@@ -427,7 +367,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['jasper.crowe@horrorbark.test'],
-                'island_id' => $islands['Blackwater Approach'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'Midnight Draw',
                 'description' => 'A dockside table game of sealed cards, tide wagers, and prizes chosen by the harbor keeper.',
                 'price' => 55,
@@ -455,7 +395,7 @@ class HorrorBarkWorldSeeder extends Seeder
         $beachEvents = [
             [
                 'user_id' => $owners['ophelia.vale@horrorbark.test'],
-                'island_id' => $islands['Pale Moon Strand'],
+                'island_id' => $islands['Picnic Island'],
                 'name' => 'Moonlight Vigil',
                 'description' => 'An after-dark gathering of lanterns, strings, and whispered vows timed to the inward pull of the tide.',
                 'event_date' => Carbon::today()->addDays(4),
@@ -470,7 +410,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['ophelia.vale@horrorbark.test'],
-                'island_id' => $islands['Saltveil Beach'],
+                'island_id' => $islands['Picnic Island'],
                 'name' => 'Velvet Bonfire',
                 'description' => 'Black sand, velvet seating, and a ceremonial bonfire fed with aromatic cedar and sea salt.',
                 'event_date' => Carbon::today()->addDays(11),
@@ -485,7 +425,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['ophelia.vale@horrorbark.test'],
-                'island_id' => $islands['Coven Quay'],
+                'island_id' => $islands['Picnic Island'],
                 'name' => 'Lantern Wake',
                 'description' => 'A midnight send-off at the quay with floating lights, low choir notes, and ferries slipping in and out of the mist.',
                 'event_date' => Carbon::today()->addDays(18),
@@ -500,7 +440,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['ophelia.vale@horrorbark.test'],
-                'island_id' => $islands['Blackwater Shore'],
+                'island_id' => $islands['Picnic Island'],
                 'name' => 'The Pale Tide Gathering',
                 'description' => 'A shoreline supper and moonlit performance staged where the surf turns black and the music carries farther than it should.',
                 'event_date' => Carbon::today()->addDays(25),
@@ -530,7 +470,7 @@ class HorrorBarkWorldSeeder extends Seeder
             [
                 'name' => "Keeper's Passage",
                 'description' => 'The formal crossing from the mainland gate to Manor Ward, favored by guests with trunks, velvet cases, and evening reservations.',
-                'island_id' => $islands['Manor Ward'],
+                'island_id' => $islands['Horror Island'],
                 'price' => 75,
                 'max_capacity' => 36,
                 'max_booking_quantity' => 6,
@@ -541,7 +481,7 @@ class HorrorBarkWorldSeeder extends Seeder
             [
                 'name' => 'Night Tide Passage',
                 'description' => 'A late crossing that cuts through black water toward Coven Quay while the lantern masts trade signals with the shore.',
-                'island_id' => $islands['Coven Quay'],
+                'island_id' => $islands['Picnic Island'],
                 'price' => 55,
                 'max_capacity' => 42,
                 'max_booking_quantity' => 6,
@@ -552,7 +492,7 @@ class HorrorBarkWorldSeeder extends Seeder
             [
                 'name' => 'Moonwake Line',
                 'description' => 'The preferred route for guests bound to the midnight beaches, with open decks and a quiet final approach through pale surf.',
-                'island_id' => $islands['Pale Moon Strand'],
+                'island_id' => $islands['Picnic Island'],
                 'price' => 60,
                 'max_capacity' => 40,
                 'max_booking_quantity' => 6,

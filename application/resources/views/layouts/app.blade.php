@@ -10,8 +10,7 @@
     ];
 
     $authNavItems = [
-        ['label' => 'Portal', 'href' => route('portal'), 'active' => request()->routeIs('portal')],
-        ['label' => 'My Bookings', 'href' => route('bookings.index'), 'active' => request()->routeIs('bookings.*')],
+        ['label' => 'My Bookings', 'href' => route('bookings.index'), 'active' => request()->routeIs('portal') || request()->routeIs('bookings.*')],
         ['label' => 'My Profile', 'href' => route('profile.edit'), 'active' => request()->routeIs('profile.*')],
         ['label' => 'Logout', 'href' => route('logout'), 'method' => 'POST'],
     ];

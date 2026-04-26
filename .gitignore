@@ -3,5 +3,8 @@ logs/
 storage/logs/
 .env
 application/.env
+.DS_Store
+.codex/
+db-data/
 .cursor/plans/
 .claude/settings.local.json

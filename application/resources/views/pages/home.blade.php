@@ -29,7 +29,7 @@
         [
             'name' => 'Blackwater Approach',
             'eyebrow' => 'Arrival Passage',
-            'summary' => 'Cross the harbor on a Styx-like ferry line before the gates open. The approach now leads into a proper catalog instead of a broken shortcut.',
+            'summary' => 'Arrive by lantern-lit ferry before the island opens. The crossing sets the pace for the night before guests move inland.',
             'detail' => $ferries->sortBy('price')->first()?->name ? 'Featured crossing: ' . $ferries->sortBy('price')->first()->name : 'Lantern barges and harbor bells wait at the quay.',
             'stat' => $ferries->count() . ' ' . \Illuminate\Support\Str::plural('crossing', $ferries->count()),
             'href' => route('ferries.index'),
@@ -41,7 +41,7 @@
         [
             'name' => 'Manor Ward',
             'eyebrow' => 'Chamber Quarter',
-            'summary' => 'The lodging quarter stays central to the experience, but now the homepage pushes guests into real offers and specific discounted rooms instead of vague featured tiles.',
+            'summary' => 'Reserve rooms among stone corridors, gallery windows, and quiet harbor-facing chambers prepared for overnight guests.',
             'detail' => $startingRoom ? 'Starting with ' . $startingRoom->room_number . ' at ' . $startingRoom->hotel?->name : 'Stone corridors, velvet galleries, and candlelit suites.',
             'stat' => $hotels->count() . ' ' . \Illuminate\Support\Str::plural('hotel', $hotels->count()),
             'href' => route('hotels.index'),
@@ -53,7 +53,7 @@
         [
             'name' => 'Shadow Park',
             'eyebrow' => 'Midway Grounds',
-            'summary' => 'Rides and games stay in one registry, but the homepage no longer gives them a competing feature band that dilutes the promotion path.',
+            'summary' => 'Enter the ride grounds and game stalls after check-in, with timed sessions and ticketed attractions grouped together.',
             'detail' => $rides->first()?->name ? 'Opening with ' . $rides->first()->name : 'Twisted iron, ceremonial timing, and midnight trials.',
             'stat' => ($rides->count() + $games->count()) . ' active attractions',
             'href' => route('themepark.index'),
@@ -65,7 +65,7 @@
         [
             'name' => 'Pale Moon Strand',
             'eyebrow' => 'Shoreline Gatherings',
-            'summary' => 'The shore now reads as a destination with real bookable events, not a loose afterthought. The live offer page takes guests straight into discounted event checkout.',
+            'summary' => 'End the route at the shore, where bonfires, vigils, and late gatherings are listed by date and capacity.',
             'detail' => $beachEvents->sortBy('event_date')->first()?->name ? 'Tonight\'s invitation: ' . $beachEvents->sortBy('event_date')->first()->name : 'Ceremonial fires, surf, and silver table settings.',
             'stat' => $beachEvents->count() . ' moonlit events',
             'href' => route('beach-events.index'),
@@ -165,11 +165,11 @@
 
         <section class="home-chart-shell">
             <div class="space-y-4">
-                <p class="theme-kicker">District Chart</p>
+                <p class="theme-kicker">Island Atlas</p>
                 <h2 class="font-display text-4xl italic leading-none text-moonlight sm:text-5xl">A calmer route across the island.</h2>
                 <p class="readable-copy max-w-3xl">
-                    The old homepage atlas tried to act like a full interactive map, and it looked wrong for this theme. This redesign treats the map as a stylized route chart:
-                    a guided sequence through the harbor, the manor, the midway, and the shoreline.
+                    Trace the night by district: arrive through the harbor, settle into the manor, cross into the midway, then follow the path down to the shore.
+                    Each marker opens the live listings for that part of Horror-Bark.
                 </p>
             </div>
 

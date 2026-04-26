@@ -4,11 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\RideResource\Pages;
 use App\Filament\Resources\RideResource\RelationManagers;
+use App\Models\Island;
 use App\Models\Ride;
 use App\Models\User;
 use App\Services\IslandAccessService;
 use Filament\Forms;
-use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -19,7 +19,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Select;
-use Dotswan\MapPicker\Fields\Map;
 
 
 class RideResource extends Resource
@@ -35,6 +34,9 @@ class RideResource extends Resource
             Forms\Components\Select::make('user_id')
                 ->label('Owner')
                 ->relationship('owner', 'name')
+                ->searchable(['name', 'email'])
+                ->preload()
+                ->native(false)
                 ->required(),
             Forms\Components\TextInput::make('name')
                 ->required(),
@@ -53,67 +55,12 @@ class RideResource extends Resource
             Select::make('island_id')
                 ->label('Island')
                 ->relationship('island', 'name', fn ($query) => $query->where('type', IslandAccessService::HORROR_ISLAND))
+                ->getOptionLabelFromRecordUsing(fn (Island $record): string => self::islandOptionLabel($record))
                 ->required()
-                ->searchable()
+                ->searchable(['name', 'type'])
+                ->preload()
+                ->native(false)
                 ->helperText('Rides are available on Horror Island only.'),
-            Forms\Components\Section::make('Public Map Placement')
-                ->schema([
-                    Forms\Components\Placeholder::make('horror_map_picker')
-                        ->hiddenLabel()
-                        ->content(new \Illuminate\Support\HtmlString(view('filament.forms.components.horror-map-picker')->render())),
-                    Forms\Components\Grid::make(2)
-                        ->schema([
-                            Forms\Components\TextInput::make('map_x')
-                                ->label('Map X')
-                                ->numeric()
-                                ->default(50)
-                                ->readOnly()
-                                ->extraInputAttributes(['data-horror-map-x' => '1']),
-                            Forms\Components\TextInput::make('map_y')
-                                ->label('Map Y')
-                                ->numeric()
-                                ->default(50)
-                                ->readOnly()
-                                ->extraInputAttributes(['data-horror-map-y' => '1']),
-                        ]),
-                ])
-                ->columnSpanFull(),
-            Map::make('location_data')
-                ->label('Legacy Real-World Position')
-                ->columnSpanFull()
-                ->defaultLocation(latitude: 4.22700104517645, longitude: 73.42662978621766)
-                ->draggable(true)
-                ->clickable(true)
-                ->zoom(16)
-                ->minZoom(0)
-                ->maxZoom(28)
-                ->tilesUrl("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}")
-                ->detectRetina(true)
-                ->showMarker(true)
-                ->markerColor("#3b82f6")
-                ->showFullscreenControl(true)
-                ->afterStateHydrated(function ($state, $record, Set $set): void {
-                    if ($record && $record->latitude && $record->longitude) {
-                        $set('location_data', [
-                            'lat' => $record->latitude,
-                            'lng' => $record->longitude,
-                        ]);
-                    }
-                })
-                ->afterStateUpdated(function ($state, Set $set): void {
-                    if (is_array($state)) {
-                        $set('latitude', $state['lat'] ?? null);
-                        $set('longitude', $state['lng'] ?? null);
-                    }
-                })
-                ->showZoomControl(true),
-
-            Forms\Components\TextInput::make('latitude')
-                ->label('Latitude')
-                ->numeric(),
-            Forms\Components\TextInput::make('longitude')
-                ->label('Longitude')
-                ->numeric(),
 
             Forms\Components\FileUpload::make('images')
                 ->label('Additional Images')
@@ -142,12 +89,6 @@ class RideResource extends Resource
             Tables\Columns\TextColumn::make('island.name')
                 ->label('Island')
                 ->sortable(),
-            Tables\Columns\TextColumn::make('latitude')
-                ->label('Latitude')
-                ->sortable(),
-            Tables\Columns\TextColumn::make('longitude')
-                ->label('Longitude')
-                ->sortable(),
             Tables\Columns\ImageColumn::make('images')
                 ->disk('public')
                 ->getStateUsing(fn ($record) => $record->images[0] ?? null)
@@ -166,5 +107,10 @@ class RideResource extends Resource
             'create' => Pages\CreateRide::route('/create'),
             'edit'   => Pages\EditRide::route('/{record}/edit'),
         ];
+    }
+
+    private static function islandOptionLabel(Island $island): string
+    {
+        return $island->name;
     }
 }

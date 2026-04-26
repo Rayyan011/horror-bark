@@ -13,7 +13,14 @@ return new class extends Migration
                 continue;
             }
 
-            $placeAfter = collect(['longitude', 'latitude', 'island_id', 'location', 'name'])
+            $placeAfter = collect([
+                'longitude',
+                'latitude',
+                'island_id',
+                'location',
+                $tableName === 'ferries' ? 'description' : 'name',
+                'name',
+            ])
                 ->first(fn (string $column) => Schema::hasColumn($tableName, $column));
 
             Schema::table($tableName, function (Blueprint $table) use ($placeAfter, $tableName) {

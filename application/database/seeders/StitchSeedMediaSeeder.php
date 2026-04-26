@@ -66,54 +66,24 @@ class StitchSeedMediaSeeder extends Seeder
     {
         $records = [
             [
-                'name' => 'Manor Ward',
+                'name' => 'Horror Island',
                 'type' => IslandAccessService::HORROR_ISLAND,
-                'description' => 'The velvet-lit heart of Horror Bark, where stone promenades and watchful gates frame the grand manor quarter.',
-                'latitude' => 4.2288,
-                'longitude' => 73.4258,
-                'map_x' => 31.00,
-                'map_y' => 22.00,
-                'images' => [$this->generatedImage('islands', 'manor-ward')],
-            ],
-            [
-                'name' => 'Shadow Park',
-                'type' => IslandAccessService::HORROR_ISLAND,
-                'description' => 'A grand amusement district of twisted iron rides, carnival lamps, and polished dread beneath the pale moon.',
+                'description' => 'The main Horror Bark island, containing the manor, harbor, ride districts, game grounds, and guest hotels.',
                 'latitude' => 4.2276,
-                'longitude' => 73.4274,
-                'map_x' => 33.00,
+                'longitude' => 73.4264,
+                'map_x' => 43.00,
+                'map_y' => 44.00,
+                'images' => [$this->generatedImage('islands', 'horror-island')],
+            ],
+            [
+                'name' => 'Picnic Island',
+                'type' => IslandAccessService::PICNIC_ISLAND,
+                'description' => 'The separate shore island for beach events, late crossings, fireside ceremonies, and quieter sea-facing gatherings.',
+                'latitude' => 4.2248,
+                'longitude' => 73.4268,
+                'map_x' => 73.00,
                 'map_y' => 58.00,
-                'images' => [$this->generatedImage('islands', 'shadow-park')],
-            ],
-            [
-                'name' => 'Lantern Hollow',
-                'type' => IslandAccessService::HORROR_ISLAND,
-                'description' => 'A cedar-dark hollow of chapel bells, ash paths, and warding lanterns that never fully warm the fog.',
-                'latitude' => 4.2259,
-                'longitude' => 73.4280,
-                'map_x' => 69.00,
-                'map_y' => 29.00,
-                'images' => [$this->generatedImage('islands', 'lantern-hollow')],
-            ],
-            [
-                'name' => 'Pale Moon Strand',
-                'type' => IslandAccessService::PICNIC_ISLAND,
-                'description' => 'A moon-washed shore of velvet seating, ceremonial fires, and midnight gatherings shaped around the surf.',
-                'latitude' => 4.2249,
-                'longitude' => 73.4267,
-                'map_x' => 78.00,
-                'map_y' => 72.00,
-                'images' => [$this->generatedImage('islands', 'pale-moon-strand')],
-            ],
-            [
-                'name' => 'Saltveil Beach',
-                'type' => IslandAccessService::PICNIC_ISLAND,
-                'description' => 'Ash-gray sand and salt-heavy mist frame the island’s most elegant beach rituals and late-night performances.',
-                'latitude' => 4.2243,
-                'longitude' => 73.4286,
-                'map_x' => 56.00,
-                'map_y' => 20.00,
-                'images' => [$this->generatedImage('islands', 'saltveil-beach')],
+                'images' => [$this->generatedImage('islands', 'picnic-island')],
             ],
         ];
 
@@ -291,7 +261,7 @@ class StitchSeedMediaSeeder extends Seeder
         $records = [
             [
                 'user_id' => $owners['silas.blackwood@horrorbark.test'],
-                'island_id' => $islands['Shadow Park'],
+                'island_id' => $islands['Horror Island'],
                 'name' => "Widow's Descent",
                 'description' => 'A towering plunge ride threaded through torn velvet, black iron, and tolling bells.',
                 'price' => 190.00,
@@ -305,7 +275,7 @@ class StitchSeedMediaSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['silas.blackwood@horrorbark.test'],
-                'island_id' => $islands['Manor Ward'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'Velvet Spiral',
                 'description' => 'A polished manor-side coaster that coils through violet lamps and ceremonial arches.',
                 'price' => 165.00,
@@ -319,7 +289,7 @@ class StitchSeedMediaSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['silas.blackwood@horrorbark.test'],
-                'island_id' => $islands['Lantern Hollow'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'The Ash Procession',
                 'description' => 'A solemn dark ride passing through smoke, lantern arches, and chapel-like set pieces.',
                 'price' => 150.00,
@@ -346,7 +316,7 @@ class StitchSeedMediaSeeder extends Seeder
         $records = [
             [
                 'user_id' => $owners['jasper.crowe@horrorbark.test'],
-                'island_id' => $islands['Shadow Park'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'Lantern Guess',
                 'description' => 'A timing-and-observation game where guests choose the correct warded lantern before the flame drops.',
                 'price' => 45.00,
@@ -360,7 +330,7 @@ class StitchSeedMediaSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['jasper.crowe@horrorbark.test'],
-                'island_id' => $islands['Manor Ward'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'The Silent Wheel',
                 'description' => 'A velvet-draped wheel-of-fortune attraction that feels ceremonial rather than playful.',
                 'price' => 60.00,
@@ -374,7 +344,7 @@ class StitchSeedMediaSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['jasper.crowe@horrorbark.test'],
-                'island_id' => $islands['Lantern Hollow'],
+                'island_id' => $islands['Horror Island'],
                 'name' => 'Coven Toss',
                 'description' => 'A ring-toss midway game built from ashwood posts, bone-white rings, and occult carnival styling.',
                 'price' => 40.00,
@@ -401,7 +371,7 @@ class StitchSeedMediaSeeder extends Seeder
         $records = [
             [
                 'user_id' => $owners['ophelia.vale@horrorbark.test'],
-                'island_id' => $islands['Pale Moon Strand'],
+                'island_id' => $islands['Picnic Island'],
                 'name' => 'Moonlight Vigil',
                 'description' => 'An after-dark shoreline gathering of lanterns, strings, and whispered vows timed to the turning tide.',
                 'event_date' => CarbonImmutable::parse('2026-04-18'),
@@ -416,7 +386,7 @@ class StitchSeedMediaSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['ophelia.vale@horrorbark.test'],
-                'island_id' => $islands['Saltveil Beach'],
+                'island_id' => $islands['Picnic Island'],
                 'name' => 'Velvet Bonfire',
                 'description' => 'A black-sand ceremony built around a controlled bonfire, velvet seating, and salt-heavy sea air.',
                 'event_date' => CarbonImmutable::parse('2026-04-25'),
@@ -444,7 +414,7 @@ class StitchSeedMediaSeeder extends Seeder
         $records = [
             [
                 'user_id' => $owners['ophelia.vale@horrorbark.test'],
-                'island_id' => $islands['Manor Ward'],
+                'island_id' => $islands['Horror Island'],
                 'name' => "Keeper's Passage",
                 'description' => 'A formal harbor approach for manor guests, shaped around velvet seating, quiet service, and torchlit arrivals.',
                 'price' => 75.00,
@@ -456,7 +426,7 @@ class StitchSeedMediaSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['ophelia.vale@horrorbark.test'],
-                'island_id' => $islands['Saltveil Beach'],
+                'island_id' => $islands['Picnic Island'],
                 'name' => 'Night Tide Passage',
                 'description' => 'A black-water crossing that reaches the outer shore under low lantern light and a heavier band of sea mist.',
                 'price' => 55.00,
@@ -468,7 +438,7 @@ class StitchSeedMediaSeeder extends Seeder
             ],
             [
                 'user_id' => $owners['ophelia.vale@horrorbark.test'],
-                'island_id' => $islands['Pale Moon Strand'],
+                'island_id' => $islands['Picnic Island'],
                 'name' => 'Moonwake Line',
                 'description' => 'The late ferry for shoreline gatherings, arriving beside pale surf, ceremonial fires, and moonlit seating.',
                 'price' => 60.00,
