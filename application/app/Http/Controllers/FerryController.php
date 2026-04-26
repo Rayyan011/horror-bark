@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Ferry;
 use App\Models\Island;
+use App\Services\IslandAccessService;
 use App\Support\CatalogFilterBounds;
+use App\Support\IslandTypeCatalogFilter;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -14,6 +16,7 @@ class FerryController extends Controller
     {
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:120'],
+            'island_type' => ['nullable', IslandTypeCatalogFilter::rule()],
             'island_id' => ['nullable', 'integer', 'exists:islands,id'],
             'min_price' => ['nullable', 'numeric', 'min:0'],
             'max_price' => ['nullable', 'numeric', 'min:0'],
@@ -56,6 +59,12 @@ class FerryController extends Controller
             $query->where('island_id', $filters['island_id']);
         }
 
+        IslandTypeCatalogFilter::apply(
+            $query,
+            $filters['island_type'] ?? null,
+            IslandAccessService::HORROR_ISLAND,
+        );
+
         if ($filters['min_price'] > $priceBounds['min']) {
             $query->where('price', '>=', $filters['min_price']);
         }
@@ -77,12 +86,13 @@ class FerryController extends Controller
 
         $ferries = $query->paginate(12)->withQueryString();
         $islands = Island::query()->orderBy('name')->get(['id', 'name', 'type']);
+        $islandTypeOptions = IslandTypeCatalogFilter::options();
 
         $filterBounds = [
             'price' => $priceBounds,
             'capacity' => $capacityBounds,
         ];
 
-        return view('pages.ferries.index', compact('ferries', 'filters', 'islands', 'filterBounds'));
+        return view('pages.ferries.index', compact('ferries', 'filters', 'islands', 'islandTypeOptions', 'filterBounds'));
     }
 }

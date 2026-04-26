@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\BeachEvent;
+use App\Services\IslandAccessService;
 use App\Support\CatalogFilterBounds;
+use App\Support\IslandTypeCatalogFilter;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -13,6 +15,7 @@ class BeachEventController extends Controller
     {
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:120'],
+            'island_type' => ['nullable', IslandTypeCatalogFilter::rule()],
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date'],
             'min_price' => ['nullable', 'numeric', 'min:0'],
@@ -55,6 +58,12 @@ class BeachEventController extends Controller
             });
         }
 
+        IslandTypeCatalogFilter::apply(
+            $query,
+            $filters['island_type'] ?? null,
+            IslandAccessService::PICNIC_ISLAND,
+        );
+
         if (! empty($filters['date_from'])) {
             $query->whereDate('event_date', '>=', $filters['date_from']);
         }
@@ -91,7 +100,8 @@ class BeachEventController extends Controller
             'price' => $priceBounds,
             'capacity' => $capacityBounds,
         ];
+        $islandTypeOptions = IslandTypeCatalogFilter::options();
 
-        return view('pages.beach-events.index', compact('beachEvents', 'filters', 'filterBounds'));
+        return view('pages.beach-events.index', compact('beachEvents', 'filters', 'filterBounds', 'islandTypeOptions'));
     }
 }

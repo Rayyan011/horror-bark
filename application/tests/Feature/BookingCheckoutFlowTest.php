@@ -6,6 +6,7 @@ use App\Models\BeachEvent;
 use App\Models\Ferry;
 use App\Models\Game;
 use App\Models\Hotel;
+use App\Models\HotelBooking;
 use App\Models\Island;
 use App\Models\Ride;
 use App\Models\Room;
@@ -105,6 +106,32 @@ class BookingCheckoutFlowTest extends TestCase
     {
         $user = User::factory()->create();
         $owner = User::factory()->create();
+        $hotel = Hotel::create([
+            'user_id' => $owner->id,
+            'name' => 'Access Hotel',
+            'location' => 'Manor Ward',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+        $room = Room::create([
+            'hotel_id' => $hotel->id,
+            'room_number' => 'AX-01',
+            'price' => 120,
+            'status' => 'available',
+            'max_occupancy' => 2,
+            'images' => [],
+        ]);
+        HotelBooking::create([
+            'user_id' => $user->id,
+            'room_id' => $room->id,
+            'start_date' => now()->addDays(4)->startOfDay(),
+            'end_date' => now()->addDays(10)->startOfDay(),
+            'quantity' => 1,
+            'total_price' => 720,
+            'status' => 'confirmed',
+        ]);
+
         $picnicIsland = Island::create([
             'name' => 'Pale Moon Strand',
             'type' => IslandAccessService::PICNIC_ISLAND,

@@ -8,19 +8,19 @@ This project applies island-aware access requirements for booking flows.
 |---|---|---|
 | Ferry | Horror-Island destination | Yes |
 | Ferry | Picnic-Island destination | No |
-| Ride | Horror-Island | Yes |
-| Game | Horror-Island | Yes |
-| Beach Event | Picnic-Island | No |
+| Ride | Any island | Yes |
+| Game | Any island | Yes |
+| Beach Event | Any island | Yes |
 
 ## Valid Hotel Stay Definition
 
-A valid stay for Horror-Island access must satisfy all of:
+A valid stay for hotel-gated bookings must satisfy all of:
 - `status = confirmed`
 - `start_date <= booking_datetime`
 - `end_date > booking_datetime`
 
-If no valid stay exists for a Horror-Island activity, booking is blocked with:
-`A confirmed hotel stay is required to access Horror Island activities.`
+If no valid stay exists for a hotel-gated booking, booking is blocked with:
+`A confirmed hotel stay is required before booking this activity.`
 
 ## Island Data Assumptions
 
@@ -30,3 +30,4 @@ If no valid stay exists for a Horror-Island activity, booking is blocked with:
 - During transition, `null island_id` fallback behavior is:
   - Rides/Games: treated as Horror-Island.
   - Beach Events: treated as Picnic-Island.
+- Picnic-Island ferry bookings remain bookable without a hotel stay; rides, games, and beach events do not.

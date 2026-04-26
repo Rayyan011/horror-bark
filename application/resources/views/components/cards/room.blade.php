@@ -3,6 +3,10 @@
     'openDetailsAction' => null,
 ])
 
+@php
+    $detailsAction = $openDetailsAction ?: "openUiModal('room-modal-{$room->id}')";
+@endphp
+
 <x-ui.surface>
     <div class="mb-4 overflow-hidden rounded-2xl border border-primary-light/10">
         <x-ui.media-gallery
@@ -30,15 +34,13 @@
     @endif
     </div>
 
-    <button
+    <x-ui.button
         type="button"
-        class="mt-4 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
-        @if ($openDetailsAction)
-            onclick="{{ $openDetailsAction }}"
-        @else
-            onclick="openUiModal('room-modal-{{ $room->id }}')"
-        @endif
+        variant="secondary"
+        block
+        class="mt-4"
+        onclick="{{ $detailsAction }}"
     >
         View Room Details
-    </button>
+    </x-ui.button>
 </x-ui.surface>

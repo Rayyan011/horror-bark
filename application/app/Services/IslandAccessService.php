@@ -13,8 +13,10 @@ use Carbon\Carbon;
 class IslandAccessService
 {
     public const HORROR_ISLAND = 'Horror-Island';
+
     public const PICNIC_ISLAND = 'Picnic-Island';
-    public const REQUIRED_STAY_ERROR = 'A confirmed hotel stay is required to access Horror Island activities.';
+
+    public const REQUIRED_STAY_ERROR = 'A confirmed hotel stay is required before booking this activity.';
 
     public function ferryRequiresHotel(Ferry $ferry): bool
     {
@@ -23,17 +25,17 @@ class IslandAccessService
 
     public function rideRequiresHotel(Ride $ride): bool
     {
-        return $this->isHorrorIsland($ride->island?->type ?? self::HORROR_ISLAND);
+        return true;
     }
 
     public function gameRequiresHotel(Game $game): bool
     {
-        return $this->isHorrorIsland($game->island?->type ?? self::HORROR_ISLAND);
+        return true;
     }
 
     public function beachEventRequiresHotel(BeachEvent $beachEvent): bool
     {
-        return $this->isHorrorIsland($beachEvent->island?->type ?? self::PICNIC_ISLAND);
+        return true;
     }
 
     public function hasConfirmedHotelStayAt(User $user, Carbon $activityAt): bool

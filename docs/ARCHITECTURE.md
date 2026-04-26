@@ -73,8 +73,7 @@ Horror Bark is a Laravel 11 monolith with Blade/Vite on the public site and Fila
 
 ## Important Runtime Rules
 - Ferry bookings require a valid overlapping hotel stay only when the destination is Horror Island.
-- Ride and game bookings require a valid overlapping hotel stay on Horror Island.
-- Beach events default to Picnic Island access rules unless explicitly linked otherwise.
+- Ride, game, and beach event bookings require a valid overlapping hotel stay before purchase.
 - Ferry operators, game operators, ride operators, and hotel operators are scoped to their own records in their panels.
 
 ## Documents and Reporting

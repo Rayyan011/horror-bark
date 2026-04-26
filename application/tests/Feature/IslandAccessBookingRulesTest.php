@@ -25,7 +25,8 @@ class IslandAccessBookingRulesTest extends TestCase
         parent::setUp();
 
         Storage::fake('local');
-        $this->app->instance('dompdf.wrapper', new class {
+        $this->app->instance('dompdf.wrapper', new class
+        {
             public function loadView(string $view, array $data = []): self
             {
                 return $this;
@@ -117,6 +118,33 @@ class IslandAccessBookingRulesTest extends TestCase
         $this->assertDatabaseCount('ride_bookings', 0);
     }
 
+    public function test_ride_booking_requires_hotel_booking_even_on_picnic_island(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $picnicIsland = $this->createIsland('Picnic', 'Picnic-Island');
+
+        $ride = Ride::create([
+            'user_id' => $owner->id,
+            'island_id' => $picnicIsland->id,
+            'name' => 'Picnic Drop',
+            'price' => 25,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+            'max_capacity' => 80,
+            'max_booking_quantity' => 4,
+        ]);
+
+        $response = $this->actingAs($user)->post(route('bookings.rides.store', $ride), [
+            'booking_time' => now()->addDay()->setTime(9, 0)->format('Y-m-d H:i:s'),
+            'quantity' => 1,
+        ]);
+
+        $response->assertSessionHasErrors('booking_time');
+        $this->assertDatabaseCount('ride_bookings', 0);
+    }
+
     public function test_game_booking_requires_hotel_booking(): void
     {
         $user = User::factory()->create();
@@ -144,7 +172,34 @@ class IslandAccessBookingRulesTest extends TestCase
         $this->assertDatabaseCount('game_bookings', 0);
     }
 
-    public function test_beach_event_on_picnic_island_does_not_require_hotel_booking(): void
+    public function test_game_booking_requires_hotel_booking_even_on_picnic_island(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $picnicIsland = $this->createIsland('Picnic', 'Picnic-Island');
+
+        $game = Game::create([
+            'user_id' => $owner->id,
+            'island_id' => $picnicIsland->id,
+            'name' => 'Picnic Puzzle',
+            'price' => 20,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+            'max_capacity' => 60,
+            'max_booking_quantity' => 3,
+        ]);
+
+        $response = $this->actingAs($user)->post(route('bookings.games.store', $game), [
+            'booking_time' => now()->addDay()->setTime(9, 0)->format('Y-m-d H:i:s'),
+            'quantity' => 1,
+        ]);
+
+        $response->assertSessionHasErrors('booking_time');
+        $this->assertDatabaseCount('game_bookings', 0);
+    }
+
+    public function test_beach_event_on_picnic_island_requires_hotel_booking(): void
     {
         $user = User::factory()->create();
         $owner = User::factory()->create();
@@ -163,6 +218,44 @@ class IslandAccessBookingRulesTest extends TestCase
             'longitude' => 73.4,
             'images' => [],
         ]);
+
+        $response = $this->actingAs($user)->post(route('bookings.beach-events.store', $event), [
+            'booking_date' => $eventDate,
+            'booking_time' => '12:00',
+            'quantity' => 2,
+        ]);
+
+        $response->assertSessionHasErrors('booking_time');
+        $this->assertDatabaseCount('beach_event_bookings', 0);
+    }
+
+    public function test_beach_event_allows_overlapping_confirmed_hotel_stay(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $picnicIsland = $this->createIsland('Picnic', 'Picnic-Island');
+
+        $eventDate = now()->addDays(2)->toDateString();
+        $event = BeachEvent::create([
+            'user_id' => $owner->id,
+            'island_id' => $picnicIsland->id,
+            'name' => 'Moonlight Concert',
+            'event_date' => $eventDate,
+            'price' => 50,
+            'max_capacity' => 100,
+            'max_booking_quantity' => 5,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+        $bookingAt = Carbon::parse($eventDate)->setTime(12, 0);
+
+        $this->createHotelStay(
+            $user,
+            $bookingAt->copy()->subDay(),
+            $bookingAt->copy()->addDay(),
+            'confirmed',
+        );
 
         $response = $this->actingAs($user)->post(route('bookings.beach-events.store', $event), [
             'booking_date' => $eventDate,
@@ -233,9 +326,9 @@ class IslandAccessBookingRulesTest extends TestCase
     private function createIsland(string $name, string $type): Island
     {
         return Island::create([
-            'name' => $name . ' Island',
+            'name' => $name.' Island',
             'type' => $type,
-            'description' => $name . ' description',
+            'description' => $name.' description',
             'latitude' => 4.2,
             'longitude' => 73.4,
             'images' => [],

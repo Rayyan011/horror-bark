@@ -32,6 +32,7 @@
                 ['label' => 'Rides Only', 'value' => 'rides'],
                 ['label' => 'Games Only', 'value' => 'games'],
             ], 'value' => $filters['section'] ?? 'all'],
+            ['label' => 'Island Type', 'name' => 'island_type', 'type' => 'select', 'options' => $islandTypeOptions, 'value' => $filters['island_type'] ?? ''],
             [
                 'label' => 'Ticket Range',
                 'type' => 'range_pair',
@@ -64,7 +65,7 @@
         ]"
         :reset-href="route('themepark.index')"
         apply-label="Filter Attractions"
-        grid="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
+        grid="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4"
     />
 
     <section class="space-y-4">
@@ -80,7 +81,7 @@
                         :type="$activity->catalog_type"
                         :booking-config="[
                             'mode' => 'datetime',
-                            'rulesHint' => 'Only 9:00 or 17:00.',
+                            'rulesHint' => 'Only 9:00 or 17:00. Confirmed hotel stay required.',
                             'submitLabel' => $activity->catalog_type === 'game' ? 'Book game' : 'Book ride',
                         ]"
                     />

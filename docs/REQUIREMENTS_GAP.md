@@ -8,8 +8,8 @@ Verified against the current repository state on 2026-03-31.
 - This review is based on the implemented code, tests, and docs currently in the worktree.
 
 ## Resolved Since Earlier Gap Analysis
-- Ferry bookings now enforce hotel-stay requirements for Horror Island access.
-- Ride and game bookings also enforce island-aware hotel-stay rules.
+- Ferry bookings now enforce hotel-stay requirements for Horror Island access while allowing Picnic Island ferry-only trips.
+- Ride, game, and beach-event bookings are hotel-gated before purchase.
 - Admin/operator dashboards and chart widgets exist across panels.
 - Ferry pass generation is implemented as a separate document flow from invoices.
 - Ferry passenger/trip reporting is implemented with CSV export.

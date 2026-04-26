@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\BeachEvent;
 use App\Models\Ferry;
 use App\Models\Game;
 use App\Models\Hotel;
@@ -9,6 +10,7 @@ use App\Models\Island;
 use App\Models\Ride;
 use App\Models\Room;
 use App\Models\User;
+use App\Services\IslandAccessService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -119,6 +121,15 @@ class CatalogFiltersTest extends TestCase
         $response->assertSee('name="max_price"', false);
         $response->assertSee('name="min_capacity"', false);
         $response->assertSee('type="range"', false);
+
+        $typeFiltered = $this->get(route('ferries.index', [
+            'island_type' => IslandAccessService::PICNIC_ISLAND,
+        ]));
+
+        $typeFiltered->assertOk();
+        $typeFiltered->assertSee('Picnic Ferry');
+        $typeFiltered->assertDontSee('Horror Ferry 1');
+        $typeFiltered->assertSee('value="'.IslandAccessService::PICNIC_ISLAND.'" selected', false);
     }
 
     public function test_themepark_combines_rides_and_games_and_uses_section_filter(): void
@@ -174,5 +185,124 @@ class CatalogFiltersTest extends TestCase
         $gamesOnly->assertOk();
         $gamesOnly->assertDontSee('Nocturne Drop');
         $gamesOnly->assertSee('Midnight Draw');
+    }
+
+    public function test_themepark_filters_by_island_type(): void
+    {
+        $owner = User::factory()->create();
+        $horrorIsland = Island::create([
+            'name' => 'Manor Ward',
+            'type' => IslandAccessService::HORROR_ISLAND,
+            'description' => 'Horror',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+        $picnicIsland = Island::create([
+            'name' => 'Picnic Strand',
+            'type' => IslandAccessService::PICNIC_ISLAND,
+            'description' => 'Picnic',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+
+        Ride::create([
+            'user_id' => $owner->id,
+            'island_id' => $horrorIsland->id,
+            'name' => 'Manor Drop',
+            'price' => 190,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+            'max_capacity' => 20,
+            'max_booking_quantity' => 4,
+        ]);
+
+        Game::create([
+            'user_id' => $owner->id,
+            'island_id' => $picnicIsland->id,
+            'name' => 'Strand Puzzle',
+            'price' => 45,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+            'max_capacity' => 18,
+            'max_booking_quantity' => 3,
+        ]);
+
+        $horror = $this->get(route('themepark.index', [
+            'island_type' => IslandAccessService::HORROR_ISLAND,
+        ]));
+
+        $horror->assertOk();
+        $horror->assertSee('Manor Drop');
+        $horror->assertDontSee('Strand Puzzle');
+        $horror->assertSee('value="'.IslandAccessService::HORROR_ISLAND.'" selected', false);
+
+        $picnic = $this->get(route('themepark.index', [
+            'island_type' => IslandAccessService::PICNIC_ISLAND,
+        ]));
+
+        $picnic->assertOk();
+        $picnic->assertDontSee('Manor Drop');
+        $picnic->assertSee('Strand Puzzle');
+        $picnic->assertSee('value="'.IslandAccessService::PICNIC_ISLAND.'" selected', false);
+    }
+
+    public function test_beach_events_filter_by_island_type(): void
+    {
+        $owner = User::factory()->create();
+        $horrorIsland = Island::create([
+            'name' => 'Manor Ward',
+            'type' => IslandAccessService::HORROR_ISLAND,
+            'description' => 'Horror',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+        $picnicIsland = Island::create([
+            'name' => 'Picnic Strand',
+            'type' => IslandAccessService::PICNIC_ISLAND,
+            'description' => 'Picnic',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+
+        BeachEvent::create([
+            'user_id' => $owner->id,
+            'island_id' => $horrorIsland->id,
+            'name' => 'Manor Masquerade',
+            'event_date' => now()->addDays(4)->toDateString(),
+            'price' => 90,
+            'max_capacity' => 80,
+            'max_booking_quantity' => 4,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+
+        BeachEvent::create([
+            'user_id' => $owner->id,
+            'island_id' => $picnicIsland->id,
+            'name' => 'Moonlit Picnic',
+            'event_date' => now()->addDays(5)->toDateString(),
+            'price' => 70,
+            'max_capacity' => 80,
+            'max_booking_quantity' => 4,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+
+        $response = $this->get(route('beach-events.index', [
+            'island_type' => IslandAccessService::PICNIC_ISLAND,
+        ]));
+
+        $response->assertOk();
+        $response->assertDontSee('Manor Masquerade');
+        $response->assertSee('Moonlit Picnic');
+        $response->assertSee('value="'.IslandAccessService::PICNIC_ISLAND.'" selected', false);
     }
 }

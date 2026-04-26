@@ -11,6 +11,7 @@
     <x-filters.panel
         :fields="[
             ['label' => 'Search', 'name' => 'search', 'type' => 'text', 'value' => $filters['search'] ?? '', 'placeholder' => 'Ferry name', 'class' => 'lg:col-span-2'],
+            ['label' => 'Island Type', 'name' => 'island_type', 'type' => 'select', 'options' => $islandTypeOptions, 'value' => $filters['island_type'] ?? ''],
             ['label' => 'Destination', 'name' => 'island_id', 'type' => 'select', 'options' => collect($islands)->map(fn($island) => ['label' => $island->name, 'value' => $island->id])->prepend(['label' => 'All', 'value' => ''])->values()->all(), 'value' => $filters['island_id'] ?? ''],
             [
                 'label' => 'Fare Range',
@@ -44,13 +45,13 @@
         ]"
         :reset-href="route('ferries.index')"
         apply-label="Filter Ferries"
-        grid="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
+        grid="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4"
     />
 
     @if($ferries->isEmpty())
         <x-ui.empty-state
             title="No ferry tickets match your filters"
-            description="Try adjusting search, island, or capacity filters."
+            description="Try adjusting search, island type, destination, or capacity filters."
             action-label="Clear filters"
             :action-href="route('ferries.index')"
         />

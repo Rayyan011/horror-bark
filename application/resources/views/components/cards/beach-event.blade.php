@@ -26,7 +26,7 @@
                 :action="route('checkout.beach-events.prepare', $event)"
                 mode="date-time"
                 :submit-label="$bookingConfig['submitLabel'] ?? 'Review & pay'"
-                rules-hint="You will confirm this event booking on the demo payment screen."
+                rules-hint="Confirmed hotel stay required before payment review."
                 :quantity-config="[
                     'label' => 'Tickets',
                     'min' => 1,

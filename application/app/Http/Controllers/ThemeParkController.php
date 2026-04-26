@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use App\Models\Ride;
+use App\Services\IslandAccessService;
 use App\Support\CatalogFilterBounds;
+use App\Support\IslandTypeCatalogFilter;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as Paginator;
@@ -19,6 +21,7 @@ class ThemeParkController extends Controller
         $filters = $request->validate([
             'section' => ['nullable', Rule::in(['all', 'rides', 'games'])],
             'search' => ['nullable', 'string', 'max:120'],
+            'island_type' => ['nullable', IslandTypeCatalogFilter::rule()],
             'min_price' => ['nullable', 'numeric', 'min:0'],
             'max_price' => ['nullable', 'numeric', 'min:0'],
             'min_capacity' => ['nullable', 'integer', 'min:1'],
@@ -71,6 +74,8 @@ class ThemeParkController extends Controller
         $sort = $filters['sort'] ?? 'name_asc';
         $this->applyActivityFilters($ridesQuery, $filters, $priceBounds, $capacityBounds);
         $this->applyActivityFilters($gamesQuery, $filters, $priceBounds, $capacityBounds);
+        IslandTypeCatalogFilter::apply($ridesQuery, $filters['island_type'] ?? null, IslandAccessService::HORROR_ISLAND);
+        IslandTypeCatalogFilter::apply($gamesQuery, $filters['island_type'] ?? null, IslandAccessService::HORROR_ISLAND);
 
         $activities = collect();
 
@@ -103,8 +108,9 @@ class ThemeParkController extends Controller
             'price' => $priceBounds,
             'capacity' => $capacityBounds,
         ];
+        $islandTypeOptions = IslandTypeCatalogFilter::options();
 
-        return view('pages.themepark.index', compact('activities', 'filters', 'filterBounds'));
+        return view('pages.themepark.index', compact('activities', 'filters', 'filterBounds', 'islandTypeOptions'));
     }
 
     private function applyActivityFilters($query, array $filters, array $priceBounds, array $capacityBounds): void

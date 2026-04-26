@@ -11,6 +11,7 @@
     <x-filters.panel
         :fields="[
             ['label' => 'Search', 'name' => 'search', 'type' => 'text', 'value' => $filters['search'] ?? '', 'placeholder' => 'Event or organizer', 'class' => 'lg:col-span-2'],
+            ['label' => 'Island Type', 'name' => 'island_type', 'type' => 'select', 'options' => $islandTypeOptions, 'value' => $filters['island_type'] ?? ''],
             ['label' => 'Date From', 'name' => 'date_from', 'type' => 'date', 'value' => $filters['date_from'] ?? ''],
             ['label' => 'Date To', 'name' => 'date_to', 'type' => 'date', 'value' => $filters['date_to'] ?? ''],
             [

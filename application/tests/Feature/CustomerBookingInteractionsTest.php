@@ -37,7 +37,8 @@ class CustomerBookingInteractionsTest extends TestCase
         parent::setUp();
 
         Storage::fake('local');
-        $this->app->instance('dompdf.wrapper', new class {
+        $this->app->instance('dompdf.wrapper', new class
+        {
             public function loadView(string $view, array $data = []): self
             {
                 return $this;
@@ -223,6 +224,8 @@ class CustomerBookingInteractionsTest extends TestCase
 
     public function test_customer_can_complete_full_beach_event_booking_lifecycle(): void
     {
+        $this->createConfirmedHotelStay(now()->addDays(7), now()->addDays(9));
+
         $eventDate = now()->addDays(8)->toDateString();
 
         $event = BeachEvent::create([
