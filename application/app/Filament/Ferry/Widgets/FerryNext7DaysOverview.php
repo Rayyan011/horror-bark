@@ -2,58 +2,60 @@
 
 namespace App\Filament\Ferry\Widgets;
 
+use App\Filament\Widgets\Concerns\HasDashboardDateRange;
 use App\Models\FerryBooking;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Carbon;
 
 class FerryNext7DaysOverview extends StatsOverviewWidget
 {
+    use HasDashboardDateRange;
+
     protected static ?int $sort = -1;
 
-    protected ?string $heading = 'Next 7 Days';
+    protected ?string $heading = 'Selected Date Range';
 
     protected function getStats(): array
     {
         $ownerId = auth()->id();
-        $todayStart = Carbon::now()->startOfDay();
-        $tomorrowStart = $todayStart->copy()->addDay();
-        $weekEnd = $todayStart->copy()->addDays(7);
+        [$rangeStart, $rangeEnd] = $this->getDashboardDateRange();
+        [$firstDayStart, $firstDayEnd] = $this->getFirstDashboardDateRange();
+        $rangeLabel = $this->getDashboardDateRangeLabel();
 
         $baseQuery = FerryBooking::query()
             ->whereHas('ferry', fn ($query) => $query->where('user_id', $ownerId));
 
-        $todayBookings = (clone $baseQuery)
+        $firstDayBookings = (clone $baseQuery)
             ->where('status', '!=', 'canceled')
-            ->where('booking_time', '>=', $todayStart)
-            ->where('booking_time', '<', $tomorrowStart)
+            ->where('booking_time', '>=', $firstDayStart)
+            ->where('booking_time', '<', $firstDayEnd)
             ->count();
 
-        $nextWeekBookings = (clone $baseQuery)
+        $rangeBookings = (clone $baseQuery)
             ->where('status', '!=', 'canceled')
-            ->where('booking_time', '>=', $todayStart)
-            ->where('booking_time', '<', $weekEnd)
+            ->where('booking_time', '>=', $rangeStart)
+            ->where('booking_time', '<', $rangeEnd)
             ->count();
 
         $pendingApprovals = (clone $baseQuery)
             ->where('status', 'pending')
-            ->where('booking_time', '>=', $todayStart)
-            ->where('booking_time', '<', $weekEnd)
+            ->where('booking_time', '>=', $rangeStart)
+            ->where('booking_time', '<', $rangeEnd)
             ->count();
 
         $cancellations = (clone $baseQuery)
             ->where('status', 'canceled')
-            ->where('booking_time', '>=', $todayStart)
-            ->where('booking_time', '<', $weekEnd)
+            ->where('booking_time', '>=', $rangeStart)
+            ->where('booking_time', '<', $rangeEnd)
             ->count();
 
         return [
-            Stat::make('Bookings Today', number_format($todayBookings))
-                ->description('Today’s departures')
+            Stat::make('Departures First Day', number_format($firstDayBookings))
+                ->description($firstDayStart->format('M j, Y'))
                 ->descriptionIcon('heroicon-m-calendar-days')
                 ->color('primary'),
-            Stat::make('Bookings (7 Days)', number_format($nextWeekBookings))
-                ->description('Upcoming departures')
+            Stat::make('Departures In Range', number_format($rangeBookings))
+                ->description($rangeLabel)
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('info'),
             Stat::make('Pending Approvals', number_format($pendingApprovals))
@@ -61,7 +63,7 @@ class FerryNext7DaysOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),
             Stat::make('Cancellations', number_format($cancellations))
-                ->description('Next 7 days')
+                ->description($rangeLabel)
                 ->descriptionIcon('heroicon-m-x-circle')
                 ->color('danger'),
         ];

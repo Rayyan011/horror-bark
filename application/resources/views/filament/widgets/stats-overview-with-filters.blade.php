@@ -2,13 +2,13 @@
     $columns = $this->getColumns();
     $heading = $this->getHeading();
     $description = $this->getDescription();
-    $filters = method_exists($this, 'getPeriodFilters') ? $this->getPeriodFilters() : [];
+    $rangeLabel = method_exists($this, 'getDashboardDateRangeLabel') ? $this->getDashboardDateRangeLabel() : null;
     $hasHeading = filled($heading);
     $hasDescription = filled($description);
 @endphp
 
 <x-filament-widgets::widget class="fi-wi-stats-overview grid gap-y-4">
-    @if ($hasHeading || $hasDescription || $filters)
+    @if ($hasHeading || $hasDescription || $rangeLabel)
         <div class="fi-wi-stats-overview-header flex flex-col gap-y-2 sm:flex-row sm:items-center sm:justify-between">
             <div class="grid gap-y-1">
                 @if ($hasHeading)
@@ -28,23 +28,10 @@
                 @endif
             </div>
 
-            @if ($filters)
-                <x-filament::input.wrapper
-                    inline-prefix
-                    wire:target="period"
-                    class="w-max sm:-my-2"
-                >
-                    <x-filament::input.select
-                        inline-prefix
-                        wire:model.live="period"
-                    >
-                        @foreach ($filters as $value => $label)
-                            <option value="{{ $value }}">
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </x-filament::input.select>
-                </x-filament::input.wrapper>
+            @if ($rangeLabel)
+                <div class="w-max rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 dark:border-white/10 dark:text-gray-300">
+                    Range: {{ $rangeLabel }}
+                </div>
             @endif
         </div>
     @endif

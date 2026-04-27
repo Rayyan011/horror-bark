@@ -2,43 +2,22 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Widgets\Concerns\HasDashboardDateRange;
 use Filament\Widgets\StatsOverviewWidget;
 use Illuminate\Support\Carbon;
 
 abstract class PeriodStatsOverviewWidget extends StatsOverviewWidget
 {
-    public string $period = 'this_month';
+    use HasDashboardDateRange;
 
     protected static string $view = 'filament.widgets.stats-overview-with-filters';
-
-    protected function getPeriodFilters(): array
-    {
-        return [
-            'today' => 'Today',
-            '7d' => 'Last 7 days',
-            '30d' => 'Last 30 days',
-            'this_month' => 'This month',
-        ];
-    }
-
-    public function updatedPeriod(): void
-    {
-        $this->cachedStats = null;
-    }
 
     /**
      * @return array{0: Carbon, 1: Carbon}
      */
     protected function getPeriodRange(): array
     {
-        $now = Carbon::now();
-
-        return match ($this->period) {
-            'today' => [$now->copy()->startOfDay(), $now->copy()->addDay()->startOfDay()],
-            '7d' => [$now->copy()->subDays(6)->startOfDay(), $now->copy()->addDay()->startOfDay()],
-            '30d' => [$now->copy()->subDays(29)->startOfDay(), $now->copy()->addDay()->startOfDay()],
-            default => [$now->copy()->startOfMonth(), $now->copy()->addMonth()->startOfMonth()],
-        };
+        return $this->getDashboardDateRange();
     }
 
     /**
@@ -46,20 +25,7 @@ abstract class PeriodStatsOverviewWidget extends StatsOverviewWidget
      */
     protected function getPreviousPeriodRange(): array
     {
-        [$start, $end] = $this->getPeriodRange();
-
-        if ($this->period === 'this_month') {
-            $prevEnd = $start->copy();
-            $prevStart = $start->copy()->subMonth()->startOfMonth();
-
-            return [$prevStart, $prevEnd];
-        }
-
-        $seconds = $end->diffInSeconds($start);
-        $prevEnd = $start->copy();
-        $prevStart = $start->copy()->subSeconds($seconds);
-
-        return [$prevStart, $prevEnd];
+        return $this->getPreviousDashboardDateRange();
     }
 
     /**

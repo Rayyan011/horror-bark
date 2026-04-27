@@ -323,6 +323,81 @@ class IslandAccessBookingRulesTest extends TestCase
         $blocked->assertSessionHasErrors('booking_time');
     }
 
+    public function test_horror_island_ferry_allows_checkout_day_departure(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $horrorIsland = $this->createIsland('Horror', 'Horror-Island');
+
+        $ferry = Ferry::create([
+            'user_id' => $owner->id,
+            'name' => 'Checkout Ferry',
+            'price' => 40,
+            'max_capacity' => 100,
+            'max_booking_quantity' => 5,
+            'island_id' => $horrorIsland->id,
+        ]);
+
+        $checkoutDay = now()->addDays(5)->startOfDay();
+        $bookingAt = $checkoutDay->copy()->setTime(16, 0);
+
+        $this->createHotelStay(
+            $user,
+            $checkoutDay->copy()->subDays(2),
+            $checkoutDay,
+            'confirmed',
+        );
+
+        $response = $this->actingAs($user)->post(route('bookings.ferries.store', $ferry), [
+            'booking_time' => $bookingAt->format('Y-m-d H:i:s'),
+            'quantity' => 1,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('ferry_bookings', [
+            'user_id' => $user->id,
+            'ferry_id' => $ferry->id,
+            'status' => 'confirmed',
+        ]);
+    }
+
+    public function test_ride_booking_still_excludes_checkout_day(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $horrorIsland = $this->createIsland('Horror', 'Horror-Island');
+
+        $ride = Ride::create([
+            'user_id' => $owner->id,
+            'island_id' => $horrorIsland->id,
+            'name' => 'Checkout Coaster',
+            'price' => 25,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+            'max_capacity' => 80,
+            'max_booking_quantity' => 4,
+        ]);
+
+        $checkoutDay = now()->addDays(5)->startOfDay();
+        $bookingAt = $checkoutDay->copy()->setTime(9, 0);
+
+        $this->createHotelStay(
+            $user,
+            $checkoutDay->copy()->subDays(2),
+            $checkoutDay,
+            'confirmed',
+        );
+
+        $response = $this->actingAs($user)->post(route('bookings.rides.store', $ride), [
+            'booking_time' => $bookingAt->format('Y-m-d H:i:s'),
+            'quantity' => 1,
+        ]);
+
+        $response->assertSessionHasErrors('booking_time');
+        $this->assertDatabaseCount('ride_bookings', 0);
+    }
+
     private function createIsland(string $name, string $type): Island
     {
         return Island::create([

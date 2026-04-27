@@ -235,7 +235,7 @@ class BookingLifecycleService
 
         if (
             $this->islandAccessService->ferryRequiresHotel($ferry)
-            && ! $this->islandAccessService->hasConfirmedHotelStayAt($actor, $bookingTime)
+            && ! $this->islandAccessService->hasConfirmedHotelStayForFerryAt($actor, $bookingTime)
         ) {
             throw ValidationException::withMessages([
                 'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,

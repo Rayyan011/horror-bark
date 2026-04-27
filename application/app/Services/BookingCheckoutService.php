@@ -117,7 +117,7 @@ class BookingCheckoutService
 
         if (
             $this->islandAccessService->ferryRequiresHotel($ferry)
-            && ! $this->islandAccessService->hasConfirmedHotelStayAt($user, $bookingTime)
+            && ! $this->islandAccessService->hasConfirmedHotelStayForFerryAt($user, $bookingTime)
         ) {
             throw ValidationException::withMessages([
                 'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,

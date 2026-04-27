@@ -19,6 +19,8 @@ A valid stay for hotel-gated bookings must satisfy all of:
 - `start_date <= booking_datetime`
 - `end_date > booking_datetime`
 
+For Horror-Island ferry bookings only, the hotel stay also covers the checkout date. Ferry bookings are still restricted to whole-hour departures between 09:00 and 16:00, so a confirmed stay ending on the selected date allows a checkout-day ferry in that window.
+
 If no valid stay exists for a hotel-gated booking, booking is blocked with:
 `A confirmed hotel stay is required before booking this activity.`
 

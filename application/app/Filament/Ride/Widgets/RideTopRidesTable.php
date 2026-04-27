@@ -2,26 +2,27 @@
 
 namespace App\Filament\Ride\Widgets;
 
+use App\Filament\Widgets\Concerns\HasDashboardDateRange;
 use App\Models\RideBooking;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
-use Illuminate\Support\Carbon;
 
 class RideTopRidesTable extends TableWidget
 {
+    use HasDashboardDateRange;
+
     protected static ?int $sort = 4;
 
     protected function getTableHeading(): ?string
     {
-        return 'Top Rides (This month)';
+        return 'Top Rides (Selected Range)';
     }
 
     public function table(Table $table): Table
     {
         $ownerId = auth()->id();
-        $start = Carbon::now()->startOfMonth();
-        $end = Carbon::now()->addMonth()->startOfMonth();
+        [$start, $end] = $this->getDashboardDateRange();
 
         return $table
             ->query(

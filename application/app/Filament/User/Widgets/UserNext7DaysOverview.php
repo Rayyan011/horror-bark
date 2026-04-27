@@ -2,6 +2,7 @@
 
 namespace App\Filament\User\Widgets;
 
+use App\Filament\Widgets\Concerns\HasDashboardDateRange;
 use App\Models\FerryBooking;
 use App\Models\GameBooking;
 use App\Models\HotelBooking;
@@ -12,29 +13,31 @@ use Illuminate\Support\Carbon;
 
 class UserNext7DaysOverview extends StatsOverviewWidget
 {
+    use HasDashboardDateRange;
+
     protected static ?int $sort = -1;
 
-    protected ?string $heading = 'Next 7 Days';
+    protected ?string $heading = 'Selected Date Range';
 
     protected function getStats(): array
     {
         $userId = auth()->id();
-        $todayStart = Carbon::now()->startOfDay();
-        $tomorrowStart = $todayStart->copy()->addDay();
-        $weekEnd = $todayStart->copy()->addDays(7);
+        [$rangeStart, $rangeEnd] = $this->getDashboardDateRange();
+        [$firstDayStart, $firstDayEnd] = $this->getFirstDashboardDateRange();
+        $rangeLabel = $this->getDashboardDateRangeLabel();
 
-        $todayBookings = $this->countBookingsInRange($userId, $todayStart, $tomorrowStart);
-        $nextWeekBookings = $this->countBookingsInRange($userId, $todayStart, $weekEnd);
-        $pendingApprovals = $this->countBookingsInRange($userId, $todayStart, $weekEnd, status: 'pending');
-        $cancellations = $this->countBookingsInRange($userId, $todayStart, $weekEnd, status: 'canceled');
+        $firstDayBookings = $this->countBookingsInRange($userId, $firstDayStart, $firstDayEnd);
+        $rangeBookings = $this->countBookingsInRange($userId, $rangeStart, $rangeEnd);
+        $pendingApprovals = $this->countBookingsInRange($userId, $rangeStart, $rangeEnd, status: 'pending');
+        $cancellations = $this->countBookingsInRange($userId, $rangeStart, $rangeEnd, status: 'canceled');
 
         return [
-            Stat::make('Bookings Today', number_format($todayBookings))
-                ->description('Today’s schedule')
+            Stat::make('Bookings First Day', number_format($firstDayBookings))
+                ->description($firstDayStart->format('M j, Y'))
                 ->descriptionIcon('heroicon-m-calendar-days')
                 ->color('primary'),
-            Stat::make('Bookings (7 Days)', number_format($nextWeekBookings))
-                ->description('Upcoming bookings')
+            Stat::make('Bookings In Range', number_format($rangeBookings))
+                ->description($rangeLabel)
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('info'),
             Stat::make('Pending Approvals', number_format($pendingApprovals))
@@ -42,7 +45,7 @@ class UserNext7DaysOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),
             Stat::make('Cancellations', number_format($cancellations))
-                ->description('Next 7 days')
+                ->description($rangeLabel)
                 ->descriptionIcon('heroicon-m-x-circle')
                 ->color('danger'),
         ];

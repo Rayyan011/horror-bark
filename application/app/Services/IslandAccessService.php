@@ -48,6 +48,16 @@ class IslandAccessService
             ->exists();
     }
 
+    public function hasConfirmedHotelStayForFerryAt(User $user, Carbon $ferryAt): bool
+    {
+        return HotelBooking::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'confirmed')
+            ->where('start_date', '<=', $ferryAt)
+            ->whereDate('end_date', '>=', $ferryAt->toDateString())
+            ->exists();
+    }
+
     private function isHorrorIsland(?string $type): bool
     {
         return $type === self::HORROR_ISLAND;
