@@ -1,0 +1,37 @@
+# Production overlay for horror-bark.
+# Adds Coolify/Traefik integration on top of docker-compose.yml.
+#
+# Deploy on the server with:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Local development uses plain `docker compose up` (base file only).
+
+services:
+  nginx:
+    restart: unless-stopped
+    networks:
+      - internal
+      - coolify
+    ports: !reset []
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.horrorbark-http.rule=Host(`horrorbark.rayyanameez.com`)"
+      - "traefik.http.routers.horrorbark-http.entrypoints=http"
+      - "traefik.http.routers.horrorbark-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.horrorbark-http.service=horrorbark"
+      - "traefik.http.routers.horrorbark-https.rule=Host(`horrorbark.rayyanameez.com`)"
+      - "traefik.http.routers.horrorbark-https.entrypoints=https"
+      - "traefik.http.routers.horrorbark-https.tls=true"
+      - "traefik.http.routers.horrorbark-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.horrorbark-https.service=horrorbark"
+      - "traefik.http.services.horrorbark.loadbalancer.server.port=80"
+
+  php:
+    restart: unless-stopped
+
+  mysql:
+    restart: unless-stopped
+
+networks:
+  coolify:
+    external: true

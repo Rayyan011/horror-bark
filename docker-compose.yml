@@ -3,42 +3,43 @@ services:
     build:
       context: .
       dockerfile: nginx/Dockerfile
-    ports: 
-      - "8080:80"
+    container_name: horrorbark-nginx
+    depends_on:
+      - php
     networks:
       - internal
+    ports:
+      - "8081:80"
     volumes:
       - ./application/:/var/www/html/
       - ./logs/nginx:/var/log/nginx/
-    container_name: horrorbark-nginx
+
   php:
     build:
       context: .
       dockerfile: php/Dockerfile
+    container_name: horrorbark-php
+    expose:
+      - "9000"
     networks:
       - internal
     volumes:
       - ./application/:/var/www/html/
-      - ./logs/php.log:/var/log/fpm-php.www.log
-    container_name: horrorbark-php
-    expose:
-      - "9000"
+
   mysql:
-    container_name: horrorbark-db
-    restart: always
-    image: mysql:latest
+    image: mysql:8.0
+    container_name: db
     platform: linux/x86_64
-    ports:
-     - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_PASSWORD: "root"
       MYSQL_DATABASE: "horrorbark"
-      MYSQL_USER: 'db_user'
-      MYSQL_PASSWORD: 'db_password'
-    volumes:
-      - db-data:/var/lib/mysql
+      MYSQL_USER: "db_user"
+      MYSQL_PASSWORD: "db_password"
     networks:
       - internal
+    volumes:
+      - db-data:/var/lib/mysql
+
 networks:
   internal:
     driver: bridge
