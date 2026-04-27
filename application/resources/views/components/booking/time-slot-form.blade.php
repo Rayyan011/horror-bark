@@ -52,8 +52,12 @@
     }
 
     $resolvedDateOptions = $dateOptions ?: [];
-    $defaultDate = $oldBookingDate ?: ($dateValue ?: (count($resolvedDateOptions) === 1 ? $resolvedDateOptions[0]['value'] : ''));
-    $resolvedDateMin = $dateMin ?? now()->toDateString();
+    $firstDateOption = $resolvedDateOptions[0]['value'] ?? null;
+    $lastDateOption = count($resolvedDateOptions) > 0 ? $resolvedDateOptions[count($resolvedDateOptions) - 1]['value'] : null;
+    $defaultDate = $oldBookingDate ?: ($dateValue ?: ($firstDateOption ?: ''));
+    $baseDateMin = $dateMin ?? now()->toDateString();
+    $resolvedDateMin = $firstDateOption ? max($baseDateMin, $firstDateOption) : $baseDateMin;
+    $resolvedDateMax = $lastDateOption && $dateMax ? min($lastDateOption, $dateMax) : ($lastDateOption ?: $dateMax);
     $currentDate = now()->toDateString();
     $currentTime = now()->format('H:i');
     $bookingTimeError = $showFieldErrors
@@ -75,7 +79,7 @@
         requiresHotel: @js((bool) $requiresHotel),
         blocked: @js((bool) $disabled),
         dateMin: @js($resolvedDateMin),
-        dateMax: @js($dateMax),
+        dateMax: @js($resolvedDateMax),
         currentDate: @js($currentDate),
         currentTime: @js($currentTime),
         isInsideDateBounds(value) {
@@ -142,34 +146,18 @@
         <div class="grid gap-3 sm:grid-cols-2">
             <div class="grid gap-2">
                 <label class="catalog-filter-label" for="{{ $idPrefix }}_date">{{ $dateLabel }}</label>
-                @if (count($resolvedDateOptions) > 0)
-                    <select
-                        id="{{ $idPrefix }}_date"
-                        name="{{ $dateFieldName }}"
-                        x-model="date"
-                        :disabled="blocked"
-                        required
-                        class="catalog-filter-control w-full border px-3 py-2 {{ $bookingTimeError ? 'border-rose-500' : 'border-primary-light/30' }}"
-                    >
-                        <option value="">Select date</option>
-                        @foreach ($resolvedDateOptions as $option)
-                            <option value="{{ $option['value'] }}" @selected($defaultDate === $option['value'])>{{ $option['label'] }}</option>
-                        @endforeach
-                    </select>
-                @else
-                    <input
-                        id="{{ $idPrefix }}_date"
-                        name="{{ $dateFieldName }}"
-                        type="date"
-                        min="{{ $resolvedDateMin }}"
-                        @if ($dateMax) max="{{ $dateMax }}" @endif
-                        x-model="date"
-                        value="{{ $defaultDate }}"
-                        :disabled="blocked"
-                        required
-                        class="catalog-filter-control w-full border px-3 py-2 {{ $bookingTimeError ? 'border-rose-500' : 'border-primary-light/30' }}"
-                    />
-                @endif
+                <input
+                    id="{{ $idPrefix }}_date"
+                    name="{{ $dateFieldName }}"
+                    type="date"
+                    min="{{ $resolvedDateMin }}"
+                    @if ($resolvedDateMax) max="{{ $resolvedDateMax }}" @endif
+                    x-model="date"
+                    value="{{ $defaultDate }}"
+                    :disabled="blocked"
+                    required
+                    class="catalog-filter-control w-full border px-3 py-2 {{ $bookingTimeError ? 'border-rose-500' : 'border-primary-light/30' }}"
+                />
             </div>
 
             <div class="grid gap-2">

@@ -177,6 +177,8 @@ class CatalogFiltersTest extends TestCase
         $listing->assertOk();
         $listing->assertDontSee('type="datetime-local"', false);
         $listing->assertSee('id="ferry_'.$picnicFerry->id.'_date"', false);
+        $this->assertMatchesRegularExpression('/<input\s+[^>]*id="ferry_'.$picnicFerry->id.'_date"[^>]*name="_booking_date"[^>]*type="date"/', $listing->getContent());
+        $this->assertMatchesRegularExpression('/<input\s+[^>]*id="ferry_'.$horrorFerry->id.'_date"[^>]*name="_booking_date"[^>]*type="date"/', $listing->getContent());
         $listing->assertSee('id="ferry_'.$picnicFerry->id.'_time"', false);
         $listing->assertSee('value="09:00"', false);
         $listing->assertSee('value="16:00"', false);
@@ -306,9 +308,11 @@ class CatalogFiltersTest extends TestCase
         $response->assertOk();
         $response->assertSee('id="ride_'.$ride->id.'_date"', false);
         $response->assertSee('id="game_'.$game->id.'_date"', false);
+        $this->assertMatchesRegularExpression('/<input\s+[^>]*id="ride_'.$ride->id.'_date"[^>]*name="_booking_date"[^>]*type="date"/', $response->getContent());
+        $this->assertMatchesRegularExpression('/<input\s+[^>]*id="game_'.$game->id.'_date"[^>]*name="_booking_date"[^>]*type="date"/', $response->getContent());
         $response->assertSee('value="'.$stayStart->toDateString().'"', false);
-        $response->assertSee('value="'.$stayStart->copy()->addDay()->toDateString().'"', false);
-        $response->assertDontSee('value="'.$stayEnd->toDateString().'"', false);
+        $response->assertSee($stayStart->format('M j, Y').' - '.$stayEnd->copy()->subDay()->format('M j, Y'));
+        $response->assertSee('max="'.$stayEnd->copy()->subDay()->toDateString().'"', false);
         $response->assertSee('value="09:00"', false);
         $response->assertSee('value="17:00"', false);
         $response->assertDontSee('type="datetime-local"', false);
@@ -470,7 +474,10 @@ class CatalogFiltersTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('id="beach_event_'.$event->id.'_date"', false);
-        $response->assertSee('value="'.$eventDate.'" selected', false);
+        $this->assertMatchesRegularExpression('/<input\s+[^>]*id="beach_event_'.$event->id.'_date"[^>]*name="_booking_date"[^>]*type="date"/', $response->getContent());
+        $response->assertSee('min="'.$eventDate.'"', false);
+        $response->assertSee('max="'.$eventDate.'"', false);
+        $response->assertSee('value="'.$eventDate.'"', false);
         $response->assertSee('value="19:00"', false);
         $response->assertDontSee('type="datetime-local"', false);
         $response->assertDontSee('Book a confirmed hotel stay covering this event date before booking.');
