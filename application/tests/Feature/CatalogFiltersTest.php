@@ -6,6 +6,7 @@ use App\Models\BeachEvent;
 use App\Models\Ferry;
 use App\Models\Game;
 use App\Models\Hotel;
+use App\Models\HotelBooking;
 use App\Models\Island;
 use App\Models\Ride;
 use App\Models\Room;
@@ -132,7 +133,7 @@ class CatalogFiltersTest extends TestCase
         $typeFiltered->assertSee('value="'.IslandAccessService::PICNIC_ISLAND.'" selected', false);
     }
 
-    public function test_ferry_booking_form_uses_whole_hour_steps_and_scoped_validation_errors(): void
+    public function test_ferry_booking_form_uses_rule_aware_date_and_time_controls_with_scoped_errors(): void
     {
         $user = User::factory()->create();
         $owner = User::factory()->create();
@@ -174,7 +175,12 @@ class CatalogFiltersTest extends TestCase
         $listing = $this->actingAs($user)->get(route('ferries.index'));
 
         $listing->assertOk();
-        $listing->assertSee('step="3600"', false);
+        $listing->assertDontSee('type="datetime-local"', false);
+        $listing->assertSee('id="ferry_'.$picnicFerry->id.'_date"', false);
+        $listing->assertSee('id="ferry_'.$picnicFerry->id.'_time"', false);
+        $listing->assertSee('value="09:00"', false);
+        $listing->assertSee('value="16:00"', false);
+        $listing->assertSee('Book a confirmed hotel stay before booking this Horror Island ferry.');
         $listing->assertSee('name="_booking_form_id" value="ferry_'.$picnicFerry->id.'"', false);
 
         $invalidTime = now()->addDay()->setTime(9, 15)->format('Y-m-d\TH:i');
@@ -192,11 +198,11 @@ class CatalogFiltersTest extends TestCase
         $content = $response->getContent();
 
         $response->assertOk();
-        $this->assertSame(1, substr_count($content, 'border-rose-500'));
-        $this->assertStringContainsString('id="ferry_'.$picnicFerry->id.'_datetime"', $content);
-        $this->assertStringContainsString('value="'.$invalidTime.'"', $content);
-        $this->assertStringContainsString('id="ferry_'.$horrorFerry->id.'_datetime"', $content);
-        $this->assertStringNotContainsString('id="ferry_'.$horrorFerry->id.'_datetime" name="booking_time" type="datetime-local" step="3600" value="'.$invalidTime.'"', $content);
+        $this->assertStringContainsString('Ferry bookings must start on the hour between 9:00 and 16:00.', $content);
+        $this->assertStringNotContainsString('The booking time field is required.', $content);
+        $this->assertStringContainsString('id="ferry_'.$picnicFerry->id.'_date"', $content);
+        $this->assertStringContainsString('id="ferry_'.$horrorFerry->id.'_date"', $content);
+        $this->assertStringNotContainsString('id="ferry_'.$horrorFerry->id.'_date" name="_booking_date" type="date" value="'.now()->addDay()->toDateString().'"', $content);
     }
 
     public function test_themepark_combines_rides_and_games_and_uses_section_filter(): void
@@ -252,6 +258,60 @@ class CatalogFiltersTest extends TestCase
         $gamesOnly->assertOk();
         $gamesOnly->assertDontSee('Nocturne Drop');
         $gamesOnly->assertSee('Midnight Draw');
+    }
+
+    public function test_themepark_booking_forms_use_hotel_stay_date_options_for_rides_and_games(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $island = Island::create([
+            'name' => 'Horror Island',
+            'type' => IslandAccessService::HORROR_ISLAND,
+            'description' => 'Horror',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+
+        $ride = Ride::create([
+            'user_id' => $owner->id,
+            'island_id' => $island->id,
+            'name' => 'Velvet Spiral',
+            'price' => 210,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+            'max_capacity' => 20,
+            'max_booking_quantity' => 4,
+        ]);
+
+        $game = Game::create([
+            'user_id' => $owner->id,
+            'island_id' => $island->id,
+            'name' => 'Lantern Guess',
+            'price' => 55,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+            'max_capacity' => 18,
+            'max_booking_quantity' => 3,
+        ]);
+
+        $stayStart = now()->addDays(3)->startOfDay();
+        $stayEnd = now()->addDays(5)->startOfDay();
+        $this->createConfirmedHotelStay($user, $stayStart, $stayEnd);
+
+        $response = $this->actingAs($user)->get(route('themepark.index'));
+
+        $response->assertOk();
+        $response->assertSee('id="ride_'.$ride->id.'_date"', false);
+        $response->assertSee('id="game_'.$game->id.'_date"', false);
+        $response->assertSee('value="'.$stayStart->toDateString().'"', false);
+        $response->assertSee('value="'.$stayStart->copy()->addDay()->toDateString().'"', false);
+        $response->assertDontSee('value="'.$stayEnd->toDateString().'"', false);
+        $response->assertSee('value="09:00"', false);
+        $response->assertSee('value="17:00"', false);
+        $response->assertDontSee('type="datetime-local"', false);
     }
 
     public function test_themepark_filters_by_island_type(): void
@@ -371,5 +431,85 @@ class CatalogFiltersTest extends TestCase
         $response->assertDontSee('Manor Masquerade');
         $response->assertSee('Moonlit Picnic');
         $response->assertSee('value="'.IslandAccessService::PICNIC_ISLAND.'" selected', false);
+    }
+
+    public function test_beach_event_booking_form_uses_the_event_date_only_when_hotel_stay_covers_it(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $picnicIsland = Island::create([
+            'name' => 'Picnic Island',
+            'type' => IslandAccessService::PICNIC_ISLAND,
+            'description' => 'Picnic',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+        $eventDate = now()->addDays(4)->toDateString();
+
+        $event = BeachEvent::create([
+            'user_id' => $owner->id,
+            'island_id' => $picnicIsland->id,
+            'name' => 'Moonlit Picnic',
+            'event_date' => $eventDate,
+            'price' => 70,
+            'max_capacity' => 80,
+            'max_booking_quantity' => 4,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+
+        $this->createConfirmedHotelStay(
+            $user,
+            now()->addDays(3)->startOfDay(),
+            now()->addDays(5)->startOfDay(),
+        );
+
+        $response = $this->actingAs($user)->get(route('beach-events.index'));
+
+        $response->assertOk();
+        $response->assertSee('id="beach_event_'.$event->id.'_date"', false);
+        $response->assertSee('value="'.$eventDate.'" selected', false);
+        $response->assertSee('value="19:00"', false);
+        $response->assertDontSee('type="datetime-local"', false);
+        $response->assertDontSee('Book a confirmed hotel stay covering this event date before booking.');
+
+        $blocked = $this->actingAs(User::factory()->create())->get(route('beach-events.index'));
+
+        $blocked->assertOk();
+        $blocked->assertSee('Book a confirmed hotel stay covering this event date before booking.');
+    }
+
+    private function createConfirmedHotelStay(User $user, \Carbon\CarbonInterface $startDate, \Carbon\CarbonInterface $endDate): HotelBooking
+    {
+        $hotelOwner = User::factory()->create();
+        $hotel = Hotel::create([
+            'user_id' => $hotelOwner->id,
+            'name' => 'Access Hotel',
+            'location' => 'Manor Ward',
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+        ]);
+
+        $room = Room::create([
+            'hotel_id' => $hotel->id,
+            'room_number' => 'AX-01',
+            'price' => 120,
+            'status' => 'available',
+            'max_occupancy' => 2,
+            'images' => [],
+        ]);
+
+        return HotelBooking::create([
+            'user_id' => $user->id,
+            'room_id' => $room->id,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'quantity' => 1,
+            'total_price' => 240,
+            'status' => 'confirmed',
+        ]);
     }
 }

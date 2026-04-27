@@ -123,6 +123,15 @@
         @apply bg-background-dark/90 font-serif text-sm tracking-[0.03em] text-moonlight placeholder:text-primary-light/60 focus:border-primary-light focus:outline-none;
     }
 
+    select.catalog-filter-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8L10 12L14 8' stroke='%23d1d1d4' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1rem 1rem;
+        padding-right: 2.5rem;
+    }
+
     .catalog-range-summary {
         @apply flex items-center justify-between gap-3;
     }

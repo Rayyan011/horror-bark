@@ -60,6 +60,39 @@ class IslandAccessBookingRulesTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors('booking_time');
+        $response->assertSessionHasErrors([
+            'booking_time' => 'A confirmed hotel stay is required before booking this Horror Island ferry.',
+        ]);
+        $this->assertDatabaseCount('ferry_bookings', 0);
+    }
+
+    public function test_horror_ferry_outside_confirmed_stay_reports_eligible_dates(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $horrorIsland = $this->createIsland('Horror', 'Horror-Island');
+
+        $ferry = Ferry::create([
+            'user_id' => $owner->id,
+            'name' => 'Horror Transfer',
+            'price' => 40,
+            'max_capacity' => 100,
+            'max_booking_quantity' => 5,
+            'island_id' => $horrorIsland->id,
+        ]);
+
+        $stayStart = now()->addDays(2)->startOfDay();
+        $stayEnd = now()->addDays(4)->startOfDay();
+        $this->createHotelStay($user, $stayStart, $stayEnd, 'confirmed');
+
+        $response = $this->actingAs($user)->post(route('bookings.ferries.store', $ferry), [
+            'booking_time' => now()->addDays(8)->setTime(10, 0)->format('Y-m-d H:i:s'),
+            'quantity' => 2,
+        ]);
+
+        $response->assertSessionHasErrors([
+            'booking_time' => 'Choose a ferry time during your confirmed hotel stay: '.$stayStart->format('M j, Y').' - '.$stayEnd->format('M j, Y').'.',
+        ]);
         $this->assertDatabaseCount('ferry_bookings', 0);
     }
 
@@ -114,7 +147,43 @@ class IslandAccessBookingRulesTest extends TestCase
             'quantity' => 1,
         ]);
 
-        $response->assertSessionHasErrors('booking_time');
+        $response->assertSessionHasErrors([
+            'booking_time' => 'A confirmed hotel stay is required before booking this ride.',
+        ]);
+        $this->assertDatabaseCount('ride_bookings', 0);
+    }
+
+    public function test_ride_booking_outside_confirmed_stay_reports_eligible_dates(): void
+    {
+        $user = User::factory()->create();
+        $owner = User::factory()->create();
+        $horrorIsland = $this->createIsland('Horror', 'Horror-Island');
+
+        $ride = Ride::create([
+            'user_id' => $owner->id,
+            'island_id' => $horrorIsland->id,
+            'name' => 'Ghost Coaster',
+            'price' => 25,
+            'latitude' => 4.2,
+            'longitude' => 73.4,
+            'images' => [],
+            'max_capacity' => 80,
+            'max_booking_quantity' => 4,
+        ]);
+
+        $stayStart = now()->addDays(2)->startOfDay();
+        $stayEnd = now()->addDays(4)->startOfDay();
+        $this->createHotelStay($user, $stayStart, $stayEnd, 'confirmed');
+
+        $response = $this->actingAs($user)->post(route('bookings.rides.store', $ride), [
+            'booking_time' => now()->addDays(8)->setTime(9, 0)->format('Y-m-d H:i:s'),
+            'quantity' => 1,
+        ]);
+
+        $eligibleEnd = $stayEnd->copy()->subDay();
+        $response->assertSessionHasErrors([
+            'booking_time' => 'Choose a ride time during your confirmed hotel stay: '.$stayStart->format('M j, Y').' - '.$eligibleEnd->format('M j, Y').'.',
+        ]);
         $this->assertDatabaseCount('ride_bookings', 0);
     }
 
@@ -168,7 +237,9 @@ class IslandAccessBookingRulesTest extends TestCase
             'quantity' => 1,
         ]);
 
-        $response->assertSessionHasErrors('booking_time');
+        $response->assertSessionHasErrors([
+            'booking_time' => 'A confirmed hotel stay is required before booking this game.',
+        ]);
         $this->assertDatabaseCount('game_bookings', 0);
     }
 
@@ -225,7 +296,9 @@ class IslandAccessBookingRulesTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $response->assertSessionHasErrors('booking_time');
+        $response->assertSessionHasErrors([
+            'booking_time' => 'A confirmed hotel stay covering this event date is required before booking.',
+        ]);
         $this->assertDatabaseCount('beach_event_bookings', 0);
     }
 

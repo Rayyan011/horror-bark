@@ -32,27 +32,20 @@
     @endforeach
 
     @if ($mode === 'date-range')
-        <x-ui.field
-            :label="$values['start_label'] ?? 'Check-in'"
-            :name="$values['start_name'] ?? 'start_date'"
-            type="date"
-            :value="$values['start_value'] ?? null"
-            :min="$values['start_min'] ?? null"
-            :max="$values['start_max'] ?? null"
-            required
-            :id="$idPrefix . '_start'"
-            :show-error="$showFieldErrors"
-            :use-old-value="$showFieldErrors"
-        />
-        <x-ui.field
-            :label="$values['end_label'] ?? 'Check-out'"
-            :name="$values['end_name'] ?? 'end_date'"
-            type="date"
-            :value="$values['end_value'] ?? null"
-            :min="$values['end_min'] ?? null"
-            :max="$values['end_max'] ?? null"
-            required
-            :id="$idPrefix . '_end'"
+        <x-ui.date-range
+            :label="$values['range_label'] ?? 'Stay dates'"
+            :start-name="$values['start_name'] ?? 'start_date'"
+            :end-name="$values['end_name'] ?? 'end_date'"
+            :start-label="$values['start_label'] ?? 'From'"
+            :end-label="$values['end_label'] ?? 'To'"
+            :start-value="$values['start_value'] ?? null"
+            :end-value="$values['end_value'] ?? null"
+            :start-min="$values['start_min'] ?? now()->toDateString()"
+            :end-min="$values['end_min'] ?? now()->addDay()->toDateString()"
+            :start-max="$values['start_max'] ?? null"
+            :end-max="$values['end_max'] ?? null"
+            :hint="$values['range_hint'] ?? null"
+            :id-prefix="$idPrefix . '_range'"
             :show-error="$showFieldErrors"
             :use-old-value="$showFieldErrors"
         />

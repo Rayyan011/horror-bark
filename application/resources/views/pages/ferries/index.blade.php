@@ -58,11 +58,7 @@
     @else
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach ($ferries as $ferry)
-                <x-cards.ferry :ferry="$ferry" :booking-config="[
-                    'mode' => 'datetime',
-                    'rulesHint' => 'Whole hour between 9:00 and 16:00.',
-                    'submitLabel' => 'Book ferry',
-                ]" />
+                <x-cards.ferry :ferry="$ferry" :booking-config="$ferryBookingConfigs[$ferry->id] ?? []" />
             @endforeach
         </div>
 

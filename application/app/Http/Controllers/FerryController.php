@@ -8,11 +8,12 @@ use App\Services\IslandAccessService;
 use App\Support\CatalogFilterBounds;
 use App\Support\IslandTypeCatalogFilter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
 class FerryController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, IslandAccessService $islandAccessService)
     {
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:120'],
@@ -87,12 +88,56 @@ class FerryController extends Controller
         $ferries = $query->paginate(12)->withQueryString();
         $islands = Island::query()->orderBy('name')->get(['id', 'name', 'type']);
         $islandTypeOptions = IslandTypeCatalogFilter::options();
+        $hotelStayWindows = $request->user()
+            ? $islandAccessService->confirmedHotelStayWindowsForFerry($request->user())
+            : [];
+        $ferryTimeOptions = collect(range(9, 16))
+            ->map(fn (int $hour): string => sprintf('%02d:00', $hour))
+            ->all();
+        $ferryDateMin = Carbon::now()->format('H:i') >= '16:00'
+            ? Carbon::tomorrow()->toDateString()
+            : Carbon::today()->toDateString();
+        $hotelStayDateOptions = $islandAccessService->dateOptionsWithFutureSlots(
+            $islandAccessService->dateOptionsFromStayWindows($hotelStayWindows),
+            $ferryTimeOptions,
+        );
+        $ferryBookingConfigs = $ferries->getCollection()
+            ->mapWithKeys(function (Ferry $ferry) use ($ferryTimeOptions, $ferryDateMin, $hotelStayWindows, $hotelStayDateOptions, $islandAccessService): array {
+                $requiresHotel = $islandAccessService->ferryRequiresHotel($ferry);
+                $hasEligibleStay = ! $requiresHotel || count($hotelStayDateOptions) > 0;
+                $dateMax = $requiresHotel && $hasEligibleStay
+                    ? collect($hotelStayDateOptions)->max('value')
+                    : null;
+
+                return [
+                    $ferry->id => [
+                        'mode' => 'ferry-window',
+                        'requiresHotel' => $requiresHotel,
+                        'hotelStayWindows' => $requiresHotel ? $hotelStayWindows : [],
+                        'dateOptions' => $requiresHotel ? $hotelStayDateOptions : [],
+                        'dateMin' => $ferryDateMin,
+                        'dateMax' => $dateMax,
+                        'timeOptions' => $ferryTimeOptions,
+                        'disabled' => ! $hasEligibleStay,
+                        'disabledReason' => 'Book a confirmed hotel stay before booking this Horror Island ferry.',
+                        'invalidDateMessage' => $requiresHotel
+                            ? 'Choose a date during your confirmed hotel stay, including checkout day.'
+                            : 'Choose today or a future ferry date.',
+                        'futureMessage' => 'Choose a future ferry time.',
+                        'rulesHint' => $requiresHotel
+                            ? 'Choose a date during your confirmed hotel stay, including checkout day. Departures run on the hour from 09:00 to 16:00.'
+                            : 'Choose a future date. Departures run on the hour from 09:00 to 16:00.',
+                        'submitLabel' => 'Book ferry',
+                    ],
+                ];
+            })
+            ->all();
 
         $filterBounds = [
             'price' => $priceBounds,
             'capacity' => $capacityBounds,
         ];
 
-        return view('pages.ferries.index', compact('ferries', 'filters', 'islands', 'islandTypeOptions', 'filterBounds'));
+        return view('pages.ferries.index', compact('ferries', 'filters', 'islands', 'islandTypeOptions', 'filterBounds', 'ferryBookingConfigs'));
     }
 }

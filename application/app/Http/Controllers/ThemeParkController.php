@@ -16,7 +16,7 @@ use Illuminate\View\View;
 
 class ThemeParkController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, IslandAccessService $islandAccessService): View
     {
         $filters = $request->validate([
             'section' => ['nullable', Rule::in(['all', 'rides', 'games'])],
@@ -109,8 +109,36 @@ class ThemeParkController extends Controller
             'capacity' => $capacityBounds,
         ];
         $islandTypeOptions = IslandTypeCatalogFilter::options();
+        $slotTimeOptions = ['09:00', '17:00'];
+        $hotelStayWindows = $request->user()
+            ? $islandAccessService->confirmedHotelStayWindowsForActivities($request->user())
+            : [];
+        $hotelStayDateOptions = $islandAccessService->dateOptionsWithFutureSlots(
+            $islandAccessService->dateOptionsFromStayWindows($hotelStayWindows),
+            $slotTimeOptions,
+        );
+        $hasEligibleStay = count($hotelStayDateOptions) > 0;
+        $dateMax = $hasEligibleStay ? collect($hotelStayDateOptions)->max('value') : null;
+        $activityBookingConfigs = $activities->getCollection()
+            ->mapWithKeys(fn ($activity): array => [
+                $activity->catalog_type.'_'.$activity->id => [
+                    'mode' => 'hotel-gated-slot',
+                    'hotelStayWindows' => $hotelStayWindows,
+                    'dateOptions' => $hotelStayDateOptions,
+                    'dateMin' => now()->toDateString(),
+                    'dateMax' => $dateMax,
+                    'timeOptions' => $slotTimeOptions,
+                    'disabled' => ! $hasEligibleStay,
+                    'disabledReason' => 'Book a confirmed hotel stay before booking rides or games.',
+                    'invalidDateMessage' => 'Choose a date during your confirmed hotel stay.',
+                    'futureMessage' => 'Choose a future '.($activity->catalog_type === 'game' ? 'game' : 'ride').' time.',
+                    'rulesHint' => 'Choose a date during your confirmed hotel stay. Sessions are available at 09:00 or 17:00.',
+                    'submitLabel' => $activity->catalog_type === 'game' ? 'Book game' : 'Book ride',
+                ],
+            ])
+            ->all();
 
-        return view('pages.themepark.index', compact('activities', 'filters', 'filterBounds', 'islandTypeOptions'));
+        return view('pages.themepark.index', compact('activities', 'filters', 'filterBounds', 'islandTypeOptions', 'activityBookingConfigs'));
     }
 
     private function applyActivityFilters($query, array $filters, array $priceBounds, array $capacityBounds): void

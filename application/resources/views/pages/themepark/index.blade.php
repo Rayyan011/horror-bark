@@ -78,11 +78,7 @@
                     <x-cards.activity
                         :item="$activity"
                         :type="$activity->catalog_type"
-                        :booking-config="[
-                            'mode' => 'datetime',
-                            'rulesHint' => 'Only 9:00 or 17:00. Confirmed hotel stay required.',
-                            'submitLabel' => $activity->catalog_type === 'game' ? 'Book game' : 'Book ride',
-                        ]"
+                        :booking-config="$activityBookingConfigs[$activity->catalog_type . '_' . $activity->id] ?? []"
                     />
                 @endforeach
             </div>

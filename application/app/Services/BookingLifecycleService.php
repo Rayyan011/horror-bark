@@ -189,9 +189,15 @@ class BookingLifecycleService
         $startDate = Carbon::parse($changes['start_date'])->startOfDay();
         $endDate = Carbon::parse($changes['end_date'])->startOfDay();
 
+        if ($startDate->lt(Carbon::today())) {
+            throw ValidationException::withMessages([
+                'start_date' => 'Choose today or a future check-in date.',
+            ]);
+        }
+
         if ($endDate->lessThanOrEqualTo($startDate)) {
             throw ValidationException::withMessages([
-                'end_date' => 'The end date must be after the start date.',
+                'end_date' => 'Choose a check-out date after check-in.',
             ]);
         }
 
@@ -224,6 +230,12 @@ class BookingLifecycleService
         $bookingTime = Carbon::parse($changes['booking_time'])->setSecond(0);
         $hour = (int) $bookingTime->format('G');
 
+        if ($bookingTime->lte(Carbon::now())) {
+            throw ValidationException::withMessages([
+                'booking_time' => 'Choose a future ferry time.',
+            ]);
+        }
+
         if ($bookingTime->minute !== 0 || $hour < 9 || $hour > 16) {
             throw ValidationException::withMessages([
                 'booking_time' => 'Ferry bookings must start on the hour between 9:00 and 16:00.',
@@ -238,7 +250,12 @@ class BookingLifecycleService
             && ! $this->islandAccessService->hasConfirmedHotelStayForFerryAt($actor, $bookingTime)
         ) {
             throw ValidationException::withMessages([
-                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+                'booking_time' => $this->islandAccessService->hotelStayAccessError(
+                    $actor,
+                    'A confirmed hotel stay is required before booking this Horror Island ferry.',
+                    'Choose a ferry time during your confirmed hotel stay',
+                    includeCheckoutDay: true,
+                ),
             ]);
         }
 
@@ -266,6 +283,12 @@ class BookingLifecycleService
         $bookingTime = Carbon::parse($changes['booking_time'])->setSecond(0);
         $hour = (int) $bookingTime->format('G');
 
+        if ($bookingTime->lte(Carbon::now())) {
+            throw ValidationException::withMessages([
+                'booking_time' => 'Choose a future ride time.',
+            ]);
+        }
+
         if ($bookingTime->minute !== 0 || ! in_array($hour, [9, 17], true)) {
             throw ValidationException::withMessages([
                 'booking_time' => 'Ride bookings are only available at 9:00 or 17:00.',
@@ -280,7 +303,11 @@ class BookingLifecycleService
             && ! $this->islandAccessService->hasConfirmedHotelStayAt($actor, $bookingTime)
         ) {
             throw ValidationException::withMessages([
-                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+                'booking_time' => $this->islandAccessService->hotelStayAccessError(
+                    $actor,
+                    'A confirmed hotel stay is required before booking this ride.',
+                    'Choose a ride time during your confirmed hotel stay',
+                ),
             ]);
         }
 
@@ -308,6 +335,12 @@ class BookingLifecycleService
         $bookingTime = Carbon::parse($changes['booking_time'])->setSecond(0);
         $hour = (int) $bookingTime->format('G');
 
+        if ($bookingTime->lte(Carbon::now())) {
+            throw ValidationException::withMessages([
+                'booking_time' => 'Choose a future game time.',
+            ]);
+        }
+
         if ($bookingTime->minute !== 0 || ! in_array($hour, [9, 17], true)) {
             throw ValidationException::withMessages([
                 'booking_time' => 'Game bookings are only available at 9:00 or 17:00.',
@@ -322,7 +355,11 @@ class BookingLifecycleService
             && ! $this->islandAccessService->hasConfirmedHotelStayAt($actor, $bookingTime)
         ) {
             throw ValidationException::withMessages([
-                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+                'booking_time' => $this->islandAccessService->hotelStayAccessError(
+                    $actor,
+                    'A confirmed hotel stay is required before booking this game.',
+                    'Choose a game time during your confirmed hotel stay',
+                ),
             ]);
         }
 
@@ -352,6 +389,12 @@ class BookingLifecycleService
 
         $bookingDate = Carbon::parse($changes['booking_date'])->toDateString();
 
+        if (Carbon::parse($bookingDate)->lt(Carbon::today())) {
+            throw ValidationException::withMessages([
+                'booking_date' => 'Choose today or a future event date.',
+            ]);
+        }
+
         if ($bookingDate !== $beachEvent->event_date->toDateString()) {
             throw ValidationException::withMessages([
                 'booking_date' => 'Booking date must match the event date.',
@@ -360,12 +403,22 @@ class BookingLifecycleService
 
         $bookingTime = Carbon::parse($bookingDate.' '.$changes['booking_time'])->setSecond(0);
 
+        if ($bookingTime->lte(Carbon::now())) {
+            throw ValidationException::withMessages([
+                'booking_time' => 'Choose a future event time.',
+            ]);
+        }
+
         if (
             $this->islandAccessService->beachEventRequiresHotel($beachEvent)
             && ! $this->islandAccessService->hasConfirmedHotelStayAt($actor, $bookingTime)
         ) {
             throw ValidationException::withMessages([
-                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+                'booking_time' => $this->islandAccessService->hotelStayAccessError(
+                    $actor,
+                    'A confirmed hotel stay covering this event date is required before booking.',
+                    'Choose an event time during your confirmed hotel stay',
+                ),
             ]);
         }
 

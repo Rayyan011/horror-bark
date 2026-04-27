@@ -3,23 +3,24 @@
 namespace App\Filament\Hotel\Resources;
 
 use App\Filament\Hotel\Resources\HotelBookingResource\Pages;
+use App\Filament\Resources\Concerns\HasHotelBookingDateRangeFields;
 use App\Models\Hotel;
 use App\Models\HotelBooking;
 use App\Models\Room;
-use Filament\Forms;
+use Carbon\Carbon;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Hidden;
-use Carbon\Carbon;
 
 class HotelBookingResource extends Resource
 {
+    use HasHotelBookingDateRangeFields;
+
     protected static ?string $model = HotelBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -91,17 +92,7 @@ class HotelBookingResource extends Resource
                 ->afterStateUpdated($recalculatePrice)
                 ->required(),
 
-            DatePicker::make('start_date')
-                ->label('Start Date')
-                ->reactive()
-                ->afterStateUpdated($recalculatePrice)
-                ->required(),
-
-            DatePicker::make('end_date')
-                ->label('End Date')
-                ->reactive()
-                ->afterStateUpdated($recalculatePrice)
-                ->required(),
+            ...self::hotelBookingDateRangeFields($recalculatePrice),
 
             TextInput::make('total_price')
                 ->label('Total Price')
@@ -134,9 +125,9 @@ class HotelBookingResource extends Resource
             Tables\Columns\TextColumn::make('status')->sortable(),
             Tables\Columns\TextColumn::make('created_at')->dateTime()->label('Created')->sortable(),
         ])
-        ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
-        ]);
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getRelations(): array

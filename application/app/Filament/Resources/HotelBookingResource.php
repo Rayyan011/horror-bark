@@ -2,25 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HasHotelBookingDateRangeFields;
 use App\Filament\Resources\HotelBookingResource\Pages;
-use App\Filament\Resources\HotelBookingResource\RelationManagers;
 use App\Models\Hotel;
 use App\Models\HotelBooking;
 use App\Models\Room;
-use Filament\Forms;
+use Carbon\Carbon;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Carbon\Carbon;
 
 class HotelBookingResource extends Resource
 {
+    use HasHotelBookingDateRangeFields;
+
     protected static ?string $model = HotelBooking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -57,7 +55,7 @@ class HotelBookingResource extends Resource
                     return Hotel::pluck('name', 'id')->toArray();
                 })
                 ->reactive()
-                ->afterStateUpdated(fn($state, callable $set) => $set('room_id', null))
+                ->afterStateUpdated(fn ($state, callable $set) => $set('room_id', null))
                 ->dehydrated(false)
                 ->required(),
 
@@ -66,9 +64,10 @@ class HotelBookingResource extends Resource
                 ->label('Room')
                 ->options(function ($get) {
                     $hotelId = $get('hotel_id');
-                    if (!$hotelId) {
+                    if (! $hotelId) {
                         return [];
                     }
+
                     return Room::where('hotel_id', $hotelId)
                         ->pluck('room_number', 'id')
                         ->toArray();
@@ -88,19 +87,7 @@ class HotelBookingResource extends Resource
                 ->afterStateUpdated($recalculatePrice)
                 ->required(),
 
-            // Booking start date.
-            DatePicker::make('start_date')
-                ->label('Start Date')
-                ->reactive()
-                ->afterStateUpdated($recalculatePrice)
-                ->required(),
-
-            // Booking end date.
-            DatePicker::make('end_date')
-                ->label('End Date')
-                ->reactive()
-                ->afterStateUpdated($recalculatePrice)
-                ->required(),
+            ...self::hotelBookingDateRangeFields($recalculatePrice),
 
             // Total price is computed and displayed as read-only.
             TextInput::make('total_price')
@@ -114,7 +101,7 @@ class HotelBookingResource extends Resource
             Select::make('status')
                 ->label('Status')
                 ->options([
-                    'pending'   => 'Pending',
+                    'pending' => 'Pending',
                     'confirmed' => 'Confirmed',
                     'canceled' => 'Canceled',
                 ])
@@ -155,9 +142,9 @@ class HotelBookingResource extends Resource
                 ->dateTime()
                 ->sortable(),
         ])
-        ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
-        ]);
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getRelations(): array
@@ -170,9 +157,9 @@ class HotelBookingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListHotelBookings::route('/'),
+            'index' => Pages\ListHotelBookings::route('/'),
             'create' => Pages\CreateHotelBooking::route('/create'),
-            'edit'   => Pages\EditHotelBooking::route('/{record}/edit'),
+            'edit' => Pages\EditHotelBooking::route('/{record}/edit'),
         ];
     }
 }

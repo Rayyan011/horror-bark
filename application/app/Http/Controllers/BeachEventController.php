@@ -7,11 +7,12 @@ use App\Services\IslandAccessService;
 use App\Support\CatalogFilterBounds;
 use App\Support\IslandTypeCatalogFilter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
 class BeachEventController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, IslandAccessService $islandAccessService)
     {
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:120'],
@@ -101,7 +102,44 @@ class BeachEventController extends Controller
             'capacity' => $capacityBounds,
         ];
         $islandTypeOptions = IslandTypeCatalogFilter::options();
+        $eventTimeOptions = collect(range(0, 23))
+            ->map(fn (int $hour): string => sprintf('%02d:00', $hour))
+            ->all();
+        $hotelStayWindows = $request->user()
+            ? $islandAccessService->confirmedHotelStayWindowsForActivities($request->user())
+            : [];
+        $hotelStayDateOptions = $islandAccessService->dateOptionsWithFutureSlots(
+            $islandAccessService->dateOptionsFromStayWindows($hotelStayWindows),
+            $eventTimeOptions,
+        );
+        $beachEventBookingConfigs = $beachEvents->getCollection()
+            ->mapWithKeys(function (BeachEvent $event) use ($eventTimeOptions, $hotelStayWindows, $hotelStayDateOptions): array {
+                $eventDate = Carbon::parse($event->event_date)->toDateString();
+                $dateOptions = collect($hotelStayDateOptions)
+                    ->where('value', $eventDate)
+                    ->values()
+                    ->all();
+                $hasEligibleStay = count($dateOptions) > 0;
 
-        return view('pages.beach-events.index', compact('beachEvents', 'filters', 'filterBounds', 'islandTypeOptions'));
+                return [
+                    $event->id => [
+                        'mode' => 'hotel-gated-event',
+                        'hotelStayWindows' => $hotelStayWindows,
+                        'dateOptions' => $dateOptions,
+                        'dateMin' => $eventDate,
+                        'dateMax' => $eventDate,
+                        'timeOptions' => $eventTimeOptions,
+                        'disabled' => ! $hasEligibleStay,
+                        'disabledReason' => 'Book a confirmed hotel stay covering this event date before booking.',
+                        'invalidDateMessage' => 'Choose the event date during your confirmed hotel stay.',
+                        'futureMessage' => 'Choose a future event time.',
+                        'rulesHint' => 'Choose a time on the event date during your confirmed hotel stay.',
+                        'submitLabel' => 'Book event',
+                    ],
+                ];
+            })
+            ->all();
+
+        return view('pages.beach-events.index', compact('beachEvents', 'filters', 'filterBounds', 'islandTypeOptions', 'beachEventBookingConfigs'));
     }
 }

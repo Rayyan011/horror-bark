@@ -36,20 +36,46 @@
 >
     <x-slot:footer>
         @auth
-            <x-booking.form
-                :action="$route"
-                :mode="$bookingConfig['mode'] ?? 'datetime'"
-                :rules-hint="$bookingConfig['rulesHint'] ?? 'Only 9:00 or 17:00. Payment is confirmed on the next screen.'"
-                :submit-label="$submitLabel"
-                :submit-variant="$buttonVariant"
-                :quantity-config="[
-                    'label' => $quantityLabel,
-                    'min' => 1,
-                    'max' => $item->max_booking_quantity,
-                    'default' => 1,
-                ]"
-                :id-prefix="($isGame ? 'game_' : 'ride_') . $item->id"
-            />
+            @if (($bookingConfig['mode'] ?? null) === 'hotel-gated-slot')
+                <x-booking.time-slot-form
+                    :action="$route"
+                    :rules-hint="$bookingConfig['rulesHint'] ?? null"
+                    :submit-label="$submitLabel"
+                    :submit-variant="$buttonVariant"
+                    :quantity-config="[
+                        'label' => $quantityLabel,
+                        'min' => 1,
+                        'max' => $item->max_booking_quantity,
+                        'default' => 1,
+                    ]"
+                    :time-options="$bookingConfig['timeOptions'] ?? ['09:00', '17:00']"
+                    :date-options="$bookingConfig['dateOptions'] ?? []"
+                    :date-min="$bookingConfig['dateMin'] ?? null"
+                    :date-max="$bookingConfig['dateMax'] ?? null"
+                    :requires-hotel="true"
+                    :hotel-stay-windows="$bookingConfig['hotelStayWindows'] ?? []"
+                    :disabled="$bookingConfig['disabled'] ?? false"
+                    :disabled-reason="$bookingConfig['disabledReason'] ?? null"
+                    :invalid-date-message="$bookingConfig['invalidDateMessage'] ?? 'Choose a date during your confirmed hotel stay.'"
+                    :future-message="$bookingConfig['futureMessage'] ?? ($isGame ? 'Choose a future game time.' : 'Choose a future ride time.')"
+                    :id-prefix="($isGame ? 'game_' : 'ride_') . $item->id"
+                />
+            @else
+                <x-booking.form
+                    :action="$route"
+                    :mode="$bookingConfig['mode'] ?? 'datetime'"
+                    :rules-hint="$bookingConfig['rulesHint'] ?? 'Only 9:00 or 17:00. Payment is confirmed on the next screen.'"
+                    :submit-label="$submitLabel"
+                    :submit-variant="$buttonVariant"
+                    :quantity-config="[
+                        'label' => $quantityLabel,
+                        'min' => 1,
+                        'max' => $item->max_booking_quantity,
+                        'default' => 1,
+                    ]"
+                    :id-prefix="($isGame ? 'game_' : 'ride_') . $item->id"
+                />
+            @endif
         @else
             <x-ui.auth-gate-cta :login-href="route('login')" label="Log in to book" />
         @endauth

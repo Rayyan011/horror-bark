@@ -29,10 +29,13 @@ class BookingCheckoutService
     public function prepareHotel(User $user, Room $room, array $input): array
     {
         $data = Validator::make($input, [
-            'start_date' => ['required', 'date'],
+            'start_date' => ['required', 'date', 'after_or_equal:today'],
             'end_date' => ['required', 'date', 'after:start_date'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$room->max_occupancy],
             'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
+        ], [
+            'start_date.after_or_equal' => 'Choose today or a future check-in date.',
+            'end_date.after' => 'Choose a check-out date after check-in.',
         ])->validate();
 
         $startDate = Carbon::parse($data['start_date'])->startOfDay();
@@ -99,9 +102,13 @@ class BookingCheckoutService
     public function prepareFerry(User $user, Ferry $ferry, array $input): array
     {
         $data = Validator::make($input, [
-            'booking_time' => ['required', 'date'],
+            'booking_time' => ['required', 'date', 'after:now'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$ferry->max_booking_quantity],
             'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
+        ], [
+            'booking_time.required' => 'Choose a ferry date and time.',
+            'booking_time.date' => 'Choose a valid ferry date and time.',
+            'booking_time.after' => 'Choose a future ferry time.',
         ])->validate();
 
         $bookingTime = Carbon::parse($data['booking_time'])->setSecond(0);
@@ -120,7 +127,12 @@ class BookingCheckoutService
             && ! $this->islandAccessService->hasConfirmedHotelStayForFerryAt($user, $bookingTime)
         ) {
             throw ValidationException::withMessages([
-                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+                'booking_time' => $this->islandAccessService->hotelStayAccessError(
+                    $user,
+                    'A confirmed hotel stay is required before booking this Horror Island ferry.',
+                    'Choose a ferry time during your confirmed hotel stay',
+                    includeCheckoutDay: true,
+                ),
             ]);
         }
 
@@ -176,9 +188,13 @@ class BookingCheckoutService
     public function prepareRide(User $user, Ride $ride, array $input): array
     {
         $data = Validator::make($input, [
-            'booking_time' => ['required', 'date'],
+            'booking_time' => ['required', 'date', 'after:now'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$ride->max_booking_quantity],
             'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
+        ], [
+            'booking_time.required' => 'Choose a ride date and time.',
+            'booking_time.date' => 'Choose a valid ride date and time.',
+            'booking_time.after' => 'Choose a future ride time.',
         ])->validate();
 
         $bookingTime = Carbon::parse($data['booking_time'])->setSecond(0);
@@ -197,7 +213,11 @@ class BookingCheckoutService
             && ! $this->islandAccessService->hasConfirmedHotelStayAt($user, $bookingTime)
         ) {
             throw ValidationException::withMessages([
-                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+                'booking_time' => $this->islandAccessService->hotelStayAccessError(
+                    $user,
+                    'A confirmed hotel stay is required before booking this ride.',
+                    'Choose a ride time during your confirmed hotel stay',
+                ),
             ]);
         }
 
@@ -253,9 +273,13 @@ class BookingCheckoutService
     public function prepareGame(User $user, Game $game, array $input): array
     {
         $data = Validator::make($input, [
-            'booking_time' => ['required', 'date'],
+            'booking_time' => ['required', 'date', 'after:now'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$game->max_booking_quantity],
             'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
+        ], [
+            'booking_time.required' => 'Choose a game date and time.',
+            'booking_time.date' => 'Choose a valid game date and time.',
+            'booking_time.after' => 'Choose a future game time.',
         ])->validate();
 
         $bookingTime = Carbon::parse($data['booking_time'])->setSecond(0);
@@ -274,7 +298,11 @@ class BookingCheckoutService
             && ! $this->islandAccessService->hasConfirmedHotelStayAt($user, $bookingTime)
         ) {
             throw ValidationException::withMessages([
-                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+                'booking_time' => $this->islandAccessService->hotelStayAccessError(
+                    $user,
+                    'A confirmed hotel stay is required before booking this game.',
+                    'Choose a game time during your confirmed hotel stay',
+                ),
             ]);
         }
 
@@ -330,10 +358,16 @@ class BookingCheckoutService
     public function prepareBeachEvent(User $user, BeachEvent $beachEvent, array $input): array
     {
         $data = Validator::make($input, [
-            'booking_date' => ['required', 'date'],
+            'booking_date' => ['required', 'date', 'after_or_equal:today'],
             'booking_time' => ['required', 'date_format:H:i'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.$beachEvent->max_booking_quantity],
             'promotion_id' => ['nullable', 'integer', 'exists:promotions,id'],
+        ], [
+            'booking_date.required' => 'Choose an event date.',
+            'booking_date.date' => 'Choose a valid event date.',
+            'booking_date.after_or_equal' => 'Choose today or a future event date.',
+            'booking_time.required' => 'Choose an event time.',
+            'booking_time.date_format' => 'Choose a valid event time.',
         ])->validate();
 
         $bookingDate = Carbon::parse($data['booking_date'])->toDateString();
@@ -347,6 +381,12 @@ class BookingCheckoutService
 
         $bookingTime = Carbon::parse($bookingDate.' '.$data['booking_time'])->setSecond(0);
 
+        if ($bookingTime->lte(Carbon::now())) {
+            throw ValidationException::withMessages([
+                'booking_time' => 'Choose a future event time.',
+            ]);
+        }
+
         $beachEvent->loadMissing('island', 'owner');
 
         if (
@@ -354,7 +394,11 @@ class BookingCheckoutService
             && ! $this->islandAccessService->hasConfirmedHotelStayAt($user, $bookingTime)
         ) {
             throw ValidationException::withMessages([
-                'booking_time' => IslandAccessService::REQUIRED_STAY_ERROR,
+                'booking_time' => $this->islandAccessService->hotelStayAccessError(
+                    $user,
+                    'A confirmed hotel stay covering this event date is required before booking.',
+                    'Choose an event time during your confirmed hotel stay',
+                ),
             ]);
         }
 

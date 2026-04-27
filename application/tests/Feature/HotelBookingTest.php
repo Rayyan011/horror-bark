@@ -20,7 +20,8 @@ class HotelBookingTest extends TestCase
         $user = User::factory()->create();
 
         Storage::fake('local');
-        $this->app->instance('dompdf.wrapper', new class {
+        $this->app->instance('dompdf.wrapper', new class
+        {
             public function loadView(string $view, array $data = []): self
             {
                 return $this;
@@ -76,5 +77,35 @@ class HotelBookingTest extends TestCase
         $this->assertNotNull($invoice);
         $this->assertNotNull($invoice->pdf_path);
         Storage::disk('local')->assertExists($invoice->pdf_path);
+    }
+
+    public function test_customer_cannot_book_a_room_with_a_backdated_check_in(): void
+    {
+        $user = User::factory()->create();
+
+        $hotel = Hotel::create([
+            'name' => 'Nightfall Inn',
+            'location' => 'Harbor',
+            'latitude' => 0,
+            'longitude' => 0,
+            'images' => [],
+        ]);
+
+        $room = Room::create([
+            'hotel_id' => $hotel->id,
+            'room_number' => '102',
+            'price' => 120.00,
+            'status' => 'available',
+            'max_occupancy' => 2,
+        ]);
+
+        $response = $this->actingAs($user)->post(route('bookings.hotels.store', $room), [
+            'start_date' => now()->subDay()->toDateString(),
+            'end_date' => now()->addDay()->toDateString(),
+            'quantity' => 1,
+        ]);
+
+        $response->assertSessionHasErrors('start_date');
+        $this->assertDatabaseCount('hotel_bookings', 0);
     }
 }
