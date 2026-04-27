@@ -26,12 +26,6 @@ class RideQuickActionsWidget extends QuickActionsWidget
                 'icon' => 'heroicon-m-plus',
                 'color' => 'secondary',
             ],
-            [
-                'label' => 'Reports',
-                'url' => route('operator-reports.index', ['domain' => 'ride']),
-                'icon' => 'heroicon-m-chart-bar',
-                'color' => 'secondary',
-            ],
         ];
     }
 

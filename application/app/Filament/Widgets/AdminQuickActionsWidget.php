@@ -34,12 +34,6 @@ class AdminQuickActionsWidget extends QuickActionsWidget
                 'icon' => 'heroicon-m-ticket',
                 'color' => 'secondary',
             ],
-            [
-                'label' => 'Reports',
-                'url' => route('admin-reports.index'),
-                'icon' => 'heroicon-m-chart-bar',
-                'color' => 'secondary',
-            ],
         ];
     }
 

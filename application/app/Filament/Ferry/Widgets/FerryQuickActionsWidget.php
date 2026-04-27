@@ -26,12 +26,6 @@ class FerryQuickActionsWidget extends QuickActionsWidget
                 'icon' => 'heroicon-m-plus',
                 'color' => 'secondary',
             ],
-            [
-                'label' => 'Passenger Reports',
-                'url' => route('ferry-reports.index'),
-                'icon' => 'heroicon-m-document-chart-bar',
-                'color' => 'secondary',
-            ],
         ];
     }
 

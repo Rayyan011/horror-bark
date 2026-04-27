@@ -6,6 +6,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -41,6 +42,14 @@ class HotelPanelProvider extends PanelProvider
         ->discoverPages(in: app_path('Filament/Hotel/Pages'), for: 'App\\Filament\\Hotel\\Pages')
         ->pages([
             Pages\Dashboard::class,
+        ])
+        ->navigationItems([
+            NavigationItem::make('Reports')
+                ->url(fn (): string => route('operator-reports.index', ['domain' => 'hotel']))
+                ->icon('heroicon-o-chart-bar')
+                ->group('Insights')
+                ->sort(1)
+                ->isActiveWhen(fn (): bool => request()->routeIs('operator-reports.*') && request()->route('domain') === 'hotel'),
         ])
         ->discoverWidgets(in: app_path('Filament/Hotel/Widgets'), for: 'App\\Filament\\Hotel\\Widgets')
         ->widgets([

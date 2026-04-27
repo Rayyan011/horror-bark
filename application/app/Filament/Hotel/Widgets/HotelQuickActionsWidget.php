@@ -26,12 +26,6 @@ class HotelQuickActionsWidget extends QuickActionsWidget
                 'url' => url('/hotel/hotels'),
                 'icon' => 'heroicon-m-building-office',
             ],
-            [
-                'label' => 'Reports',
-                'url' => route('operator-reports.index', ['domain' => 'hotel']),
-                'icon' => 'heroicon-m-chart-bar',
-                'color' => 'secondary',
-            ],
         ];
     }
 
