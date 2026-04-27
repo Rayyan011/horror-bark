@@ -205,11 +205,11 @@ class PromotionOfferService
                 'type' => 'ferry',
                 'eyebrow' => 'Blackwater Ferry',
                 'title' => $ferry->name,
-                'subtitle' => $ferry->island?->name ?? 'Night passage',
+                'subtitle' => $ferry->location ?? $ferry->island?->name ?? 'Night passage',
                 'description' => filled($ferry->description) ? $ferry->description : 'A lantern-run crossing through black water and harbor bells.',
                 'image' => $this->resolveImage($ferry->images, HorrorGeneratedMediaCatalog::path('fallbacks', 'ferry')),
                 'meta' => [
-                    ['label' => 'Destination', 'value' => $ferry->island?->name ?? 'Coven Quay'],
+                    ['label' => 'Destination', 'value' => $ferry->location ?? $ferry->island?->name ?? 'Coven Quay'],
                     ['label' => 'Capacity', 'value' => (string) $ferry->max_capacity],
                     ['label' => 'Booking limit', 'value' => (string) $ferry->max_booking_quantity],
                 ],
@@ -246,7 +246,7 @@ class PromotionOfferService
                 'description' => filled($event->description) ? $event->description : 'A shoreline gathering arranged under silver surf and ceremonial firelight.',
                 'image' => $this->resolveImage($event->images, HorrorGeneratedMediaCatalog::path('fallbacks', 'beach-event')),
                 'meta' => [
-                    ['label' => 'Island', 'value' => $event->island?->name ?? 'Picnic Island'],
+                    ['label' => 'District', 'value' => $event->location ?? $event->island?->name ?? 'Picnic Island'],
                     ['label' => 'Organizer', 'value' => $event->owner?->name ?? 'Event host'],
                     ['label' => 'Capacity', 'value' => (string) $event->max_capacity],
                 ],

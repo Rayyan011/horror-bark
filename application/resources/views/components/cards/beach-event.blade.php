@@ -12,7 +12,7 @@
     ]"
     :meta="[
         ['label' => 'Organizer', 'value' => $event->owner->name ?? 'N/A', 'tone' => 'muted'],
-        ['label' => 'Island', 'value' => $event->island->name ?? 'Picnic Island', 'tone' => 'muted'],
+        ['label' => 'District', 'value' => $event->location ?? $event->island->name ?? 'Picnic Island', 'tone' => 'muted'],
         ['label' => 'Date', 'value' => optional($event->event_date)->format('F d, Y'), 'tone' => 'muted'],
         ['label' => 'Price', 'value' => 'MVR ' . number_format($event->price, 2), 'tone' => 'muted'],
         ['label' => 'Max Capacity', 'value' => $event->max_capacity, 'tone' => 'muted'],

@@ -5,6 +5,7 @@ namespace App\Filament\Ride\Resources;
 use App\Filament\Ride\Resources\RideResource\Pages;
 use App\Models\Ride;
 use App\Services\IslandAccessService;
+use App\Support\HorrorDistrictCatalog;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -41,7 +42,15 @@ class RideResource extends Resource
                 ->relationship('island', 'name', fn ($query) => $query->where('type', IslandAccessService::HORROR_ISLAND))
                 ->required()
                 ->searchable()
+                ->preload()
+                ->native(false)
                 ->helperText('Rides are available on Horror Island only.'),
+            Select::make('location')
+                ->label('District')
+                ->options(HorrorDistrictCatalog::horrorLocations())
+                ->searchable()
+                ->preload()
+                ->native(false),
             TextInput::make('max_capacity')->numeric()->required(),
             TextInput::make('max_booking_quantity')->numeric()->required(),
             FileUpload::make('images')
@@ -59,7 +68,7 @@ class RideResource extends Resource
             Tables\Columns\TextColumn::make('id')->sortable(),
             Tables\Columns\TextColumn::make('name')->sortable(),
             Tables\Columns\TextColumn::make('price')->sortable(),
-            Tables\Columns\TextColumn::make('island.name')->label('Island'),
+            Tables\Columns\TextColumn::make('location')->label('District'),
             Tables\Columns\TextColumn::make('max_capacity')->sortable(),
             Tables\Columns\TextColumn::make('max_booking_quantity')->sortable(),
         ]);

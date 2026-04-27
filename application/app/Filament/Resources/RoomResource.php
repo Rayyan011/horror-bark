@@ -31,6 +31,9 @@ class RoomResource extends Resource
         return $form->schema([
             Select::make('hotel_id')
                 ->relationship('hotel', 'name')
+                ->searchable()
+                ->preload()
+                ->native(false)
                 ->required(),
                 MarkdownEditor::make('description'),
                 FileUpload::make('images')

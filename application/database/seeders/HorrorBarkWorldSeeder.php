@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use App\Services\IslandAccessService;
 use App\Support\HorrorGeneratedMediaCatalog;
 use Carbon\Carbon;
@@ -9,6 +10,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Spatie\Permission\Models\Role;
 
 class HorrorBarkWorldSeeder extends Seeder
 {
@@ -34,6 +36,7 @@ class HorrorBarkWorldSeeder extends Seeder
     {
         $owners = [
             'evelyn.thorne@horrorbark.test' => 'Evelyn Thorne',
+            'the.velvets@horrorbark.test' => 'The Velvets',
             'silas.blackwood@horrorbark.test' => 'Silas Blackwood',
             'jasper.crowe@horrorbark.test' => 'Jasper Crowe',
             'ophelia.vale@horrorbark.test' => 'Ophelia Vale',
@@ -54,9 +57,36 @@ class HorrorBarkWorldSeeder extends Seeder
             );
         }
 
-        return collect(array_keys($owners))
+        $ids = collect(array_keys($owners))
             ->mapWithKeys(fn (string $email) => [$email => (int) DB::table('users')->where('email', $email)->value('id')])
             ->all();
+
+        $this->assignOwnerRoles($ids);
+
+        return $ids;
+    }
+
+    private function assignOwnerRoles(array $ownerIds): void
+    {
+        $roles = [
+            'evelyn.thorne@horrorbark.test' => 'hotel_manager',
+            'the.velvets@horrorbark.test' => 'hotel_manager',
+            'silas.blackwood@horrorbark.test' => 'ride_manager',
+            'jasper.crowe@horrorbark.test' => 'game_manager',
+            'mara.voss@horrorbark.test' => 'ferry_manager',
+        ];
+
+        foreach (array_unique($roles) as $role) {
+            Role::findOrCreate($role, 'web');
+        }
+
+        foreach ($roles as $email => $role) {
+            if (! isset($ownerIds[$email])) {
+                continue;
+            }
+
+            User::query()->find($ownerIds[$email])?->syncRoles([$role]);
+        }
     }
 
     private function resetWorldTables(): void
@@ -141,7 +171,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'name' => 'Velvet Wake House',
-                'user_id' => $owners['evelyn.thorne@horrorbark.test'],
+                'user_id' => $owners['the.velvets@horrorbark.test'],
                 'location' => 'Blackwater Approach · Night Tide Dock',
                 'description' => 'A harbor residence for late arrivals and discreet departures, with candlelit lounges overlooking the black tide.',
                 'latitude' => 4.2265,
@@ -152,7 +182,7 @@ class HorrorBarkWorldSeeder extends Seeder
             ],
             [
                 'name' => 'Coldstone Chambers',
-                'user_id' => $owners['evelyn.thorne@horrorbark.test'],
+                'user_id' => $owners['the.velvets@horrorbark.test'],
                 'location' => 'Lantern Hollow · Moonfall Steps',
                 'description' => 'Quiet chambers tucked into the chapel quarter, where lantern smoke, cedar ash, and moonlit velvet settle into every room.',
                 'latitude' => 4.2258,
@@ -258,6 +288,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Horror Island'],
                 'name' => "Widow's Descent",
                 'description' => 'A towering plunge through torn velvet, cathedral ironwork, and bells that answer only the fall.',
+                'location' => 'Shadow Park · Midway Grounds',
                 'price' => 190,
                 'latitude' => 4.2279,
                 'longitude' => 73.4276,
@@ -272,6 +303,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Horror Island'],
                 'name' => 'Velvet Spiral',
                 'description' => 'A manor-side corkscrew of polished steel and violet lamps, built to turn anticipation into ceremony.',
+                'location' => "Manor Ward · Keeper's Gate",
                 'price' => 165,
                 'latitude' => 4.2284,
                 'longitude' => 73.4262,
@@ -286,6 +318,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Horror Island'],
                 'name' => 'The Ash Procession',
                 'description' => 'A solemn track ride threading chapel smoke, cedar embers, and the slow procession of lantern-bearing figures.',
+                'location' => 'Lantern Hollow · Moonfall Steps',
                 'price' => 150,
                 'latitude' => 4.2257,
                 'longitude' => 73.4282,
@@ -300,6 +333,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Horror Island'],
                 'name' => 'Nocturne Drop',
                 'description' => 'A harbor-wall freefall that flashes the black sea beneath your feet before lifting you back into the fog.',
+                'location' => 'Blackwater Approach · Night Tide Dock',
                 'price' => 210,
                 'latitude' => 4.2264,
                 'longitude' => 73.4248,
@@ -328,6 +362,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Horror Island'],
                 'name' => 'Lantern Guess',
                 'description' => 'Read the warding sigils, choose the proper lantern, and finish before the flame goes cold.',
+                'location' => 'Lantern Hollow · Moonfall Steps',
                 'price' => 45,
                 'latitude' => 4.2273,
                 'longitude' => 73.4270,
@@ -342,6 +377,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Horror Island'],
                 'name' => 'The Silent Wheel',
                 'description' => 'A velvet wheel of fortune that turns without music and stops with unnerving precision.',
+                'location' => "Manor Ward · Keeper's Gate",
                 'price' => 60,
                 'latitude' => 4.2281,
                 'longitude' => 73.4259,
@@ -356,6 +392,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Horror Island'],
                 'name' => 'Coven Toss',
                 'description' => 'Bone-white rings, ashwood posts, and prizes awarded under the watch of the hollow lanterns.',
+                'location' => 'Shadow Park · Midway Grounds',
                 'price' => 40,
                 'latitude' => 4.2255,
                 'longitude' => 73.4276,
@@ -370,6 +407,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Horror Island'],
                 'name' => 'Midnight Draw',
                 'description' => 'A dockside table game of sealed cards, tide wagers, and prizes chosen by the harbor keeper.',
+                'location' => 'Blackwater Approach · Night Tide Dock',
                 'price' => 55,
                 'latitude' => 4.2268,
                 'longitude' => 73.4254,
@@ -398,6 +436,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Picnic Island'],
                 'name' => 'Moonlight Vigil',
                 'description' => 'An after-dark gathering of lanterns, strings, and whispered vows timed to the inward pull of the tide.',
+                'location' => 'Pale Moon Strand · Saltveil Beach',
                 'event_date' => Carbon::today()->addDays(4),
                 'price' => 120,
                 'max_capacity' => 80,
@@ -413,6 +452,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Picnic Island'],
                 'name' => 'Velvet Bonfire',
                 'description' => 'Black sand, velvet seating, and a ceremonial bonfire fed with aromatic cedar and sea salt.',
+                'location' => 'Saltveil Beach · Bonfire Reach',
                 'event_date' => Carbon::today()->addDays(11),
                 'price' => 135,
                 'max_capacity' => 60,
@@ -428,6 +468,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Picnic Island'],
                 'name' => 'Lantern Wake',
                 'description' => 'A midnight send-off at the quay with floating lights, low choir notes, and ferries slipping in and out of the mist.',
+                'location' => 'Coven Quay · Lantern Wake',
                 'event_date' => Carbon::today()->addDays(18),
                 'price' => 95,
                 'max_capacity' => 70,
@@ -443,6 +484,7 @@ class HorrorBarkWorldSeeder extends Seeder
                 'island_id' => $islands['Picnic Island'],
                 'name' => 'The Pale Tide Gathering',
                 'description' => 'A shoreline supper and moonlit performance staged where the surf turns black and the music carries farther than it should.',
+                'location' => 'Blackwater Shore · Pale Tide',
                 'event_date' => Carbon::today()->addDays(25),
                 'price' => 145,
                 'max_capacity' => 90,
@@ -470,6 +512,7 @@ class HorrorBarkWorldSeeder extends Seeder
             [
                 'name' => "Keeper's Passage",
                 'description' => 'The formal crossing from the mainland gate to Manor Ward, favored by guests with trunks, velvet cases, and evening reservations.',
+                'location' => "Manor Ward · Keeper's Gate",
                 'island_id' => $islands['Horror Island'],
                 'price' => 75,
                 'max_capacity' => 36,
@@ -481,6 +524,7 @@ class HorrorBarkWorldSeeder extends Seeder
             [
                 'name' => 'Night Tide Passage',
                 'description' => 'A late crossing that cuts through black water toward Coven Quay while the lantern masts trade signals with the shore.',
+                'location' => 'Coven Quay · Lantern Wake',
                 'island_id' => $islands['Picnic Island'],
                 'price' => 55,
                 'max_capacity' => 42,
@@ -492,6 +536,7 @@ class HorrorBarkWorldSeeder extends Seeder
             [
                 'name' => 'Moonwake Line',
                 'description' => 'The preferred route for guests bound to the midnight beaches, with open decks and a quiet final approach through pale surf.',
+                'location' => 'Pale Moon Strand · Saltveil Beach',
                 'island_id' => $islands['Picnic Island'],
                 'price' => 60,
                 'max_capacity' => 40,

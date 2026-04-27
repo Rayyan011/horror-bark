@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\IslandResource\Pages;
 use App\Filament\Resources\IslandResource\RelationManagers;
 use App\Models\Island;
+use App\Support\AdminImage;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -54,8 +55,7 @@ class IslandResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label('Name')->sortable(),
                 Tables\Columns\TextColumn::make('description')->label('Description')->sortable(),
                 Tables\Columns\ImageColumn::make('images')
-                    ->disk('public')
-                    ->getStateUsing(fn ($record) => $record->images[0] ?? null)
+                    ->getStateUsing(fn ($record) => AdminImage::first($record->images))
                     ->size(50)
                     ->label('Gallery'),
                 Tables\Columns\TextColumn::make('created_at')

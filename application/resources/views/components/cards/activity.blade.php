@@ -27,7 +27,7 @@
     ]"
     :meta="[
         ['label' => 'Type', 'value' => $isGame ? 'Game' : 'Ride'],
-        ['label' => 'Island', 'value' => $item->island->name ?? 'Horror Island', 'tone' => 'muted'],
+        ['label' => 'District', 'value' => $item->location ?? $item->island->name ?? 'Horror Island', 'tone' => 'muted'],
         ['label' => 'Price', 'value' => 'MVR ' . number_format($item->price, 2), 'tone' => 'muted'],
         ['label' => 'Max Capacity', 'value' => $item->max_capacity ?? 'N/A', 'tone' => 'muted'],
         ['label' => 'Max Booking Qty', 'value' => $item->max_booking_quantity ?? 'N/A', 'tone' => 'muted'],

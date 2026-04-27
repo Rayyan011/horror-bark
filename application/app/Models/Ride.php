@@ -13,6 +13,7 @@ class Ride extends Model
         'island_id',
         'name',
         'description',
+        'location',
         'price',
         'latitude',
         'longitude',

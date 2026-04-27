@@ -5,6 +5,8 @@ namespace App\Filament\Game\Resources;
 use App\Filament\Game\Resources\GameResource\Pages;
 use App\Models\Game;
 use App\Services\IslandAccessService;
+use App\Support\AdminImage;
+use App\Support\HorrorDistrictCatalog;
 use Filament\Forms;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
@@ -50,7 +52,16 @@ class GameResource extends Resource
                 ->relationship('island', 'name', fn ($query) => $query->where('type', IslandAccessService::HORROR_ISLAND))
                 ->required()
                 ->searchable()
+                ->preload()
+                ->native(false)
                 ->helperText('Games are available on Horror Island only.'),
+
+            Forms\Components\Select::make('location')
+                ->label('District')
+                ->options(HorrorDistrictCatalog::horrorLocations())
+                ->searchable()
+                ->preload()
+                ->native(false),
 
             Forms\Components\FileUpload::make('images')
                 ->label('Additional Images')
@@ -73,12 +84,11 @@ class GameResource extends Resource
                 ->sortable(),
             Tables\Columns\TextColumn::make('max_booking_quantity')
                 ->sortable(),
-            Tables\Columns\TextColumn::make('island.name')
-                ->label('Island')
+            Tables\Columns\TextColumn::make('location')
+                ->label('District')
                 ->sortable(),
             Tables\Columns\ImageColumn::make('images')
-                ->disk('public')
-                ->getStateUsing(fn ($record) => $record->images[0] ?? null)
+                ->getStateUsing(fn ($record) => AdminImage::first($record->images))
                 ->size(50)
                 ->label('Gallery'),
         ]);

@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\HotelResource\Pages;
 use App\Models\Hotel;
 use App\Models\User;
+use App\Support\AdminImage;
+use App\Support\HorrorDistrictCatalog;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -30,9 +32,13 @@ class HotelResource extends Resource
             Forms\Components\TextInput::make('name')
                 ->required()
                 ->maxLength(255),
-            Forms\Components\TextInput::make('location')
-                ->label('Location Name')
-                ->maxLength(255),
+            Forms\Components\Select::make('location')
+                ->label('District / Location')
+                ->options(HorrorDistrictCatalog::hotelLocations())
+                ->searchable()
+                ->preload()
+                ->native(false)
+                ->helperText('Hotels stay on Horror Island; this selects the district shown publicly.'),
             Forms\Components\Textarea::make('description')
                 ->rows(4)
                 ->columnSpanFull(),
@@ -60,8 +66,7 @@ class HotelResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('images')
-                    ->disk('public')
-                    ->getStateUsing(fn ($record) => $record->images[0] ?? null)
+                    ->getStateUsing(fn ($record) => AdminImage::first($record->images))
                     ->size(50)
                     ->label('Gallery'),
                 Tables\Columns\TextColumn::make('created_at')

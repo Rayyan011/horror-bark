@@ -17,10 +17,12 @@ class IslandAtlasTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertOk()
-            ->assertSee('Horror-Bark Isle')
-            ->assertSee('The Shining Manor')
-            ->assertSee('Moonlight Vigil')
-            ->assertSee("Keeper's Passage");
+            ->assertSee('Island Atlas')
+            ->assertSee('Blackwater Approach')
+            ->assertSee('Manor Ward')
+            ->assertSee('Shadow Park')
+            ->assertSee('Pale Moon Strand')
+            ->assertSee('Moonlight Vigil');
     }
 
     public function test_themepark_page_focuses_on_the_registry_without_the_island_map(): void
@@ -34,6 +36,6 @@ class IslandAtlasTest extends TestCase
             ->assertSee('Active Attractions')
             ->assertSee('Velvet Spiral')
             ->assertSee('The Silent Wheel')
-            ->assertDontSee('Horror-Bark Isle');
+            ->assertDontSee('Island Atlas');
     }
 }

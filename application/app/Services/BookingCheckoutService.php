@@ -144,7 +144,7 @@ class BookingCheckoutService
         $summary = [
             'type_label' => 'Ferry Transfer',
             'title' => $ferry->name,
-            'subtitle' => $ferry->island?->name ?? 'Island transfer',
+            'subtitle' => $ferry->location ?? $ferry->island?->name ?? 'Island transfer',
             'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
             'quantity_label' => 'Tickets',
             'quantity' => (int) $data['quantity'],
@@ -152,7 +152,7 @@ class BookingCheckoutService
             'unit_price' => (float) $ferry->price,
             'total_price' => (float) ($ferry->price * $data['quantity']),
             'line_items' => [
-                ['label' => 'Destination', 'value' => $ferry->island?->name ?? 'Island route'],
+                ['label' => 'Destination', 'value' => $ferry->location ?? $ferry->island?->name ?? 'Island route'],
                 ['label' => 'Departure', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
                 ['label' => 'Tickets', 'value' => (string) $data['quantity']],
                 ['label' => 'Capacity', 'value' => (string) $ferry->max_capacity],
@@ -221,7 +221,7 @@ class BookingCheckoutService
         $summary = [
             'type_label' => 'Ride Booking',
             'title' => $ride->name,
-            'subtitle' => $ride->island?->name ?? 'Theme park ride',
+            'subtitle' => $ride->location ?? $ride->island?->name ?? 'Theme park ride',
             'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
             'quantity_label' => 'Tickets',
             'quantity' => (int) $data['quantity'],
@@ -229,7 +229,7 @@ class BookingCheckoutService
             'unit_price' => (float) $ride->price,
             'total_price' => (float) ($ride->price * $data['quantity']),
             'line_items' => [
-                ['label' => 'Island', 'value' => $ride->island?->name ?? 'Horror Island'],
+                ['label' => 'District', 'value' => $ride->location ?? $ride->island?->name ?? 'Horror Island'],
                 ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
                 ['label' => 'Tickets', 'value' => (string) $data['quantity']],
                 ['label' => 'Capacity', 'value' => (string) $ride->max_capacity],
@@ -298,7 +298,7 @@ class BookingCheckoutService
         $summary = [
             'type_label' => 'Game Booking',
             'title' => $game->name,
-            'subtitle' => $game->island?->name ?? 'Theme park game',
+            'subtitle' => $game->location ?? $game->island?->name ?? 'Theme park game',
             'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
             'quantity_label' => 'Players',
             'quantity' => (int) $data['quantity'],
@@ -306,7 +306,7 @@ class BookingCheckoutService
             'unit_price' => (float) $game->price,
             'total_price' => (float) ($game->price * $data['quantity']),
             'line_items' => [
-                ['label' => 'Island', 'value' => $game->island?->name ?? 'Horror Island'],
+                ['label' => 'District', 'value' => $game->location ?? $game->island?->name ?? 'Horror Island'],
                 ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
                 ['label' => 'Players', 'value' => (string) $data['quantity']],
                 ['label' => 'Capacity', 'value' => (string) $game->max_capacity],
@@ -379,7 +379,7 @@ class BookingCheckoutService
         $summary = [
             'type_label' => 'Beach Event',
             'title' => $beachEvent->name,
-            'subtitle' => $beachEvent->island?->name ?? 'Beach event',
+            'subtitle' => $beachEvent->location ?? $beachEvent->island?->name ?? 'Beach event',
             'schedule_label' => $bookingTime->format('M d, Y \\a\\t H:i'),
             'quantity_label' => 'Tickets',
             'quantity' => (int) $data['quantity'],
@@ -388,7 +388,7 @@ class BookingCheckoutService
             'total_price' => (float) ($beachEvent->price * $data['quantity']),
             'line_items' => [
                 ['label' => 'Organizer', 'value' => $beachEvent->owner?->name ?? 'Event host'],
-                ['label' => 'Island', 'value' => $beachEvent->island?->name ?? 'Picnic Island'],
+                ['label' => 'District', 'value' => $beachEvent->location ?? $beachEvent->island?->name ?? 'Picnic Island'],
                 ['label' => 'Session', 'value' => $bookingTime->format('M d, Y \\a\\t H:i')],
                 ['label' => 'Tickets', 'value' => (string) $data['quantity']],
             ],

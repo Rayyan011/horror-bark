@@ -23,7 +23,7 @@ class HeroVisibilityTest extends TestCase
             $response = $this->get($url);
 
             $response->assertOk();
-            $response->assertSeeText('Under the Pale Moon');
+            $response->assertSeeText($url === route('home') ? 'Horror-Bark Arrival Ledger' : 'Under the Pale Moon');
         }
     }
 
@@ -48,7 +48,7 @@ class HeroVisibilityTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertOk();
-        $response->assertSeeText('Midnight Protocol');
-        $response->assertSeeText('The gates only part for those with reservations. Secure your passage before the moon reaches its zenith.');
+        $response->assertSeeText('One path through the island.');
+        $response->assertSeeText('The landing page now mirrors the real customer flow: offers first, districts second, then the broader night registry.');
     }
 }

@@ -13,6 +13,7 @@ class BeachEvent extends Model
         'island_id',
         'name',
         'description',
+        'location',
         'event_date', // Date of the event (YYYY-MM-DD)
         'price',
         'latitude',

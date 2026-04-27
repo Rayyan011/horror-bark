@@ -38,7 +38,11 @@ class HotelBookingResource extends Resource
             $endDate = $get('end_date');
             $quantity = $get('quantity') ?: 1;
             if ($roomId && $startDate && $endDate) {
-                $room = Room::find($roomId);
+                $room = Room::query()
+                    ->whereKey($roomId)
+                    ->whereHas('hotel', fn (Builder $query) => $query->where('user_id', auth()->id()))
+                    ->first();
+
                 if ($room) {
                     $days = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate));
                     $price = $room->price * $days * $quantity;
@@ -54,22 +58,26 @@ class HotelBookingResource extends Resource
 
             Select::make('hotel_id')
                 ->label('Hotel')
-                ->options(function () {
-                    return Hotel::where('user_id', auth()->id())->pluck('name', 'id')->toArray();
-                })
+                ->options(fn () => RoomResource::ownedHotelOptions())
+                ->searchable()
+                ->preload()
+                ->native(false)
+                ->rules([self::ownedHotelValidationRule()])
                 ->reactive()
+                ->afterStateHydrated(function (Select $component, ?HotelBooking $record): void {
+                    $component->state($record?->room?->hotel_id);
+                })
                 ->afterStateUpdated(fn ($state, callable $set) => $set('room_id', null))
                 ->dehydrated(false)
                 ->required(),
 
             Select::make('room_id')
                 ->label('Room')
-                ->options(function ($get) {
-                    $hotelId = $get('hotel_id');
-                    if (!$hotelId) return [];
-                    return Room::where('hotel_id', $hotelId)->pluck('room_number', 'id')->toArray();
-                })
+                ->options(fn ($get) => RoomResource::ownedRoomOptions((int) $get('hotel_id')))
                 ->searchable()
+                ->preload()
+                ->native(false)
+                ->rules([self::ownedRoomValidationRule()])
                 ->reactive()
                 ->afterStateUpdated($recalculatePrice)
                 ->required(),
@@ -109,6 +117,7 @@ class HotelBookingResource extends Resource
                     'confirmed' => 'Confirmed',
                     'canceled' => 'Canceled',
                 ])
+                ->native(false)
                 ->default('pending')
                 ->required(),
         ]);
@@ -142,5 +151,37 @@ class HotelBookingResource extends Resource
             'create' => Pages\CreateHotelBooking::route('/create'),
             'edit' => Pages\EditHotelBooking::route('/{record}/edit'),
         ];
+    }
+
+    private static function ownedHotelValidationRule(): \Closure
+    {
+        return function () {
+            return function (string $attribute, $value, $fail): void {
+                $ownsHotel = Hotel::query()
+                    ->whereKey($value)
+                    ->where('user_id', auth()->id())
+                    ->exists();
+
+                if (! $ownsHotel) {
+                    $fail('Select one of your hotels.');
+                }
+            };
+        };
+    }
+
+    private static function ownedRoomValidationRule(): \Closure
+    {
+        return function () {
+            return function (string $attribute, $value, $fail): void {
+                $ownsRoom = Room::query()
+                    ->whereKey($value)
+                    ->whereHas('hotel', fn (Builder $query) => $query->where('user_id', auth()->id()))
+                    ->exists();
+
+                if (! $ownsRoom) {
+                    $fail('Select one of your rooms.');
+                }
+            };
+        };
     }
 }

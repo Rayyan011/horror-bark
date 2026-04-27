@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\FerryResource\Pages;
 use App\Models\Ferry;
 use App\Models\Island;
+use App\Support\AdminImage;
+use App\Support\HorrorDistrictCatalog;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -61,6 +63,13 @@ class FerryResource extends Resource
                     ->required()
                     ->label('Home Island'),
 
+                Select::make('location')
+                    ->label('District')
+                    ->options(HorrorDistrictCatalog::allLocations())
+                    ->searchable()
+                    ->preload()
+                    ->native(false),
+
                 Forms\Components\FileUpload::make('images')
                     ->label('Additional Images')
                     ->directory('ferries/gallery')
@@ -77,13 +86,12 @@ class FerryResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
                 Tables\Columns\TextColumn::make('owner.name')->label('Owner'),
-                Tables\Columns\TextColumn::make('island.name')->label('Island'),
+                Tables\Columns\TextColumn::make('location')->label('District'),
                 Tables\Columns\TextColumn::make('price')->money('MVR')->sortable(),
                 Tables\Columns\TextColumn::make('max_capacity')->sortable(),
                 Tables\Columns\TextColumn::make('max_booking_quantity')->sortable(),
                 Tables\Columns\ImageColumn::make('images')
-                    ->disk('public')
-                    ->getStateUsing(fn ($record) => $record->images[0] ?? null)
+                    ->getStateUsing(fn ($record) => AdminImage::first($record->images))
                     ->size(50)
                     ->label('Gallery'),
             ])

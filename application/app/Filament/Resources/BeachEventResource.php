@@ -7,6 +7,8 @@ use App\Filament\Resources\BeachEventResource\RelationManagers;
 use App\Models\BeachEvent;
 use App\Models\Island;
 use App\Services\IslandAccessService;
+use App\Support\AdminImage;
+use App\Support\HorrorDistrictCatalog;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -57,6 +59,13 @@ class BeachEventResource extends Resource
                 ->native(false)
                 ->helperText('Beach events are available on Picnic Island only.'),
 
+            Forms\Components\Select::make('location')
+                ->label('District')
+                ->options(HorrorDistrictCatalog::picnicLocations())
+                ->searchable()
+                ->preload()
+                ->native(false),
+
             // File Upload for Images
             Forms\Components\FileUpload::make('images')
                 ->label('Additional Images')
@@ -77,10 +86,9 @@ class BeachEventResource extends Resource
             Tables\Columns\TextColumn::make('price'),
             Tables\Columns\TextColumn::make('max_capacity'),
             Tables\Columns\TextColumn::make('max_booking_quantity'),
-            Tables\Columns\TextColumn::make('island.name')->label('Island'),
+            Tables\Columns\TextColumn::make('location')->label('District'),
             Tables\Columns\ImageColumn::make('images')
-                ->disk('public')
-                ->getStateUsing(fn ($record) => $record->images[0] ?? null)
+                ->getStateUsing(fn ($record) => AdminImage::first($record->images))
                 ->size(50)
                 ->label('Gallery'),
             Tables\Columns\TextColumn::make('created_at')->dateTime(),

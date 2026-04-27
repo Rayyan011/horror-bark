@@ -6,14 +6,17 @@ use App\Filament\Ferry\Resources\FerryBookingResource;
 use App\Filament\Ferry\Resources\FerryResource;
 use App\Filament\Game\Resources\GameBookingResource;
 use App\Filament\Game\Resources\GameResource;
+use App\Filament\Hotel\Resources\RoomResource as HotelRoomResource;
 use App\Filament\Ride\Resources\RideBookingResource;
 use App\Models\Ferry;
 use App\Models\FerryBooking;
 use App\Models\Game;
 use App\Models\GameBooking;
+use App\Models\Hotel;
 use App\Models\Island;
 use App\Models\Ride;
 use App\Models\RideBooking;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -250,6 +253,89 @@ class OperatorPanelScopingTest extends TestCase
         $visibleIds = RideBookingResource::getEloquentQuery()->pluck('id')->all();
 
         $this->assertSame([$ownedBooking->id], $visibleIds);
+    }
+
+    public function test_hotel_operator_room_query_only_returns_rooms_for_owned_hotels(): void
+    {
+        $operator = User::factory()->create();
+        $otherOperator = User::factory()->create();
+
+        $ownedHotel = Hotel::create([
+            'user_id' => $operator->id,
+            'name' => 'Velvet Wake House',
+            'location' => 'Blackwater Approach · Night Tide Dock',
+            'images' => [],
+        ]);
+
+        $otherHotel = Hotel::create([
+            'user_id' => $otherOperator->id,
+            'name' => 'The Shining Manor',
+            'location' => "Manor Ward · Keeper's Gate",
+            'images' => [],
+        ]);
+
+        $ownedRoom = Room::create([
+            'hotel_id' => $ownedHotel->id,
+            'room_number' => 'VW-110',
+            'price' => 540,
+            'status' => 'available',
+            'max_occupancy' => 3,
+            'amenities' => [],
+            'images' => [],
+        ]);
+
+        Room::create([
+            'hotel_id' => $otherHotel->id,
+            'room_number' => 'SM-101',
+            'price' => 780,
+            'status' => 'available',
+            'max_occupancy' => 2,
+            'amenities' => [],
+            'images' => [],
+        ]);
+
+        $this->actingAs($operator);
+
+        $visibleIds = HotelRoomResource::getEloquentQuery()->pluck('id')->all();
+
+        $this->assertSame([$ownedRoom->id], $visibleIds);
+    }
+
+    public function test_hotel_operator_room_hotel_options_allow_multiple_owned_hotels_and_exclude_unowned_hotels(): void
+    {
+        $operator = User::factory()->create();
+        $otherOperator = User::factory()->create();
+
+        $firstOwnedHotel = Hotel::create([
+            'user_id' => $operator->id,
+            'name' => 'Velvet Wake House',
+            'location' => 'Blackwater Approach · Night Tide Dock',
+            'images' => [],
+        ]);
+
+        $secondOwnedHotel = Hotel::create([
+            'user_id' => $operator->id,
+            'name' => 'Coldstone Chambers',
+            'location' => 'Lantern Hollow · Moonfall Steps',
+            'images' => [],
+        ]);
+
+        $unownedHotel = Hotel::create([
+            'user_id' => $otherOperator->id,
+            'name' => 'The Shining Manor',
+            'location' => "Manor Ward · Keeper's Gate",
+            'images' => [],
+        ]);
+
+        $this->actingAs($operator);
+
+        $options = HotelRoomResource::ownedHotelOptions();
+
+        $this->assertSame([
+            $secondOwnedHotel->id => 'Coldstone Chambers',
+            $firstOwnedHotel->id => 'Velvet Wake House',
+        ], $options);
+        $this->assertArrayNotHasKey($unownedHotel->id, $options);
     }
 
     private function createIsland(): Island

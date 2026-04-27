@@ -12,6 +12,7 @@ class Ferry extends Model
         'user_id',           // Owner of the ferry
         'name',
         'description',
+        'location',
         'price',
         'max_capacity',
         'max_booking_quantity',

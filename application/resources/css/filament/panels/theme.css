@@ -86,6 +86,19 @@ body.fi-body {
     padding-inline-end: 2.5rem !important;
 }
 
+.fi .fi-input-wrp select,
+.fi select.fi-select-input {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.fi .choices__inner,
+.fi .choices__input,
+.fi .fi-fo-select .choices__inner {
+    background-image: none !important;
+    background-repeat: no-repeat !important;
+}
+
 .fi .fi-simple-main .fi-btn,
 .fi .fi-simple-main button[type='submit'] {
     border: 1px solid rgba(96, 92, 98, 0.45) !important;
