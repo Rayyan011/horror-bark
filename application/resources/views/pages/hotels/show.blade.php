@@ -89,7 +89,7 @@
                                         :action="route('checkout.hotels.prepare', $room)"
                                         mode="date-range"
                                         submit-label="Review & pay"
-                                        rules-hint="You will confirm this room booking on the demo payment screen."
+                                        rules-hint="You will confirm this room booking during payment review."
                                         :quantity-config="[
                                             'label' => 'Guests',
                                             'min' => 1,

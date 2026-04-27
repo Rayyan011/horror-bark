@@ -222,7 +222,7 @@ class PromotionOfferFlowTest extends TestCase
             'expiry_month' => '12',
             'expiry_year' => '29',
             'security_code' => '123',
-            'acknowledge_demo' => '1',
+            'payment_acknowledgement' => '1',
         ])->assertRedirect();
 
         $this->assertDatabaseHas('hotel_bookings', [

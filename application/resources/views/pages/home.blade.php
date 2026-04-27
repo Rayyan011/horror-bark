@@ -130,8 +130,7 @@
                 <p class="theme-kicker">Tonight's Protocol</p>
                 <h2 class="font-display text-3xl italic text-moonlight sm:text-4xl">One path through the island.</h2>
                 <p class="readable-copy">
-                    The landing page now mirrors the real customer flow: offers first, districts second, then the broader night registry.
-                    That removes the duplicate feature band and stops the homepage from feeling like a stitched-together leftovers page.
+                    Begin with live offers, choose a district, then browse the broader night registry from a single route through the island.
                 </p>
             </x-ui.surface>
 
@@ -139,7 +138,7 @@
                 <p class="theme-kicker">Live Discounts</p>
                 <h2 class="font-display text-3xl italic text-moonlight sm:text-4xl">{{ $promotions->count() }} discounts across the island.</h2>
                 <p class="readable-copy">
-                    Each active promotion now lands on specific discounted inventory with existing experience imagery, not a bundle page or a generic catalog redirect.
+                    Active promotions lead directly to discounted rooms, crossings, and events with the reduced rate preserved through checkout.
                 </p>
             </x-ui.surface>
         </section>

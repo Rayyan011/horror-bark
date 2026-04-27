@@ -12,12 +12,27 @@
         :download-href="route('invoices.download', $invoice)"
     />
 
-    <x-ui.surface class="space-y-2">
-        <h2 class="text-xl font-semibold">Booking Details</h2>
-        <p class="readable-copy">{{ class_basename($invoice->invoiceable_type) }} #{{ $invoice->invoiceable_id }}</p>
-        @if ($invoice->invoiceable)
-            <pre class="overflow-x-auto rounded-sm border border-primary-light/10 bg-background-dark/60 p-4 text-xs text-primary-light/75 whitespace-pre-wrap">{{ json_encode($invoice->invoiceable->toArray(), JSON_PRETTY_PRINT) }}</pre>
-        @endif
+    <x-ui.surface class="space-y-4">
+        <h2 class="text-xl font-semibold">Invoice Details</h2>
+
+        <dl class="grid gap-3 sm:grid-cols-2">
+            <div>
+                <dt class="theme-detail-label">Invoice ID</dt>
+                <dd class="theme-detail-value">#{{ $invoice->id }}</dd>
+            </div>
+            <div>
+                <dt class="theme-detail-label">Booking Type</dt>
+                <dd class="theme-detail-value">{{ class_basename($invoice->invoiceable_type) }}</dd>
+            </div>
+            <div>
+                <dt class="theme-detail-label">Invoice Number</dt>
+                <dd class="theme-detail-value">{{ $invoice->invoice_number }}</dd>
+            </div>
+            <div>
+                <dt class="theme-detail-label">Customer</dt>
+                <dd class="theme-detail-value">{{ $invoice->user?->name ?? 'Customer' }}</dd>
+            </div>
+        </dl>
     </x-ui.surface>
 </main>
 @endsection

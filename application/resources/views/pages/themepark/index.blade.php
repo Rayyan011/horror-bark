@@ -9,8 +9,7 @@
             <p class="text-xs uppercase tracking-[0.32em] text-primary-light/70">Shadow Park Registry</p>
             <h1 class="font-display text-4xl italic leading-none text-moonlight sm:text-5xl">Rides, games, and midnight attractions.</h1>
             <p class="max-w-3xl font-serif text-base leading-relaxed text-primary-light/80">
-                The atlas now lives on the home page. Use this registry to sort the active attractions, compare prices and capacities,
-                and book the experiences that fit your stay inside Horror-Bark.
+                Use this registry to sort the active attractions, compare prices and capacities, and book the experiences that fit your stay inside Horror-Bark.
             </p>
         </div>
     </section>
@@ -19,7 +18,7 @@
 
     <x-ui.section-heading
         title="Theme Park Manifest"
-        subtitle="Use the atlas above to orient yourself, then narrow the active ride and game listings below."
+        subtitle="Narrow the active ride and game listings below."
         size="lg"
         align="center"
     />

@@ -72,14 +72,14 @@ class BookingCheckoutController extends Controller
             'expiry_month' => ['required', 'digits:2'],
             'expiry_year' => ['required', 'digits:2'],
             'security_code' => ['required', 'digits_between:3,4'],
-            'acknowledge_demo' => ['accepted'],
+            'payment_acknowledgement' => ['accepted'],
         ]);
 
         $booking = $checkoutService->createFromCheckout($request->user(), $checkout);
         $this->forgetCheckout($request, $token);
 
         return redirect(BookingSupport::detailRoute($booking))
-            ->with('status', 'Demonstration payment approved. Your booking is confirmed.');
+            ->with('status', 'Payment approved. Your booking is confirmed.');
     }
 
     private function storeCheckoutAndRedirect(Request $request, array $checkout): RedirectResponse
@@ -129,14 +129,14 @@ class BookingCheckoutController extends Controller
         $summary = $checkout['summary'];
 
         return implode("\n", [
-            'HORROR BARK DEMO PAYMENT',
-            'Reference: '.($checkout['qr_reference'] ?? 'HB-DEMO'),
+            'HORROR BARK PAYMENT',
+            'Reference: '.($checkout['qr_reference'] ?? 'HB-PAY'),
             'Type: '.$summary['type_label'],
             'Item: '.$summary['title'],
             'Schedule: '.$summary['schedule_label'],
             'Quantity: '.$summary['quantity'],
             'Total: MVR '.number_format((float) $summary['total_price'], 2, '.', ''),
-            'Status: Awaiting simulated payment confirmation',
+            'Status: Awaiting payment confirmation',
         ]);
     }
 }

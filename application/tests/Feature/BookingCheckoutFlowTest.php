@@ -79,9 +79,9 @@ class BookingCheckoutFlowTest extends TestCase
 
         $this->actingAs($user)->get($location)
             ->assertOk()
-            ->assertSee('Review the booking, then pass through the demo payment gate.')
+            ->assertSee('Review and confirm your booking.')
             ->assertSee('Generate Payment QR')
-            ->assertSee('Demo Payment Gateway');
+            ->assertSee('Secure Payment');
 
         $confirm = $this->actingAs($user)->post(route('checkout.confirm', $token), [
             'payment_method' => 'ghost_card',
@@ -90,7 +90,7 @@ class BookingCheckoutFlowTest extends TestCase
             'expiry_month' => '12',
             'expiry_year' => '29',
             'security_code' => '123',
-            'acknowledge_demo' => '1',
+            'payment_acknowledgement' => '1',
         ]);
 
         $confirm->assertRedirect();
@@ -102,7 +102,7 @@ class BookingCheckoutFlowTest extends TestCase
         $this->assertDatabaseCount('invoices', 1);
     }
 
-    public function test_every_booking_type_can_open_the_demo_checkout_page(): void
+    public function test_every_booking_type_can_open_the_checkout_page(): void
     {
         $user = User::factory()->create();
         $owner = User::factory()->create();
@@ -231,7 +231,7 @@ class BookingCheckoutFlowTest extends TestCase
             $this->actingAs($user)->get($response->headers->get('Location'))
                 ->assertOk()
                 ->assertSee('Generate Payment QR')
-                ->assertSee('Demo Payment Gateway');
+                ->assertSee('Secure Payment');
         }
     }
 }

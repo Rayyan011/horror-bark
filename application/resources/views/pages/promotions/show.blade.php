@@ -38,7 +38,7 @@
     <section class="space-y-4">
         <x-ui.section-heading
             title="Book The Discounted Selection"
-            subtitle="Each item below is a real purchasable resource. The reduced rate is carried into checkout rather than sending the customer to a generic catalog page."
+            subtitle="Choose an eligible item below and the reduced rate will carry into checkout."
             size="lg"
             align="center"
         />

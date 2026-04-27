@@ -5,9 +5,9 @@
         <p><span class="label">Status:</span> {{ ucfirst($invoice->status) }}</p>
     </x-slot:summary>
 
-    <h2>Booking</h2>
+    <h2>Invoice</h2>
     <x-print.invoice-table :rows="[
-        ['label' => 'Type', 'value' => class_basename($invoice->invoiceable_type)],
-        ['label' => 'Booking ID', 'value' => $invoice->invoiceable_id],
+        ['label' => 'Invoice ID', 'value' => $invoice->id],
+        ['label' => 'Booking Type', 'value' => class_basename($invoice->invoiceable_type)],
     ]" />
 </x-print.invoice-layout>

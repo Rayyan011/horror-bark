@@ -80,6 +80,7 @@ body.fi-body {
 .fi .fi-select-input,
 .fi select.fi-select-input,
 .fi .fi-input-wrp select {
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8L10 12L14 8' stroke='%23d1d1d4' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
     background-position: right 0.75rem center !important;
     background-repeat: no-repeat !important;
     background-size: 1rem 1rem !important;
@@ -97,6 +98,32 @@ body.fi-body {
 .fi .fi-fo-select .choices__inner {
     background-image: none !important;
     background-repeat: no-repeat !important;
+}
+
+.fi .fi-fo-select .choices[data-type*='select-one'] {
+    position: relative;
+}
+
+.fi .fi-fo-select .choices[data-type*='select-one'] .choices__inner {
+    padding-inline-end: 2.5rem !important;
+}
+
+.fi .fi-fo-select .choices[data-type*='select-one']::after {
+    content: '';
+    position: absolute;
+    inset-inline-end: 1rem;
+    top: 50%;
+    z-index: 2;
+    width: 0.45rem;
+    height: 0.45rem;
+    border: solid rgba(209, 209, 212, 0.72);
+    border-width: 0 1.5px 1.5px 0;
+    pointer-events: none;
+    transform: translateY(-65%) rotate(45deg);
+}
+
+.fi .fi-fo-select .choices[data-type*='select-one'].is-open::after {
+    transform: translateY(-35%) rotate(225deg);
 }
 
 .fi .fi-simple-main .fi-btn,
