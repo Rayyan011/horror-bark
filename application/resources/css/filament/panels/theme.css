@@ -4,20 +4,50 @@
 @config '../../../../tailwind.config.js';
 
 :root {
+    --hb-bg: #f8f4ef;
+    --hb-bg-soft: #fffaf3;
+    --hb-bg-image: linear-gradient(to bottom, rgba(248, 244, 239, 0.96), rgba(238, 230, 219, 0.98));
+    --hb-surface: rgba(255, 250, 243, 0.94);
+    --hb-input: rgba(255, 255, 255, 0.92);
+    --hb-button: #2b242c;
+    --hb-button-text: #fffaf3;
+    --hb-border: rgba(62, 54, 65, 0.22);
+    --hb-text: #3f3944;
+    --hb-title: #1c1a1e;
+    --hb-muted: rgba(63, 57, 68, 0.66);
+    --hb-placeholder: rgba(63, 57, 68, 0.48);
+    --hb-select-arrow: rgba(63, 57, 68, 0.72);
+    --hb-link: rgba(43, 36, 44, 0.78);
+    --hb-link-hover: #000;
+    --hb-shadow: 0 22px 55px -26px rgba(44, 37, 46, 0.38);
+    --hb-heading-shadow: none;
+}
+
+html.dark {
     --hb-bg: #050505;
     --hb-bg-soft: #1c1a1e;
+    --hb-bg-image:
+        linear-gradient(to bottom, rgba(5, 5, 5, 0.92), rgba(10, 9, 11, 0.98)),
+        url('https://www.transparenttextures.com/patterns/dark-matter.png');
     --hb-surface: rgba(28, 26, 30, 0.92);
+    --hb-input: rgba(10, 9, 11, 0.86);
+    --hb-button: #000;
+    --hb-button-text: #d1d1d4;
     --hb-border: rgba(96, 92, 98, 0.28);
     --hb-text: #605c62;
     --hb-title: #d1d1d4;
     --hb-muted: rgba(209, 209, 212, 0.62);
+    --hb-placeholder: rgba(209, 209, 212, 0.45);
+    --hb-select-arrow: rgba(209, 209, 212, 0.72);
+    --hb-link: rgba(209, 209, 212, 0.84);
+    --hb-link-hover: #fff;
+    --hb-shadow: 0 22px 55px -20px rgba(0, 0, 0, 0.95);
+    --hb-heading-shadow: 0 4px 12px rgba(0, 0, 0, 0.75);
 }
 
 body.fi-body {
     background-color: var(--hb-bg);
-    background-image:
-        linear-gradient(to bottom, rgba(5, 5, 5, 0.92), rgba(10, 9, 11, 0.98)),
-        url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    background-image: var(--hb-bg-image);
     color: var(--hb-text);
     font-family: 'Lato', sans-serif;
 }
@@ -36,7 +66,7 @@ body.fi-body {
     width: min(100%, 38rem);
     border: 1px solid var(--hb-border);
     background: var(--hb-surface);
-    box-shadow: 0 22px 55px -20px rgba(0, 0, 0, 0.95);
+    box-shadow: var(--hb-shadow);
     backdrop-filter: blur(6px);
 }
 
@@ -45,7 +75,7 @@ body.fi-body {
     color: var(--hb-title);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.75);
+    text-shadow: var(--hb-heading-shadow);
 }
 
 .fi .fi-simple-header-subheading {
@@ -60,31 +90,37 @@ body.fi-body {
 .fi .fi-simple-main input,
 .fi .fi-simple-main select,
 .fi .fi-simple-main textarea {
-    border-color: rgba(96, 92, 98, 0.35) !important;
-    background-color: rgba(10, 9, 11, 0.86) !important;
+    border-color: var(--hb-border) !important;
+    background-color: var(--hb-input) !important;
     color: var(--hb-title) !important;
     font-family: 'Lato', sans-serif;
 }
 
 .fi .fi-simple-main input::placeholder,
 .fi .fi-simple-main textarea::placeholder {
-    color: rgba(209, 209, 212, 0.45) !important;
+    color: var(--hb-placeholder) !important;
 }
 
 .fi .fi-simple-main .fi-input-wrp,
 .fi .fi-simple-main .fi-select-input {
-    border-color: rgba(96, 92, 98, 0.35) !important;
-    background-color: rgba(10, 9, 11, 0.86) !important;
+    border-color: var(--hb-border) !important;
+    background-color: var(--hb-input) !important;
 }
 
 .fi .fi-select-input,
 .fi select.fi-select-input,
 .fi .fi-input-wrp select {
-    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8L10 12L14 8' stroke='%23d1d1d4' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8L10 12L14 8' stroke='%233f3944' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
     background-position: right 0.75rem center !important;
     background-repeat: no-repeat !important;
     background-size: 1rem 1rem !important;
     padding-inline-end: 2.5rem !important;
+}
+
+html.dark .fi .fi-select-input,
+html.dark .fi select.fi-select-input,
+html.dark .fi .fi-input-wrp select {
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8L10 12L14 8' stroke='%23d1d1d4' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
 }
 
 .fi .fi-input-wrp select,
@@ -116,7 +152,7 @@ body.fi-body {
     z-index: 2;
     width: 0.45rem;
     height: 0.45rem;
-    border: solid rgba(209, 209, 212, 0.72);
+    border: solid var(--hb-select-arrow);
     border-width: 0 1.5px 1.5px 0;
     pointer-events: none;
     transform: translateY(-65%) rotate(45deg);
@@ -128,9 +164,9 @@ body.fi-body {
 
 .fi .fi-simple-main .fi-btn,
 .fi .fi-simple-main button[type='submit'] {
-    border: 1px solid rgba(96, 92, 98, 0.45) !important;
-    background: #000 !important;
-    color: var(--hb-title) !important;
+    border: 1px solid var(--hb-border) !important;
+    background: var(--hb-button) !important;
+    color: var(--hb-button-text) !important;
     font-family: 'Playfair Display', serif;
     font-style: italic;
     letter-spacing: 0.16em;
@@ -138,9 +174,9 @@ body.fi-body {
 }
 
 .fi .fi-simple-main a {
-    color: rgba(209, 209, 212, 0.84);
+    color: var(--hb-link);
 }
 
 .fi .fi-simple-main a:hover {
-    color: #fff;
+    color: var(--hb-link-hover);
 }
