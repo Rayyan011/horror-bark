@@ -16,6 +16,12 @@ class HorrorBarkWorldSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->isProduction() && ! filter_var(env('ALLOW_WORLD_SEED_RESET', false), FILTER_VALIDATE_BOOL)) {
+            $this->command?->warn('Skipped HorrorBarkWorldSeeder in production because it resets booking and catalog tables. Set ALLOW_WORLD_SEED_RESET=true only for an intentional production reset.');
+
+            return;
+        }
+
         $now = now();
         $owners = $this->seedOwners($now);
 
