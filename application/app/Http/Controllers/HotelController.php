@@ -95,15 +95,20 @@ class HotelController extends Controller
     {
         $hotel->load(['rooms' => fn ($query) => $query->where('status', 'available')]);
 
-        $today = Carbon::today();
+        // Availability is shown for tonight (today → tomorrow). The booking modal lets
+        // the guest pick real dates, and BookingCheckoutService re-validates against them.
+        $startDate = Carbon::today();
+        $endDate = $startDate->copy()->addDay();
 
         foreach ($hotel->rooms as $room) {
-            $bookedQuantity = HotelBooking::where('room_id', $room->id)
+            $overlappingQuantity = HotelBooking::query()
+                ->where('room_id', $room->id)
                 ->where('status', '!=', 'canceled')
-                ->where('end_date', '>', $today)
+                ->where('start_date', '<', $endDate)
+                ->where('end_date', '>', $startDate)
                 ->sum('quantity');
 
-            $room->available_spots = max(0, $room->max_occupancy - $bookedQuantity);
+            $room->available_spots = max(0, $room->max_occupancy - $overlappingQuantity);
         }
 
         return view('pages.hotels.show', compact('hotel'));
