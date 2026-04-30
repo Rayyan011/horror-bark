@@ -23,5 +23,6 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesAndPanelAccessSeeder::class);
         $this->call(PagesTableSeeder::class);
         $this->call(HorrorBarkWorldSeeder::class);
+        $this->call(DemoBookingsSeeder::class);
     }
 }
