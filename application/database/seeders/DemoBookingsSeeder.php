@@ -16,10 +16,11 @@ use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
 /**
- * Seeds a populated demo dataset: ~24 customers and ~300 bookings spread across
+ * Seeds a populated demo dataset: ~150 customers and ~675 bookings spread across
  * a 60-day window so every dashboard widget — period stats, by-day charts,
  * next-7-days lists, capacity/occupancy meters, ferry departures table — has
- * meaningful data on first load.
+ * meaningful data on first load. Customer count is sized so the per-customer
+ * booking average (~4.5) looks like real repeat behavior rather than 28 each.
  *
  * Booking PDFs (invoices, ferry passes) are intentionally NOT generated here:
  * the InvoiceController and FerryPassController already lazy-generate them on
@@ -31,7 +32,7 @@ use Spatie\Permission\Models\Role;
 class DemoBookingsSeeder extends Seeder
 {
     /** Tune these to grow/shrink the demo dataset. */
-    private const CUSTOMER_COUNT = 24;
+    private const CUSTOMER_COUNT = 150;
 
     private const PAST_WINDOW_DAYS = 30;
 
@@ -104,8 +105,9 @@ class DemoBookingsSeeder extends Seeder
         $ids = [];
         for ($i = 0; $i < self::CUSTOMER_COUNT; $i++) {
             $first = $firstNames[$i % count($firstNames)];
-            $last = $lastNames[$i % count($lastNames)];
-            $email = sprintf('demo+%s.%s@horrorbark.test', strtolower($first), strtolower($last));
+            $last = $lastNames[intdiv($i, count($firstNames)) % count($lastNames)];
+            $suffix = $i >= count($firstNames) * count($lastNames) ? (string) ($i + 1) : '';
+            $email = sprintf('demo+%s.%s%s@horrorbark.test', strtolower($first), strtolower($last), $suffix);
             $createdAt = CarbonImmutable::now()->subDays(mt_rand(1, 60));
 
             DB::table('users')->updateOrInsert(
